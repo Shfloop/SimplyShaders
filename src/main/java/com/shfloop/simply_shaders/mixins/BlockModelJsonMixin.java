@@ -20,17 +20,18 @@ public abstract class BlockModelJsonMixin {
             value = "INVOKE", target = "addVert(Lfinalforeach/cosmicreach/rendering/IMeshData;FFFFFISII)I")) // hopefully this finds the right spot
 
     private void addVerticiesInject(CallbackInfo ci, @Local BlockModelJsonCuboidFace f) { // just needs to update the normal helper class normal value based on the local fi
-        Shadows.normal_int = switch (f.vertexIndexD) { // there might be a better way to do this
-
+        Shadows.normal_float =(int) switch (f.vertexIndexD) { // there might be a better way to do this
+            //TODO look into this it might be causing issues
             case 1 -> 2; // i can replace this with just an updated vertex shader vec3 normal array
             case 2 -> 4;
             case 3 -> 1;
-            case 4 -> 0;
+            case 4 -> 0; // whats not seen by c gets case 4 i think
             case 5 -> 5;
             case 6 -> 3;
-            default ->
-                    0;//FOUND THE ISSUE any slab/stair inside doesnt get a block occulusion value because they shoiuld be occcoluded so i need to find another way
+            default -> 7;
+//0;//FOUND THE ISSUE any slab/stair inside doesnt get a block occulusion value because they shoiuld be occcoluded so i need to find another way
         };
+
 
 
     }
@@ -42,10 +43,10 @@ public abstract class BlockModelJsonMixin {
 
         float[] items = verts.items;
         if (RuntimeInfo.isMac) { // mac wont work yet
-            items[size + 6] = Shadows.normal_int;// ; // i need to mess with game shader to update the changes vertex attribute position when isMac
+            items[size + 6] =  Shadows.normal_float;// ; // i need to mess with game shader to update the changes vertex attribute position when isMac
             numComponents += 1;
         } else {
-            items[size + 5] = Shadows.normal_int ;//;
+            items[size + 5] =  Shadows.normal_float ;//;
         }
         verts.size += 1;
         int indexOfCurVertex = size / numComponents;
