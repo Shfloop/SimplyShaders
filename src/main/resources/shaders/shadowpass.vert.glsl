@@ -21,7 +21,7 @@ uniform samplerBuffer texBuffer;
 
 
 in float a_uvIdx;
-#import "Test/distort.glsl"
+
 
 
 //need to remove the imports
@@ -39,5 +39,5 @@ void main() {
 
 
     gl_Position = (u_projViewTrans * u_modelMat * vec4(worldPos, 1.0));
-    gl_Position.xyz = distort(gl_Position.xyz);
+
 }
