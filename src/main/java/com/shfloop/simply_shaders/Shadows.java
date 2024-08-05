@@ -132,7 +132,7 @@ public class Shadows {
         Shadows.sunCamera.update();
     }
     public static void calcSunDirection() {
-        float temp_time = time_of_day - 1500  ;
+        float temp_time = time_of_day - 960  ;
 //        if (time_of_day > 1500) {
 //            temp_time = 1500 - time_of_day;
 //        }
