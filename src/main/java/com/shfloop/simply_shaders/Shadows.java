@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.math.Vector3;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
+import finalforeach.cosmicreach.world.Sky;
 
 import java.io.IOException;
 
@@ -13,7 +14,8 @@ public class Shadows {
     public static Camera lastUsedCamera; // could be used to in a mixin with chunkbatch to get the rendercamera regardless of what state game is in and whatever camera wants to be created
     public static Vector3 lastUsedCameraPos;
     public static boolean shaders_on = false;
-    public static float time_of_day = 750;
+    public static float time_of_day = 0.0f;
+    public static boolean updateTime = false;
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
@@ -23,7 +25,7 @@ public class Shadows {
 
     public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");//TODO change the name to something better
     public static boolean forceUpdate = false;
-    private static Vector3 lastCameraPos = new Vector3();
+    private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
 
@@ -82,6 +84,16 @@ public class Shadows {
             e.printStackTrace();
         }
         initalized = true;
+
+        //Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky")); //i think this should work
+        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
+            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
+            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
+
+        } else {
+            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
+        }
         ChunkShader.reloadAllShaders();
     }
     public static OrthographicCamera getCamera() {
@@ -140,7 +152,17 @@ public class Shadows {
             shadow_map.cleanup(); //:(
         }
         initalized = false;
+        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
+            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
+            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
+
+        } else {
+            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
+        }
         ChunkShader.reloadAllShaders();
+        //Sky.skyChoices.set(1, new DynamicSkyClone("Dynamic_Sky")); //sees if this works
+
     }
 
 

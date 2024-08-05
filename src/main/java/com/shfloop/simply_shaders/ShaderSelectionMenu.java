@@ -11,6 +11,7 @@ import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
 import finalforeach.cosmicreach.ui.UISlider;
 import finalforeach.cosmicreach.ui.VerticalAnchor;
+import finalforeach.cosmicreach.world.Sky;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,6 +121,7 @@ public class ShaderSelectionMenu extends GameState{
                         this.buttonTex = uiPanelPressedTex;
                         this.setTextColor(Color.RED);
 
+
                     }
                     public void updateText() { //this will just act as reset i suppose
                         this.buttonTex = uiPanelTex;
@@ -168,7 +170,7 @@ public class ShaderSelectionMenu extends GameState{
             this.uiObjects.add(this.downButton);
             this.cycleWorldButtons();
 
-            UISlider sun_time_slider = new UISlider(0.0F, 3000.0F, (float) Shadows.time_of_day, 275.0F, -200.0F, 250.0F, 50.0F) { //275.0F, -16.0F, 250.0F, 50.0F
+            UISlider sun_time_slider = new UISlider(0.0F, 1920, (float) Shadows.time_of_day, 275.0F, -200.0F, 250.0F, 50.0F) { //275.0F, -16.0F, 250.0F, 50.0F
                 @Override
                 public void onCreate() {
                     super.onCreate();
@@ -178,8 +180,17 @@ public class ShaderSelectionMenu extends GameState{
                 @Override
                 public void onMouseUp() {
                     super.onMouseUp();
-                    Shadows.time_of_day = (int)this.currentValue;
-                    Shadows.calcSunDirection();
+                    Shadows.time_of_day = this.currentValue;
+                    if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+                    //might be a little scuffed
+                        //if its a dynamic sky then it should already be set to the rewrite
+                        Shadows.updateTime = true;
+
+                    } else {
+                        Shadows.calcSunDirection();
+                    }
+
+                    System.out.println("SUN DIRECTION " + Shadows.getCamera().direction);
                     this.updateText();
                 }
 
