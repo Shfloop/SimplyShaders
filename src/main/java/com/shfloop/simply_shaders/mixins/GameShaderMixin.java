@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.shfloop.simply_shaders.Shadows;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
+import finalforeach.cosmicreach.rendering.shaders.EntityShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +26,7 @@ public abstract class GameShaderMixin   {
     static private void addShadowPassShaders(CallbackInfo ci) {
         //Instead i should just make a shader pack and have this be in it
         new ChunkShader("InternalShader/internal.shadowpass.vert.glsl","InternalShader/internal.shadowpass.frag.glsl");
-
+        new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
         ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
 
     }

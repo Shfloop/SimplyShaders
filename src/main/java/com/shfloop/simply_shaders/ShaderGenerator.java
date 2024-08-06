@@ -1,6 +1,7 @@
 package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.files.FileHandle;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.io.SaveLocation;
@@ -9,15 +10,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 
 public class ShaderGenerator {
 
     public static String currentShaderPackFolder = "shaders/Test/";
     public static void copyShader(String baseShaderName) { //as long as the files are findablke through load asset we should be in buisness
         FileHandle input = GameAssetLoader.loadAsset(currentShaderPackFolder + baseShaderName, false);
+
+        //TODO make this better and add zip support
+
        FileHandle testShader = GameAssetLoader.loadAsset("shaders/InternalShader/internal." + baseShaderName , false); //this should find the correct values
         input.copyTo(testShader);
     }

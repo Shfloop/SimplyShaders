@@ -43,8 +43,13 @@ public class Shadows {
         ShaderGenerator generator = new ShaderGenerator();
         generator.copyContent("shadowpass.frag.glsl", "InternalShader/internal.shadowpass.frag.glsl");
         generator.copyContent("shadowpass.vert.glsl", "InternalShader/internal.shadowpass.vert.glsl"); //this should create the file and paths if its not already there
+
+        generator.copyContent("shadowEntity.frag.glsl", "InternalShader/internal.shadowEntity.frag.glsl");
+        generator.copyContent("shadowEntity.vert.glsl", "InternalShader/internal.shadowEntity.vert.glsl");
+
         ShaderGenerator.copyBaseShader("chunk.frag.glsl");
         ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
+
         //TODO add other shaders to this
 
        //i need a base shader in resources for shadow pass cause it still nedes to compile on startup
@@ -63,7 +68,7 @@ public class Shadows {
                 throw new RuntimeException(e);
             }
             try {
-                turnShadowsOn();
+                turnShadowsOn(); //this should reset the sky time
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -77,6 +82,9 @@ public class Shadows {
         ShaderGenerator.copyShader("chunk.vert.glsl");
         ShaderGenerator.copyShader("shadowpass.frag.glsl");
         ShaderGenerator.copyShader("shadowpass.vert.glsl");
+
+        ShaderGenerator.copyShader("shadowEntity.frag.glsl");
+        ShaderGenerator.copyShader("shadowEntity.vert.glsl");
         //TODO add other shaders
 
         try { shadow_map= new ShadowMap();}
@@ -132,7 +140,7 @@ public class Shadows {
         Shadows.sunCamera.update();
     }
     public static void calcSunDirection() {
-        float temp_time = time_of_day - 960  ;
+        float temp_time = time_of_day - 960  ; //TODO make a better time system
 //        if (time_of_day > 1500) {
 //            temp_time = 1500 - time_of_day;
 //        }

@@ -16,7 +16,7 @@ public class EntityModelInstanceMixin {
 
         //definitly need a better way to do this
         if (Shadows.shadowPass) {
-            GameShaderInterface.getShader().get(6).bind(worldCamera);
+            GameShaderInterface.getShader().get(7).bind(worldCamera);
         }
 
     }

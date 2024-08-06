@@ -65,14 +65,17 @@ public class DynamicSkyRewrite extends Sky {
            timeT =(int) Shadows.time_of_day * 20;
            Shadows.updateTime = false;
            System.out.println("UPDATETIME " + timeT);
+           lastT = timeT;
        }
 
         final float cycleLength = 38400.0f;
+        //final float cycleLength = 1920.0f;
         //timeT
         int currentTick = playerZone.currentTick - lastTUpdate;
             timeT += currentTick;
             if (timeT > cycleLength) {
                 timeT = 0;
+                lastT = 0;
             }
             lastTUpdate = playerZone.currentTick; // this seems dumb but it will get changed soon
         this.i =   360.0f * (float)timeT / cycleLength;
@@ -82,11 +85,11 @@ public class DynamicSkyRewrite extends Sky {
         this.sunDirection.set(0.514496f, 0.857493f, 0.0f).rotate(this.i, 1.0F, 0.0F, 1.0F); // need to rotate it differently
         //if (currentTimeSeconds > lastT + cycleLength / 1000) {
             //lets update the sun camera every 5.0
-        if (timeT > lastT + cycleLength / 2000 ){ // i want to update every 2000 of cycle
+        if (timeT > lastT + cycleLength / 4000 ){ // i want to update every 2000 of cycle
 
             //System.out.println("UPDATE_TIME " + timeT);
 //            System.out.println("SUN DIRECTION " + this.sunDirection);
-            Shadows.time_of_day =  ((float) timeT / 20);
+            Shadows.time_of_day =  ((float) timeT / 20); //this doesnt work if the cycle time is changed
             if (Shadows.shaders_on) {
                 if (Shadows.lastUsedCameraPos != null) { //feel bad doing this but easy fix
                     Shadows.forceUpdate = true; //TODO this should really just be a method input
