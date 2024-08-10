@@ -279,13 +279,13 @@ public class ShaderSelectionMenu extends GameState{
                     throw new RuntimeException(e);
                 }
             } else {
-                try {
+
                     Shadows.cleanup();
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+
             }
+        } else if (!shadersOn) {
+            Shadows.cleanup();
         }
 
 

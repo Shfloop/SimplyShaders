@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.math.Vector3;
+import dev.crmodders.cosmicquilt.mixins.override.SaveLocationMixin;
+import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.world.Sky;
 
@@ -28,7 +30,7 @@ public class Shadows {
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
-
+    private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl"};
 
     static {
         //not sure what viewport size i should be using
@@ -61,12 +63,7 @@ public class Shadows {
     }
     public static void reloadShaders() {
         if (shaders_on) {
-            try {
-                cleanup();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            cleanup();
             try {
                 turnShadowsOn(); //this should reset the sky time
             } catch (Exception e) {
@@ -74,17 +71,24 @@ public class Shadows {
             }
         }
     }
-    public static void turnShadowsOn() throws Exception {
+    public static void turnShadowsOn()  {
 
+        try {
+            copyExternalShaderFiles();
+        } catch (IOException e) { //reaplce the files
+           cleanup();
+            e.printStackTrace();
+            Shadows.shaders_on = false;
+            return;
+        }
 
-
-        ShaderGenerator.copyShader("chunk.frag.glsl");
-        ShaderGenerator.copyShader("chunk.vert.glsl");
-        ShaderGenerator.copyShader("shadowpass.frag.glsl");
-        ShaderGenerator.copyShader("shadowpass.vert.glsl");
-
-        ShaderGenerator.copyShader("shadowEntity.frag.glsl");
-        ShaderGenerator.copyShader("shadowEntity.vert.glsl");
+//        ShaderGenerator.copyShader("chunk.frag.glsl");
+//        ShaderGenerator.copyShader("chunk.vert.glsl");
+//        ShaderGenerator.copyShader("shadowpass.frag.glsl");
+//        ShaderGenerator.copyShader("shadowpass.vert.glsl");
+//
+//        ShaderGenerator.copyShader("shadowEntity.frag.glsl");
+//        ShaderGenerator.copyShader("shadowEntity.vert.glsl");
         //TODO add other shaders
 
         try { shadow_map= new ShadowMap();}
@@ -104,6 +108,23 @@ public class Shadows {
         }
         ChunkShader.reloadAllShaders();
     }
+
+    private static void copyExternalShaderFiles() throws IOException {
+
+        System.out.println("SAVE LOCATION " + SaveLocation.getSaveFolderLocation());
+        System.out.println("Copying shaders from: " + SaveLocation.getSaveFolderLocation() + ShaderGenerator.currentShaderPackFolder);
+        if (ShaderGenerator.currentShaderPackFolder.endsWith("zip/")) {// i add a / at the end when setting currentshaderpackFolder
+            for (String s : SHADERS_TO_COPY) {
+                ShaderGenerator.copyShaderFromZip(s);
+            }
+        } else {
+            for (String s : SHADERS_TO_COPY) {
+                ShaderGenerator.copyShader(s);
+            }
+        }
+
+    }
+
     public static OrthographicCamera getCamera() {
         // needs to check the current view frustrum how do i differ it from Menu cam vs player cam does matter cause shadow map will be different needs a way to take the current camera
 
@@ -152,9 +173,12 @@ public class Shadows {
         sunCamera.update();
         forceUpdate = true; // whenever the sun changes the next render pass will force update the new camera with new direction
     }
-    public static void cleanup() throws IOException {
-        ShaderGenerator.copyBaseShader("chunk.frag.glsl");
+    public static void cleanup()  {
+        //if copy base shaders fails the game need to stop for good isnt much i can doi to recover
+
+        ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
         ShaderGenerator.copyBaseShader("chunk.vert.glsl");
+
         //TODO add otehr shaders
         if (shadow_map != null) {
             shadow_map.cleanup(); //:(

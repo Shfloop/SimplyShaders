@@ -9,6 +9,7 @@ import finalforeach.cosmicreach.ui.UISlider;
 
 import java.io.IOException;
 
+//NOT USED
 public class ShaderMenu extends GameState {
     GameState previousState;
     public ShaderMenu(final GameState previousState) {
@@ -40,11 +41,9 @@ public class ShaderMenu extends GameState {
                     //creating new shader reloads it so this should be it just need to load back the old shaders when done
 
                 } else if (InGame.world != null && Shadows.shaders_on) {
-                    try {
+
                         Shadows.cleanup();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+
                     dispose();
                 }
                 Shadows.shaders_on = !Shadows.shaders_on;

@@ -32,18 +32,17 @@ public class InGameMixin extends GameState {
                 Shadows.turnShadowsOn();
 
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                //if the shadows cant be turned on just call cleanup
+                Shadows.cleanup();
             }
         }
     }
 
     @Inject(method = "dispose()V", at = @At("TAIL"))
     private void injectDispose(CallbackInfo ci) {
-        try {
+
             Shadows.cleanup();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
     private void injectInGameRender(CallbackInfo ci, @Local Zone playerZone) {
@@ -60,6 +59,7 @@ public class InGameMixin extends GameState {
             Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
             Shadows.shadowPass = true;
            // nned to improve framerate its getting cut by like 1/3 with default shaders
+            //using hte same render causes a few extra BlockModelJson calls but it isnt very much compared to what it did originally
             GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
 
             Gdx.gl.glDepthMask(true);
