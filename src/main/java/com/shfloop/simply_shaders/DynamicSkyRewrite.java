@@ -20,8 +20,8 @@ public class DynamicSkyRewrite extends Sky {
     Mesh skyMesh;
     Vector3 sunDirection = new Vector3(0.514496f, 0.857493f, 0.0f);
     float i;
-    float lastT =0;
-    int timeT = 0;
+    float lastT =(int)Shadows.time_of_day * 20;
+    int timeT = (int)Shadows.time_of_day * 20;
     int lastTUpdate = 0;
     public DynamicSkyRewrite(String nameLangKey) {
         super(nameLangKey, new Color(Color.BLACK), new Color(Color.WHITE), true);
@@ -59,14 +59,7 @@ public class DynamicSkyRewrite extends Sky {
 //       final float cycleLength = 60.0f;
 //       //this gives percentage cycle completeed
 //        this.i = 360.0F * (currentTimeSeconds % cycleLength) / cycleLength; // this makes it easier to set the time
-       if (Shadows.updateTime) { //time of day should last 1920 seconds like base game
-            //means the slider in shader menu was touched
-           //i want to set the current timeT to the new time
-           timeT =(int) Shadows.time_of_day * 20;
-           Shadows.updateTime = false;
-           System.out.println("UPDATETIME " + timeT);
-           lastT = timeT;
-       }
+
 
         final float cycleLength = 38400.0f;
         //final float cycleLength = 1920.0f;
@@ -78,6 +71,19 @@ public class DynamicSkyRewrite extends Sky {
                 lastT = 0;
             }
             lastTUpdate = playerZone.currentTick; // this seems dumb but it will get changed soon
+
+        if (Shadows.updateTime) { //time of day should last 1920 seconds like base game
+            //means the slider in shader menu was touched
+            //i want to set the current timeT to the new time
+            timeT =(int) Shadows.time_of_day * 20;
+
+            //System.out.println("UPDATETIME " + timeT);
+            lastT = timeT;
+            //this could be better as its just a duplicate but okay for a temp thing
+
+
+        }
+
         this.i =   360.0f * (float)timeT / cycleLength;
         //System.out.println("TIME " + timeT + "LAST T" + lastT);
         //TODO also add a way to stop the time from ticking
@@ -85,10 +91,11 @@ public class DynamicSkyRewrite extends Sky {
         this.sunDirection.set(0.514496f, 0.857493f, 0.0f).rotate(this.i, 1.0F, 0.0F, 1.0F); // need to rotate it differently
         //if (currentTimeSeconds > lastT + cycleLength / 1000) {
             //lets update the sun camera every 5.0
-        if (timeT > lastT + cycleLength / 4000 ){ // i want to update every 2000 of cycle
-
+        if (timeT > lastT + cycleLength / 4000  || Shadows.updateTime){ // i want to update every 2000 of cycle
+            Shadows.updateTime = false; // bit weird but it should work
             //System.out.println("UPDATE_TIME " + timeT);
 //            System.out.println("SUN DIRECTION " + this.sunDirection);
+            //FIXME the time isnt being set correctly
             Shadows.time_of_day =  ((float) timeT / 20); //this doesnt work if the cycle time is changed
             if (Shadows.shaders_on) {
                 if (Shadows.lastUsedCameraPos != null) { //feel bad doing this but easy fix

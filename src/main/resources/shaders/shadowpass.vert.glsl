@@ -13,14 +13,17 @@ out vec4 blocklight;
 
 uniform mat4 lightSpaceMatrix;
 
-in float as_normal_dir;
-out float normal_float;
+//in float as_normal_dir;
+//out float normal_float;
 
-uniform samplerBuffer texBuffer;
+//uniform samplerBuffer texBuffer;
 
 
 
-in float a_uvIdx;
+//in float a_uvIdx;
+#import "common/bitUnpacker.glsl"
+
+//just gonna switch to botunpacker for .1.44 for normal and uv
 
 
 
@@ -30,11 +33,12 @@ void main() {
 
     worldPos = a_position;
     blocklight = a_lighting;
-    int texId = int(a_uvIdx);
-    v_texCoord0 = vec2(texelFetch(texBuffer, 2*texId).r, texelFetch(texBuffer, (2*texId)+1).r);
+    //int texId = int(a_uvIdx);
+    v_texCoord0 = GET_TEX_COORDS;
+    //vec2(texelFetch(texBuffer, 2*texId).r, texelFetch(texBuffer, (2*texId)+1).r);
 
 
-    normal_float = as_normal_dir; // this makes glass transparent to shadows for some reaason??
+    //normal_float = as_normal_dir; // this makes glass transparent to shadows for some reaason??
 
 
 

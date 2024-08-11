@@ -14,20 +14,20 @@ in vec4 blocklight;
 //in vec4 fragPosLightSpace;
 
 
-
-in float normal_float;
+ //.1.44
+//in float normal_float;
 
 //in vec3 normal;
 
 uniform sampler2D texDiffuse;
 uniform sampler2D shadowMap;
 
-uniform vec3 lightPos;
+//uniform vec3 lightPos;
 uniform vec3 lightDir; // libgdx says its already normalized
 
-//#import "/distort.glsl"
 
-//a_position should be already in worldspace if im understanding it correctly
+
+
 out vec4 outColor;
 
 

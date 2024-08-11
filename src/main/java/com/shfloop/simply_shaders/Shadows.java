@@ -21,12 +21,14 @@ public class Shadows {
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
-    public static VertexAttribute posAttrib = VertexAttribute.Position();
-    public static VertexAttribute uvIdxAttrib = new VertexAttribute(32, 1, 5126, false, "a_uvIdx");
-    public static VertexAttribute lightingAttrib = new VertexAttribute(4, 4, "a_lighting");
-
-    public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");//TODO change the name to something better
-    public static boolean forceUpdate = false;
+    public static Vector3 tmpNormalVec;
+    //nolonger used in .1.44
+//    public static VertexAttribute posAttrib = VertexAttribute.Position();
+//    public static VertexAttribute uvIdxAttrib = new VertexAttribute(32, 1, 5126, false, "a_uvIdx");
+//    public static VertexAttribute lightingAttrib = new VertexAttribute(4, 4, "a_lighting");
+//
+//    public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");//TODO change the name to something better
+   public static boolean forceUpdate = false;
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;

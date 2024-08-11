@@ -22,14 +22,16 @@ public abstract class ChunkShaderMixin extends GameShader {
     }
     //TODO i should add an entity shader mixin to add normals to entities
 
-    @Inject(method = "<init>(Ljava/lang/String;Ljava/lang/String;)V", at = @At("TAIL")) //, Shadows.normal_attrib
-    private void injectConstructor(CallbackInfo ci) { // changed to new way 1.4
-        VertexAttribute[] vertex = new VertexAttribute[]{Shadows.posAttrib, Shadows.lightingAttrib,  Shadows.uvIdxAttrib, Shadows.normal_attrib }; // only works if nobody else updates vertex Attributes might want to change
-        this.allVertexAttributesObj = new VertexAttributes(vertex);
+    //Not needed in .1.44
 
-
-
-    }
+//    @Inject(method = "<init>(Ljava/lang/String;Ljava/lang/String;)V", at = @At("TAIL")) //, Shadows.normal_attrib
+//    private void injectConstructor(CallbackInfo ci) { // changed to new way 1.4
+//        VertexAttribute[] vertex = new VertexAttribute[]{Shadows.posAttrib, Shadows.lightingAttrib,  Shadows.uvIdxAttrib, Shadows.normal_attrib }; // only works if nobody else updates vertex Attributes might want to change
+//        this.allVertexAttributesObj = new VertexAttributes(vertex);
+//
+//
+//
+//    }
     //Im not sure why this doesnt work but i whateves inject works but it crashes cause vertex buffer is too small
 //    @Inject(method = "<init>(Ljava/lang/String;Ljava/lang/String;)V", at = @At(value ="INVOKE",
 //            target ="Lcom/badlogic/gdx/graphics/VertexAttributes;<init>([Lcom/badlogic/gdx/graphics/VertexAttribute;)V", shift = At.Shift.AFTER))
@@ -47,7 +49,7 @@ public abstract class ChunkShaderMixin extends GameShader {
 
             this.bindOptionalUniformMatrix("lightSpaceMatrix", Shadows.getCamera().combined);
             this.bindOptionalUniformi("shadowMap", Shadows.shadow_map.getDepthMapTexture().id); // i think i should try and change this so it matches how texture numbers are handled in chunk shader but idk
-            this.bindOptionalUniform3f("lightPos", Shadows.getCamera().position); // think this is what i need
+            //this.bindOptionalUniform3f("lightPos", Shadows.getCamera().position); // no longer used
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);// to compare with normal
 
         }

@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+//got rid of mixin include in json for .1.44
+
 @Mixin(BlockModelJson.class)
 public abstract class BlockModelJsonMixin {
     @Inject(method = "addVertices(Lfinalforeach/cosmicreach/rendering/IMeshData;IIII[S[I)V", at = @At(

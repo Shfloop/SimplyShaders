@@ -8,7 +8,8 @@
     "MainMenuMixin",
     "OptionsMenuMixin",
     "ChunkShaderMixin",
-    "BlockModelJsonMixin",
+
+    "BlockModelJsonCuboidMixin",
     "GameShaderMixin",
     "GameShaderInterface",
     "InGameMixin",
