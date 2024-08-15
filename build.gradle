@@ -6,7 +6,7 @@ plugins {
 repositories {
     ivy {
         name "Cosmic Reach"
-        url "https://github.com/CRModders/CosmicArchive/raw/main/"
+        url "https://github.com/CRModders/CosmicArchive/raw/main/versions/pre-alpha/" //add versions/pre-alpha/ to teh end 
         patternLayout {
             artifact "/Cosmic Reach-[revision].jar"
         }
