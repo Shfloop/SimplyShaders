@@ -55,7 +55,7 @@ public class DynamicSkyClone extends Sky {
     public void update() {
         World world = InGame.world;
         Zone playerZone = InGame.getLocalPlayer().getZone(world);
-        float currentTimeSeconds = (float)playerZone.currentTick * 0.05F;
+        float currentTimeSeconds = (float)playerZone.getCurrentWorldTick() * 0.05F;
         float cycleLength = 1920.0F;
         this.i = 360.0F * (currentTimeSeconds / cycleLength);
         this.sunDirection.set(0.0F, 1.0F, 0.0F).rotate(this.i, 0.0F, 0.0F, 1.0F);

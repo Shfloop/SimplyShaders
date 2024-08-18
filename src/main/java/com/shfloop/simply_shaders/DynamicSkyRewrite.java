@@ -26,6 +26,10 @@ public class DynamicSkyRewrite extends Sky {
     public DynamicSkyRewrite(String nameLangKey) {
         super(nameLangKey, new Color(Color.BLACK), new Color(Color.WHITE), true);
         this.skyShader = SkyShader.SKY_SHADER;
+        //need to initalize the lastTupdate to the current time so it doesnt update on f6 reload
+        World world = InGame.world;
+        Zone playerZone = InGame.getLocalPlayer().getZone(world);
+        lastTUpdate = (int) playerZone.getCurrentWorldTick();
     }
     public void drawSky(Camera worldCamera) {
         if (this.skyMesh == null) {
@@ -64,13 +68,13 @@ public class DynamicSkyRewrite extends Sky {
         final float cycleLength = 38400.0f;
         //final float cycleLength = 1920.0f;
         //timeT
-        int currentTick = playerZone.currentTick - lastTUpdate;
+        int currentTick = (int)playerZone.getCurrentWorldTick() - lastTUpdate;
             timeT += currentTick;
             if (timeT > cycleLength) {
                 timeT = 0;
                 lastT = 0;
             }
-            lastTUpdate = playerZone.currentTick; // this seems dumb but it will get changed soon
+            lastTUpdate = (int)playerZone.getCurrentWorldTick(); // this seems dumb but it will get changed soon
 
         if (Shadows.updateTime) { //time of day should last 1920 seconds like base game
             //means the slider in shader menu was touched
