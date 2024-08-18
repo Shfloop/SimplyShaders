@@ -11,7 +11,7 @@ out vec2 v_texCoord0;
 out vec3 worldPos;
 out vec4 blocklight;
 
-uniform mat4 lightSpaceMatrix;
+//uniform mat4 lightSpaceMatrix;
 
 //in float as_normal_dir;
 //out float normal_float;

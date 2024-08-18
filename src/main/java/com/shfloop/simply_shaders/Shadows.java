@@ -63,13 +63,15 @@ public class Shadows {
 
 
     }
-    public static void reloadShaders() {
+    public static void reloadShaders() { //dont need to call reload shaders because that happens after this gets called by chunkshader
         if (shaders_on) {
             cleanup();
             try {
                 turnShadowsOn(); //this should reset the sky time
             } catch (Exception e) {
+
                 throw new RuntimeException(e);
+
             }
         }
     }
@@ -120,7 +122,7 @@ public class Shadows {
             Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
         }
         System.out.println("Finished Loading Shaders");
-        ChunkShader.reloadAllShaders();
+       // ChunkShader.reloadAllShaders();
     }
 
     private static void copyExternalShaderFiles() throws IOException {
@@ -198,7 +200,7 @@ public class Shadows {
             shadow_map.cleanup(); //:(
         }
         initalized = false;
-        Shadows.shaders_on = false;
+        //Shadows.shaders_on = false; // dont call this in cleanup!!!
         if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
             //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
             Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
@@ -207,7 +209,7 @@ public class Shadows {
         } else {
             Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
         }
-        ChunkShader.reloadAllShaders();
+        //ChunkShader.reloadAllShaders();
         //Sky.skyChoices.set(1, new DynamicSkyClone("Dynamic_Sky")); //sees if this works
 
     }

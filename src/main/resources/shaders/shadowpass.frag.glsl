@@ -7,6 +7,8 @@ precision mediump float;
 #endif
 
 uniform vec3 skyAmbientColor;
+uniform vec4 tintColor;
+uniform vec3 worldAmbientColor;
 
 in vec2 v_texCoord0;
 in vec3 worldPos;
@@ -20,10 +22,10 @@ in vec4 blocklight;
 //in vec3 normal;
 
 uniform sampler2D texDiffuse;
-uniform sampler2D shadowMap;
+//uniform sampler2D shadowMap;
 
 //uniform vec3 lightPos;
-uniform vec3 lightDir; // libgdx says its already normalized
+//uniform vec3 lightDir; // libgdx says its already normalized
 
 
 

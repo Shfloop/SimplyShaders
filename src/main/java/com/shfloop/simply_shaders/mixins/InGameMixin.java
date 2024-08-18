@@ -9,6 +9,7 @@ import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,6 +51,7 @@ public class InGameMixin extends GameState {
     private void injectDispose(CallbackInfo ci) {
 
             Shadows.cleanup();
+            ChunkShader.reloadAllShaders();
 
     }
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
@@ -64,6 +66,7 @@ public class InGameMixin extends GameState {
                     //if the shadows cant be turned on just call cleanup
                     Shadows.cleanup();
                 }
+                ChunkShader.reloadAllShaders();
             }
         }
 

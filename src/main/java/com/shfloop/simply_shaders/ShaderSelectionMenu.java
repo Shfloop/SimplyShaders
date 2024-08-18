@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import finalforeach.cosmicreach.gamestates.*;
 import finalforeach.cosmicreach.io.SaveLocation;
+import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
 import finalforeach.cosmicreach.ui.UISlider;
@@ -29,7 +30,7 @@ public class ShaderSelectionMenu extends GameState{
         UIElement downButton;
         int topWorldIdx;
         static int last_selected_idx =1 ; //TODO change this to load from file
-        static boolean shadersOn = false; //TODO change this to load from file
+        //static boolean shadersOn = false; //TODO change this to load from file
     Array<String> allShaders;
 
 
@@ -92,7 +93,7 @@ public class ShaderSelectionMenu extends GameState{
 
                     //for now i could just change the color to indicate what is selected
                     if (allShaders.size != 0) {
-                        ShaderSelectionMenu.shadersOn = !ShaderSelectionMenu.shadersOn;
+                        Shadows.shaders_on = !Shadows.shaders_on;
 
                     }
                     this.updateText();
@@ -100,7 +101,7 @@ public class ShaderSelectionMenu extends GameState{
                 }
 
                 public void updateText() { //this will just act as reset i suppose
-                    this.setText(ShaderSelectionMenu.shadersOn ? "Enabled" : "Disabled");
+                    this.setText(Shadows.shaders_on ? "Enabled" : "Disabled");
 
                 }
             };
@@ -268,10 +269,10 @@ public class ShaderSelectionMenu extends GameState{
             return;
         }
         ShaderGenerator.currentShaderPackFolder = "shaders/"+ allShaders.get(last_selected_idx - 1) + "/"; // Last selected idx needs to be -1 cause i dont have the enable shader buitton in allshaders but its in the scroll ilst
-        Shadows.shaders_on = shadersOn; //TODO SWITCH THESE
+        //Shadows.shaders_on = shadersOn; /
         //gonna ghange it first cvause it migth be a aproblem if cleanup is called but the render still happens with shaders on
-        if (InGame.world != null) {//TODO find abetter way cause if they leave thew game it wouldnt cleanup unless i add a mixin
-            if (shadersOn) {
+        if (InGame.world != null) {
+            if (Shadows.shaders_on) {
                 try {
                     Shadows.turnShadowsOn();
 
@@ -284,8 +285,9 @@ public class ShaderSelectionMenu extends GameState{
 
 
             }
-        } else if (!shadersOn) {
-            Shadows.cleanup();
+            ChunkShader.reloadAllShaders();
+        } else if (!Shadows.shaders_on) {
+            Shadows.cleanup(); //dont think i need to call reload shaders
         }
 
 
