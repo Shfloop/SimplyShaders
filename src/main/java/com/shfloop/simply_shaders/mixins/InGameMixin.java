@@ -25,17 +25,25 @@ public class InGameMixin extends GameState {
 
     //i think instead now that sprinting influences the fov i need to change from this "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"
     //to before sky.drawsky
+
+
+    //for now ill remove this and just create the buffer in render loop not sure why this doesnt work anymore
+    //i might want to move this into the player creation or whenever the gamestate switches to ingame
+    //none of the shadowfbo depends on ingame existing so i really dont know why it was failing and not triggering exceptions
     @Inject(method = "create()V", at = @At("TAIL"))
     private void injectCreate(CallbackInfo ci) {
-        if (Shadows.shaders_on && !Shadows.initalized) {
-            try {
-                Shadows.turnShadowsOn();
-
-            } catch (Exception e) {
-                //if the shadows cant be turned on just call cleanup
-                Shadows.cleanup();
-            }
-        }
+//        if (Shadows.initalized) {
+//            Shadows.cleanup(); //force them to cleanup regardless
+//        }
+//        if (Shadows.shaders_on && !Shadows.initalized) {
+//            try {
+//                Shadows.turnShadowsOn();
+//
+//            } catch (Exception e) {
+//                //if the shadows cant be turned on just call cleanup
+//                Shadows.cleanup();
+//            }
+//        }
     }
 
     @Inject(method = "dispose()V", at = @At("TAIL"))
@@ -47,6 +55,18 @@ public class InGameMixin extends GameState {
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
     private void injectInGameRender(CallbackInfo ci, @Local Zone playerZone) {
         //this is causing fps to drop by 1/3
+        if(Shadows.shaders_on) {
+            if (!Shadows.initalized) {
+                try {
+                    Shadows.turnShadowsOn();
+
+                } catch (Exception e) {
+                    //if the shadows cant be turned on just call cleanup
+                    Shadows.cleanup();
+                }
+            }
+        }
+
         if (Shadows.shaders_on) {
             Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
             Shadows.updateCenteredCamera();

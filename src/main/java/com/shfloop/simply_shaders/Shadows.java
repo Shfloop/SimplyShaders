@@ -74,13 +74,17 @@ public class Shadows {
         }
     }
     public static void turnShadowsOn()  {
+        System.out.println("Turning Shaders On");
 
         try {
             copyExternalShaderFiles();
         } catch (IOException e) { //reaplce the files
            cleanup();
             e.printStackTrace();
+            System.out.print("ERROR   ");
+            System.out.println(e);
             Shadows.shaders_on = false;
+            initalized = false;
             return;
         }
 
@@ -92,10 +96,17 @@ public class Shadows {
 //        ShaderGenerator.copyShader("shadowEntity.frag.glsl");
 //        ShaderGenerator.copyShader("shadowEntity.vert.glsl");
         //TODO add other shaders
-
+        System.out.println("creating Shadow map");
         try { shadow_map= new ShadowMap();}
         catch (Exception e){
+            cleanup();
             e.printStackTrace();
+            System.out.print("ERROR   ");
+
+            System.out.println(e);
+            Shadows.shaders_on = false;
+            initalized = false;
+            return;
         }
         initalized = true;
 
@@ -108,6 +119,7 @@ public class Shadows {
         } else {
             Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
         }
+        System.out.println("Finished Loading Shaders");
         ChunkShader.reloadAllShaders();
     }
 
@@ -177,7 +189,7 @@ public class Shadows {
     }
     public static void cleanup()  {
         //if copy base shaders fails the game need to stop for good isnt much i can doi to recover
-
+        System.out.println("Turning Shaders OFF");
         ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
         ShaderGenerator.copyBaseShader("chunk.vert.glsl");
 
@@ -186,6 +198,7 @@ public class Shadows {
             shadow_map.cleanup(); //:(
         }
         initalized = false;
+        Shadows.shaders_on = false;
         if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
             //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
             Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
