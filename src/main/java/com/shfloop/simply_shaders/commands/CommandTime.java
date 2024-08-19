@@ -26,12 +26,16 @@ public class CommandTime extends Command {
         super.run(chat, args);
         if (args.length < 2) {
             //missing args so print help for command
-            String HELP_INFO = ("/time set <ticks> - sets time to <ticks> \n " +
-                    "/time add <ticks> - adds <ticks> to current time \n " +
-                    "/time length <ticks> - sets day/night cycle time [default: 38400]\n" +
-                    "/time query - shows current time in ticks \n" +
-                    "/time start - starts dynamic sky [default]\n " +
-                    "/time stop - stops dynamic sky ");
+            String HELP_INFO = ("""
+                    /time set <ticks> - sets time to <ticks>\s
+                     \
+                    /time add <ticks> - adds <ticks> to current time\s
+                     \
+                    /time length <ticks> - sets day/night cycle time [default: 38400]
+                    /time query - shows current time in ticks\s
+                    /time start - starts dynamic sky [default]
+                     \
+                    /time stop - stops dynamic sky\s""");
             chat.sendMessage(this.world, this.player, (Account)null, HELP_INFO);
         } else if (args.length < 3) {
 

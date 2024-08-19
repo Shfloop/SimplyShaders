@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Sky.class)
-public class SkyMixin {
+public abstract class  SkyMixin {
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void overwriteOldDynamicSky(CallbackInfo ci) {
         Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));

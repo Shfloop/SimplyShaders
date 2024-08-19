@@ -2,11 +2,9 @@ package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.VertexAttribute;
+
 import com.badlogic.gdx.math.Vector3;
-import dev.crmodders.cosmicquilt.mixins.override.SaveLocationMixin;
 import finalforeach.cosmicreach.io.SaveLocation;
-import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.world.Sky;
 
 import java.io.IOException;

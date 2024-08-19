@@ -20,7 +20,7 @@ public class DynamicSkyRewrite extends Sky {
     Mesh skyMesh;
     Vector3 sunDirection = new Vector3(0.514496f, 0.857493f, 0.0f);
 
-    int lastT =(int)Shadows.time_of_day ;
+    int lastT =Shadows.time_of_day ;
     int timeT = lastT;
     int lastTUpdate;
     public DynamicSkyRewrite(String nameLangKey) {

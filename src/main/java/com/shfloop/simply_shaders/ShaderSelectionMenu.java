@@ -10,9 +10,8 @@ import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
-import finalforeach.cosmicreach.ui.UISlider;
 import finalforeach.cosmicreach.ui.VerticalAnchor;
-import finalforeach.cosmicreach.world.Sky;
+
 
 import java.io.File;
 import java.io.IOException;

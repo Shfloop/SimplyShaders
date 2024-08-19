@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityModelInstance.class)
-public class EntityModelInstanceMixin {
+public abstract class  EntityModelInstanceMixin {
 
     @Shadow
     protected Color tintColor;
