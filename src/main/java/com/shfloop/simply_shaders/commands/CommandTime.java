@@ -27,15 +27,12 @@ public class CommandTime extends Command {
         if (args.length < 2) {
             //missing args so print help for command
             String HELP_INFO = ("""
-                    /time set <ticks> - sets time to <ticks>\s
-                     \
-                    /time add <ticks> - adds <ticks> to current time\s
-                     \
+                    /time set <ticks> - sets time to <ticks>
+                    /time add <ticks> - adds <ticks> to current time
                     /time length <ticks> - sets day/night cycle time [default: 38400]
-                    /time query - shows current time in ticks\s
+                    /time query - shows current time in ticks
                     /time start - starts dynamic sky [default]
-                     \
-                    /time stop - stops dynamic sky\s""");
+                    /time stop - stops dynamic sky""");
             chat.sendMessage(this.world, this.player, (Account)null, HELP_INFO);
         } else if (args.length < 3) {
 
