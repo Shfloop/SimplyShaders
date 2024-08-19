@@ -70,8 +70,10 @@ public class CommandTime extends Command {
                     Shadows.updateTime(Shadows.time_of_day + value);
                     break;
                 case "length":
+                    int oldCycle = Shadows.cycleLength;
                     Shadows.cycleLength = value;
-                    Shadows.updateTime(0); //should reset time
+                    int percTime = (int)((float)Shadows.time_of_day / (float) oldCycle * (float)value); //might need to cast this to float
+                    Shadows.updateTime(percTime); //should reset time
                     break;
                 case "set":
                    Shadows.updateTime(value);
