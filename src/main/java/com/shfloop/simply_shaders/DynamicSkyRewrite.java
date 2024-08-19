@@ -19,17 +19,17 @@ public class DynamicSkyRewrite extends Sky {
     private SkyShader skyShader;
     Mesh skyMesh;
     Vector3 sunDirection = new Vector3(0.514496f, 0.857493f, 0.0f);
-    float i;
-    float lastT =(int)Shadows.time_of_day * 20;
-    int timeT = (int)Shadows.time_of_day * 20;
-    int lastTUpdate = 0;
+
+    int lastT =(int)Shadows.time_of_day ;
+    int timeT = lastT;
+    int lastTUpdate;
     public DynamicSkyRewrite(String nameLangKey) {
         super(nameLangKey, new Color(Color.BLACK), new Color(Color.WHITE), true);
         this.skyShader = SkyShader.SKY_SHADER;
         //need to initalize the lastTupdate to the current time so it doesnt update on f6 reload
-        World world = InGame.world;
-        Zone playerZone = InGame.getLocalPlayer().getZone(world);
-        lastTUpdate = (int) playerZone.getCurrentWorldTick();
+//        World world = InGame.world;
+//        Zone playerZone = InGame.getLocalPlayer().getZone(world);
+//        lastTUpdate = (int) playerZone.getCurrentWorldTick();
     }
     public void drawSky(Camera worldCamera) {
         if (this.skyMesh == null) {
@@ -65,42 +65,49 @@ public class DynamicSkyRewrite extends Sky {
 //        this.i = 360.0F * (currentTimeSeconds % cycleLength) / cycleLength; // this makes it easier to set the time
 
 
-        final float cycleLength = 38400.0f;
+        //final float cycleLength = 38400.0f;
+        final float cycleLength = Shadows.cycleLength;
         //final float cycleLength = 1920.0f;
         //timeT
-        int currentTick = (int)playerZone.getCurrentWorldTick() - lastTUpdate;
-            timeT += currentTick;
+        int currentTick = (int)playerZone.getCurrentWorldTick();
+
+        if (Shadows.doDaylightCycle) {
+
+            timeT += currentTick - lastTUpdate;
             if (timeT > cycleLength) {
                 timeT = 0;
                 lastT = 0;
             }
-            lastTUpdate = (int)playerZone.getCurrentWorldTick(); // this seems dumb but it will get changed soon
+
+        }
+        lastTUpdate = currentTick; // needs to update regardless of dodaylightcycle or else when time is unfrozen it jump to current time
 
         if (Shadows.updateTime) { //time of day should last 1920 seconds like base game
             //means the slider in shader menu was touched
             //i want to set the current timeT to the new time
-            timeT =(int) Shadows.time_of_day * 20;
+            timeT = Shadows.time_of_day ;
 
             //System.out.println("UPDATETIME " + timeT);
             lastT = timeT;
+
             //this could be better as its just a duplicate but okay for a temp thing
 
 
         }
 
-        this.i =   360.0f * (float)timeT / cycleLength;
+        float dayPerc =   360.0f * (float)timeT / cycleLength;
         //System.out.println("TIME " + timeT + "LAST T" + lastT);
-        //TODO also add a way to stop the time from ticking
+
  //TODO the rotation probabaly isnt correct but looks okay for now
-        this.sunDirection.set(0.514496f, 0.857493f, 0.0f).rotate(this.i, 1.0F, 0.0F, 1.0F); // need to rotate it differently
+        this.sunDirection.set(0.514496f, 0.857493f, 0.0f).rotate(dayPerc, 1.0F, 0.0F, 1.0F); // need to rotate it differently
         //if (currentTimeSeconds > lastT + cycleLength / 1000) {
             //lets update the sun camera every 5.0
         if (timeT > lastT + cycleLength / 4000  || Shadows.updateTime){ // i want to update every 2000 of cycle
             Shadows.updateTime = false; // bit weird but it should work
             //System.out.println("UPDATE_TIME " + timeT);
 //            System.out.println("SUN DIRECTION " + this.sunDirection);
-            //FIXME the time isnt being set correctly
-            Shadows.time_of_day =  ((float) timeT / 20); //this doesnt work if the cycle time is changed
+
+            Shadows.time_of_day =  timeT ; //this doesnt work if the cycle time is changed
             if (Shadows.shaders_on) {
                 if (Shadows.lastUsedCameraPos != null) { //feel bad doing this but easy fix
                     Shadows.forceUpdate = true; //TODO this should really just be a method input

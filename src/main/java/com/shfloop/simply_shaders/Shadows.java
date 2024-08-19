@@ -16,8 +16,10 @@ public class Shadows {
     public static Camera lastUsedCamera; // could be used to in a mixin with chunkbatch to get the rendercamera regardless of what state game is in and whatever camera wants to be created
     public static Vector3 lastUsedCameraPos;
     public static boolean shaders_on = false;
-    public static float time_of_day = 0.0f;
+    public static int time_of_day = 0;
     public static boolean updateTime = false;
+    public static int cycleLength = 38400;
+    public static boolean doDaylightCycle = true;
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
@@ -113,14 +115,14 @@ public class Shadows {
         initalized = true;
 
         //Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky")); //i think this should work
-        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
-            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
-            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
-            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
-
-        } else {
-            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
-        }
+//        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+//            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
+//            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
+//            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
+//
+//        } else {
+//            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
+//        }
         System.out.println("Finished Loading Shaders");
        // ChunkShader.reloadAllShaders();
     }
@@ -177,16 +179,19 @@ public class Shadows {
         Shadows.sunCamera.update();
     }
     public static void calcSunDirection() {
-        float temp_time = time_of_day - 960  ; //TODO make a better time system
-//        if (time_of_day > 1500) {
-//            temp_time = 1500 - time_of_day;
-//        }
-        sunCamera.position.x = temp_time;
-        sunCamera.position.y = -1.0f / 1850.0f * temp_time * temp_time + 1850; // give it a little more height
-        sunCamera.position.z = -1.0f / 1850.0f * temp_time * temp_time + 1850; //TODO i should change these for other equations in the future for better sun placement
-        sunCamera.lookAt(0,0,0);
-        sunCamera.up.set(0,1,0);
+//        float temp_time = time_of_day - 960  ; //TODO make a better time system
+////        if (time_of_day > 1500) {
+////            temp_time = 1500 - time_of_day;
+////        }
+//        sunCamera.position.x = temp_time;
+//        sunCamera.position.y = -1.0f / 1850.0f * temp_time * temp_time + 1850; // give it a little more height
+//        sunCamera.position.z = -1.0f / 1850.0f * temp_time * temp_time + 1850; //TODO i should change these for other equations in the future for better sun placement
+//        sunCamera.lookAt(0,0,0);
+//        sunCamera.up.set(0,1,0);
+        float dayPerc =   360.0f * (float)time_of_day / cycleLength;
+        sunCamera.direction.set(-0.514496f, -0.857493f, -0.0f).rotate(dayPerc, 1.0F, 0.0F, 1.0F);
         sunCamera.update();
+
         forceUpdate = true; // whenever the sun changes the next render pass will force update the new camera with new direction
     }
     public static void cleanup()  {
@@ -201,17 +206,35 @@ public class Shadows {
         }
         initalized = false;
         //Shadows.shaders_on = false; // dont call this in cleanup!!!
-        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
-            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
-            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
-            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
-
-        } else {
-            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
-        }
+//        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+//            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
+//            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
+//            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
+//
+//        } else {
+//            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
+//        }
         //ChunkShader.reloadAllShaders();
         //Sky.skyChoices.set(1, new DynamicSkyClone("Dynamic_Sky")); //sees if this works
 
+    }
+    public static void  updateTime(int newTime) {
+      int temp  = newTime % cycleLength;
+      if (temp < 0) {
+          temp += cycleLength; //keep things positive
+      }
+         Shadows.time_of_day = temp;
+        Shadows.updateTime = true;
+
+        if (Sky.skyChoices.indexOf(Sky.currentSky, true) != 2 && shaders_on) {
+            //means i want to manually update shadows outside of dynamic sky
+
+            Shadows.calcSunDirection();
+            if (lastUsedCameraPos != null) {
+                Shadows.updateCenteredCamera();
+            }
+
+        }
     }
 
 

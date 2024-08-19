@@ -16,7 +16,9 @@
     "ChunkBatchMixin",
     "BatchedZoneRendererMixin",
     "BlockGameMixin",
-    "EntityModelInstanceMixin"
+    "EntityModelInstanceMixin",
+    "EntityModelInterface",
+    "SkyMixin"
 
   ],
   "injectors": {

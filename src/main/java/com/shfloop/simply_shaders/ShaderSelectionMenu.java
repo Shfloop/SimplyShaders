@@ -171,45 +171,45 @@ public class ShaderSelectionMenu extends GameState{
             this.uiObjects.add(this.downButton);
             this.cycleWorldButtons();
 
-            UISlider sun_time_slider = new UISlider(0.0F, 1920, (float) Shadows.time_of_day, 275.0F, -200.0F, 250.0F, 50.0F) { //275.0F, -16.0F, 250.0F, 50.0F
-                @Override
-                public void onCreate() {
-                    super.onCreate();
-                    this.updateText();
-                }
-
-                @Override
-                public void onMouseUp() {
-                    super.onMouseUp();
-                    Shadows.time_of_day = this.currentValue;
-                    if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
-                    //might be a little scuffed
-                        //if its a dynamic sky then it should already be set to the rewrite
-                        Shadows.updateTime = true;
-
-                    } else {
-                        Shadows.calcSunDirection();
-                    }
-
-                    System.out.println("SUN DIRECTION " + Shadows.getCamera().direction);
-                    this.updateText();
-                }
-
-                @Override
-                public void validate() {
-                    super.validate();
-                    this.currentValue = (float)((int)this.currentValue);
-                    this.updateText();
-                }
-
-                @Override
-                public void updateText() {
-                    this.setText("Time : " + (int)this.currentValue);
-                }// not sure how to measure this
-
-            };
-            sun_time_slider.show();
-            this.uiObjects.add(sun_time_slider);
+//            UISlider sun_time_slider = new UISlider(0.0F, 1920, (float) Shadows.time_of_day / 20, 275.0F, -200.0F, 250.0F, 50.0F) { //275.0F, -16.0F, 250.0F, 50.0F
+//                @Override
+//                public void onCreate() {
+//                    super.onCreate();
+//                    this.updateText();
+//                }
+//
+//                @Override
+//                public void onMouseUp() {
+//                    super.onMouseUp();
+//                    Shadows.time_of_day = this.currentValue;
+//                    if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
+//                    //might be a little scuffed
+//                        //if its a dynamic sky then it should already be set to the rewrite
+//                        Shadows.updateTime = true;
+//
+//                    } else {
+//                        Shadows.calcSunDirection();
+//                    }
+//
+//                    System.out.println("SUN DIRECTION " + Shadows.getCamera().direction);
+//                    this.updateText();
+//                }
+//
+//                @Override
+//                public void validate() {
+//                    super.validate();
+//                    this.currentValue = (float)((int)this.currentValue);
+//                    this.updateText();
+//                }
+//
+//                @Override
+//                public void updateText() {
+//                    this.setText("Time : " + (int)this.currentValue);
+//                }// not sure how to measure this
+//
+//            };
+//            sun_time_slider.show();
+//            this.uiObjects.add(sun_time_slider);
             UIElement applyButton = new UIElement(-275.0F, -16.0F, 250.0F, 50.0F) {
                 public void onClick() {
                     super.onClick();
