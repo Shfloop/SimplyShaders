@@ -68,9 +68,7 @@ public class InGameMixin extends GameState {
                 }
                 ChunkShader.reloadAllShaders();
             }
-        }
 
-        if (Shadows.shaders_on) {
             Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
             Shadows.updateCenteredCamera();
 
