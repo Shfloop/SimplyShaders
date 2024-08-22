@@ -29,6 +29,7 @@ public abstract class ChunkShaderMixin extends GameShader {
         if (Shadows.shaders_on && InGame.world != null) { //should find a better way to do this
 
             this.bindOptionalUniformMatrix("lightSpaceMatrix", Shadows.getCamera().combined);
+            //FIXME This is redundant i only need to bind the shadowmap texture once when the shader is created because it doesnchange
             this.bindOptionalUniformi("shadowMap", Shadows.shadow_map.getDepthMapTexture().id); // i think i should try and change this so it matches how texture numbers are handled in chunk shader but idk
             //this.bindOptionalUniform3f("lightPos", Shadows.getCamera().position); // no longer used
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);// to compare with normal
