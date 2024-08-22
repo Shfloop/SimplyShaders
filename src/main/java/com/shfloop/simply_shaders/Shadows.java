@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.math.Vector3;
+import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.world.Sky;
 
@@ -122,6 +123,8 @@ public class Shadows {
 //            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
 //        }
         System.out.println("Finished Loading Shaders");
+        //after shaders are loaded bind the render textures
+        RenderFBO.bindRenderTextures();
        // ChunkShader.reloadAllShaders();
     }
 

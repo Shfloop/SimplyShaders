@@ -2,20 +2,32 @@ package com.shfloop.simply_shaders.rendering;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.utils.Array;
+import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.mixins.GameShaderInterface;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+
+import java.nio.Buffer;
 
 
 public class RenderFBO {
     private final int fboHandle;
     private int WIDTH = 800;
     private int HEIGHT = 600;
+    private static BufferTexture[] renderTextures = new BufferTexture[2];
     private BufferTexture attachment0;
     private BufferTexture attachment1;
     public RenderFBO() throws Exception {
+        System.out.println("Creating RenderBuffer");
         fboHandle = Gdx.gl.glGenFramebuffer();
-        attachment0 = new BufferTexture(WIDTH, HEIGHT, GL32.GL_RGBA);
-        attachment1 = new BufferTexture(WIDTH,HEIGHT, GL32.GL_RGBA);
+        attachment0 = new BufferTexture("colorTex0",WIDTH, HEIGHT, GL32.GL_RGBA);
+        //FIXME temporary
+        renderTextures[0] = attachment0;
+
+        attachment1 = new BufferTexture("colorTex1",WIDTH,HEIGHT, GL32.GL_RGBA);
+        renderTextures[1] = attachment1;
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, attachment0.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT1, GL20.GL_TEXTURE_2D, attachment1.getID(), 0);
@@ -29,6 +41,7 @@ public class RenderFBO {
 
 
         Gdx.gl.glBindFramebuffer(36160, 0);
+        System.out.println("RenderBufferDone");
     }
     public int getFboHandle() {
         return fboHandle;
@@ -36,8 +49,30 @@ public class RenderFBO {
     public void dispose() {
 
         Gdx.gl.glDeleteFramebuffer(fboHandle);
+        //TODO change this to renderTextures
+        //make renderTextures Null after
         this.attachment0.dispose();
         this.attachment1.dispose();
+    }
+    //instead of binding the same uniforms that dont change each render
+    //bind them only once when framebuffer is created (also after shaders are created/reloaded)
+    //should happen on window resize / shaderReload(startup)
+    public static void bindRenderTextures() {
+        //only needs to happen when renderFBO is created (when reload is called/resize )
+        System.out.println("Binding render textures");
+        Array<GameShader>  allShaders = GameShaderInterface.getShader();
+        //TODO get rid of vanilla shaders cause they arent used
+        for (GameShader shader: allShaders) {
+            shader.bind(Shadows.getCamera());//need some type of camera
+            //should also add shadowTextures to this
+            shader.bindOptionalInt("shadowMap", Shadows.shadow_map.getDepthMapTexture().id);
+            //bind all render textures
+            for (BufferTexture tex: renderTextures) {
+                //get name and id
+                shader.bindOptionalInt(tex.getName(), tex.getID());
+            }
+            shader.unbind();
+        }
     }
 
 }
@@ -53,3 +88,12 @@ public class RenderFBO {
 //so for final fsh and vsh just needds to take whatever textures it wants to and
 //
 //i would probably want to see how many textures the program is actually using so im not allocating 70MB of Vram to the textures when only a couple might be used
+
+/*
+i can create the renderbuffer whenever the shaders are done being created (InGame;Create())
+//i dont want to recreate the shaders everytime the the screen is resized
+//the framebuffer doesnt need to be recreated when shaders reload
+//after shaders init. anytime scrveern resized, but the static bindRenderTextures can be called after every shader reload
+so i  think i can create framebuffer when ingame creates and dispose when ingame disposed and than rereate it each time screen resizes
+
+ */

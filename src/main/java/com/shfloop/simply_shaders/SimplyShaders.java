@@ -44,6 +44,7 @@ public class SimplyShaders implements ModInitializer {
         GL32.glVertexAttribPointer(0, 2, GL32.GL_FLOAT, GL32.GL_FALSE, 4 * sizeof(float), (void*)0);
         GL32.glEnableVertexAttribArray(1);
         GL32.glVertexAttribPointer(1, 2, GL32.GL_FLOAT, GL32.GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        GL32.glBindVertexArray(0);
     }
 }
 
