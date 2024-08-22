@@ -9,12 +9,13 @@ public class BufferTexture {
     private int id;
     private int width;
     private int height;
-    public BufferTexture(int width, int height, int pixel_format) throws Exception {
+    private String uniformName;
+    public BufferTexture(String uniformName,int width, int height, int pixel_format) throws Exception {
         this.id =  GL20.glGenTextures();
         if (this.id == -1) {
             throw new Exception("Shadow map doesnt exits cant get id");
         }
-
+        this.uniformName = uniformName;
         this.width = width;
         this.height = height;
 
@@ -37,4 +38,5 @@ public class BufferTexture {
         GL20.glDeleteTextures(this.id);
     }
     public int getID() {return id;}
+    public String getName() {return uniformName;}
 }

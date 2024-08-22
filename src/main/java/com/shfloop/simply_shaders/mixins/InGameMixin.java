@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
@@ -47,6 +48,14 @@ public class InGameMixin extends GameState {
 //                Shadows.cleanup();
 //            }
 //        }
+    if (SimplyShaders.buffer!= null) {
+        SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
+    }
+        try {
+            SimplyShaders.buffer = new RenderFBO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Inject(method = "dispose()V", at = @At("TAIL"))
@@ -54,6 +63,8 @@ public class InGameMixin extends GameState {
 
             Shadows.cleanup();
             ChunkShader.reloadAllShaders();
+            SimplyShaders.buffer.dispose();
+            SimplyShaders.buffer = null;
 
     }
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
@@ -98,10 +109,23 @@ public class InGameMixin extends GameState {
             Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Gdx.gl.glClear(org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT | org.lwjgl.opengl.GL20.GL_COLOR_BUFFER_BIT); // might not need this
             //Shadows.redraw_stars = true;
+
         }
         //i want to bind the new framebuffer to always be used
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, SimplyShaders.buffer.getFboHandle());
 
 
-        }
+    }
+        //stop the framebuffer so UI gets rendered normally to the screen
+        //then i need to do the final render so that ui displays properly
+    @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
+    private void stopRenderBuffer(CallbackInfo ci) {
+        //bind framebuffer 0
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+        //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen
+        //
+        //need to bind vertexarray
+        //need to bind the textuere maybe
+        //need to call glDrawArrays(GL_TRIANGLE,0,6)
+    }
 }
