@@ -12,6 +12,7 @@ import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,11 +49,20 @@ public class InGameMixin extends GameState {
 //                Shadows.cleanup();
 //            }
 //        }
-    if (SimplyShaders.buffer!= null) {
-        SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
+
     }
+
+    @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at =@At("TAIL"))
+    private void injectloadWorld(CallbackInfo ci) {
+
+
+
+        if (SimplyShaders.buffer!= null) { //move this shit to loadWorld
+            SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
+        }
         try {
             SimplyShaders.buffer = new RenderFBO();
+            //RenderFBO.bindRenderTextures();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,6 +123,13 @@ public class InGameMixin extends GameState {
         }
         //i want to bind the new framebuffer to always be used
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, SimplyShaders.buffer.getFboHandle());
+        //cant forget to clear the framebuffer
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
+
+        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
+        GL32.glDrawBuffers(drawBuffers);
+
 
 
     }
@@ -123,9 +140,19 @@ public class InGameMixin extends GameState {
         //bind framebuffer 0
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
         //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen
-        //
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
+
+
+       GameShader finalShader = GameShaderInterface.getShader().get(9);
+        finalShader.bind(rawWorldCamera);
+        SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
+        finalShader.unbind();
         //need to bind vertexarray
         //need to bind the textuere maybe
         //need to call glDrawArrays(GL_TRIANGLE,0,6)
+
+
+        // so i think i should just use a sprite batch
     }
 }

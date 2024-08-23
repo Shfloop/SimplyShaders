@@ -2,6 +2,9 @@ package com.shfloop.simply_shaders.rendering;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
@@ -17,7 +20,8 @@ public class RenderFBO {
     private int WIDTH = 800;
     private int HEIGHT = 600;
     private static BufferTexture[] renderTextures = new BufferTexture[2];
-    private BufferTexture attachment0;
+//    public static TextureRegion fboTexture = new TextureRegion(fbo.getColorBufferTexture());
+    public BufferTexture attachment0;
     private BufferTexture attachment1;
     public RenderFBO() throws Exception {
         System.out.println("Creating RenderBuffer");
@@ -32,14 +36,22 @@ public class RenderFBO {
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, attachment0.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT1, GL20.GL_TEXTURE_2D, attachment1.getID(), 0);
     //TODO probably need a depth texture as well
+
        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
        GL32.glDrawBuffers(drawBuffers);
+
+       int renderBuffer = Gdx.gl.glGenRenderbuffer();
+       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, renderBuffer);
+       Gdx.gl.glRenderbufferStorage(GL32.GL_RENDERBUFFER,GL32.GL_DEPTH24_STENCIL8, WIDTH,HEIGHT);
+       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0); //unbind renderbuffer
+       Gdx.gl.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, renderBuffer);
+
 
         if (Gdx.gl.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE ) {
             throw new Exception("Could not create FrameBuffer");
         }
 
-
+//        fboTexture = new TextureRegion(fbo.getColorBufferTexture());
         Gdx.gl.glBindFramebuffer(36160, 0);
         System.out.println("RenderBufferDone");
     }
@@ -58,21 +70,27 @@ public class RenderFBO {
     //bind them only once when framebuffer is created (also after shaders are created/reloaded)
     //should happen on window resize / shaderReload(startup)
     public static void bindRenderTextures() {
+
         //only needs to happen when renderFBO is created (when reload is called/resize )
         System.out.println("Binding render textures");
         Array<GameShader>  allShaders = GameShaderInterface.getShader();
         //TODO get rid of vanilla shaders cause they arent used
+        PerspectiveCamera temp = new PerspectiveCamera();
         for (GameShader shader: allShaders) {
-            shader.bind(Shadows.getCamera());//need some type of camera
+            //Todo find ouy why i cant use a orthographic camera
+            shader.bind( temp);//need some type of camera
             //should also add shadowTextures to this
-            shader.bindOptionalInt("shadowMap", Shadows.shadow_map.getDepthMapTexture().id);
+            //Todo shadow map bind needs to be created first
+            //shader.bindOptionalInt("shadowMap", Shadows.shadow_map.getDepthMapTexture().id);
             //bind all render textures
             for (BufferTexture tex: renderTextures) {
                 //get name and id
                 shader.bindOptionalInt(tex.getName(), tex.getID());
             }
             shader.unbind();
+
         }
+        System.out.println("Finished binding render textures");
     }
 
 }
