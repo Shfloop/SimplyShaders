@@ -33,7 +33,7 @@ public class Shadows {
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
-    private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl"};
+    private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl"};
 
     static {
         //not sure what viewport size i should be using
@@ -51,6 +51,9 @@ public class Shadows {
 
         generator.copyContent("shadowEntity.frag.glsl", "InternalShader/internal.shadowEntity.frag.glsl");
         generator.copyContent("shadowEntity.vert.glsl", "InternalShader/internal.shadowEntity.vert.glsl");
+
+        generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
+        generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
 
         ShaderGenerator.copyBaseShader("chunk.frag.glsl");
         ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
@@ -124,7 +127,14 @@ public class Shadows {
 //        }
         System.out.println("Finished Loading Shaders");
         //after shaders are loaded bind the render textures
-        RenderFBO.bindRenderTextures();
+        if (SimplyShaders.buffer != null) {
+            //RenderFBO.bindRenderTextures();
+
+        } else {
+            System.out.println("Render Textures NOT BOUND");
+
+        }
+
        // ChunkShader.reloadAllShaders();
     }
 

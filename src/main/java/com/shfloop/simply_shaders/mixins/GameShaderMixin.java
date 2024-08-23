@@ -3,6 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Matrix4;
 import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.rendering.FinalShader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
@@ -28,7 +29,7 @@ public abstract class GameShaderMixin   {
         new ChunkShader("InternalShader/internal.shadowpass.vert.glsl","InternalShader/internal.shadowpass.frag.glsl");
         new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
         ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
-
+        new FinalShader("InternalShader/internal.final.vert.glsl", "InternalShader/internal.final.frag.glsl");
     }
 
 
