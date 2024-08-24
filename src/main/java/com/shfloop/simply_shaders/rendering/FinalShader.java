@@ -9,6 +9,7 @@ import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import org.lwjgl.opengl.GL30;
 
 public class FinalShader extends GameShader {
     public FinalShader(String vertexShader, String fragmentShader) {
@@ -19,7 +20,11 @@ public class FinalShader extends GameShader {
         super.bind(worldCamera);
         int texNum= 0;
 
-        this.bindOptionalTextureI("colorTex0", SimplyShaders.fbo.getTextureAttachments().get(0).getTextureObjectHandle(), texNum);
+        //this.bindOptionalTextureI("colorTex0", SimplyShaders.fbo.getTextureAttachments().get(0).getTextureObjectHandle(), texNum);
+
+
+        this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum);
+        this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
         this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
 //        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 //        Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, texId);
@@ -38,4 +43,5 @@ public class FinalShader extends GameShader {
             return texNum;
         }
     }
+
 }

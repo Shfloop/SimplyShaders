@@ -39,7 +39,7 @@ public class SimplyShaders implements ModInitializer {
 		Command.registerCommand(CommandTime::new, "time");
         System.out.println("IS IT RUNNING GL30" + Gdx.graphics.isGL30Available());
         //fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        buildFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+       // buildFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         try {
             buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } catch (Exception e) {

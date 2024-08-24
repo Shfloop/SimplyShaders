@@ -127,7 +127,7 @@ public class InGameMixin extends GameState {
 
         }
         //i want to bind the new framebuffer to always be used
-//        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, SimplyShaders.buffer.getFboHandle());
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, SimplyShaders.buffer.getFboHandle());
 //        //cant forget to clear the framebuffer
 //        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
@@ -135,7 +135,7 @@ public class InGameMixin extends GameState {
 //        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
 //        GL32.glDrawBuffers(drawBuffers);
 
-        SimplyShaders.fbo.begin();
+        //SimplyShaders.fbo.begin();
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
         Sky sky = Sky.currentSky;
@@ -151,13 +151,14 @@ public class InGameMixin extends GameState {
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void stopRenderBuffer(CallbackInfo ci) {
         //bind framebuffer 0
-//        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+        //screen should alreayd be cleared and i dont think it woudl matter much
 //        //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen
-//        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 //        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
 
-        SimplyShaders.fbo.end();
-        int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
+        //SimplyShaders.fbo.end();
+        //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
 
        GameShader finalShader = GameShaderInterface.getShader().get(9);
         finalShader.bind(rawWorldCamera);
