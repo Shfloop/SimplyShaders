@@ -27,7 +27,7 @@ public class Shadows {
 //    public static VertexAttribute uvIdxAttrib = new VertexAttribute(32, 1, 5126, false, "a_uvIdx");
 //    public static VertexAttribute lightingAttrib = new VertexAttribute(4, 4, "a_lighting");
 //
-//    public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");//TODO change the name to something better
+//    public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");
    public static boolean forceUpdate = false;
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
@@ -177,13 +177,13 @@ public class Shadows {
         Shadows.sunCamera.update();
     }
     public static void calcSunDirection() {
-//        float temp_time = time_of_day - 960  ; //TODO make a better time system
+//        float temp_time = time_of_day - 960  ;
 ////        if (time_of_day > 1500) {
 ////            temp_time = 1500 - time_of_day;
 ////        }
 //        sunCamera.position.x = temp_time;
 //        sunCamera.position.y = -1.0f / 1850.0f * temp_time * temp_time + 1850; // give it a little more height
-//        sunCamera.position.z = -1.0f / 1850.0f * temp_time * temp_time + 1850; //TODO i should change these for other equations in the future for better sun placement
+//        sunCamera.position.z = -1.0f / 1850.0f * temp_time * temp_time + 1850; //
 //        sunCamera.lookAt(0,0,0);
 //        sunCamera.up.set(0,1,0);
         float dayPerc =   360.0f * (float)time_of_day / cycleLength;
@@ -198,7 +198,7 @@ public class Shadows {
         ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
         ShaderGenerator.copyBaseShader("chunk.vert.glsl");
 
-        //TODO add otehr shaders
+        //TODO add other shaders
         if (shadow_map != null) {
             shadow_map.cleanup(); //:(
         }

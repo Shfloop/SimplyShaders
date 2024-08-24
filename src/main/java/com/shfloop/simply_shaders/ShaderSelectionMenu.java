@@ -28,8 +28,8 @@ public class ShaderSelectionMenu extends GameState{
         UIElement upButton;
         UIElement downButton;
         int topWorldIdx;
-        static int last_selected_idx =1 ; //TODO change this to load from file
-        //static boolean shadersOn = false; //TODO change this to load from file
+        static int last_selected_idx =1 ; //TODO change this to load from settings file
+        //static boolean shadersOn = false;
     Array<String> allShaders;
 
 

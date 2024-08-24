@@ -22,25 +22,7 @@ public abstract class ChunkShaderMixin extends GameShader {
     }
     //TODO i should add an entity shader mixin to add normals to entities
 
-    //Not needed in .1.44
 
-//    @Inject(method = "<init>(Ljava/lang/String;Ljava/lang/String;)V", at = @At("TAIL")) //, Shadows.normal_attrib
-//    private void injectConstructor(CallbackInfo ci) { // changed to new way 1.4
-//        VertexAttribute[] vertex = new VertexAttribute[]{Shadows.posAttrib, Shadows.lightingAttrib,  Shadows.uvIdxAttrib, Shadows.normal_attrib }; // only works if nobody else updates vertex Attributes might want to change
-//        this.allVertexAttributesObj = new VertexAttributes(vertex);
-//
-//
-//
-//    }
-    //Im not sure why this doesnt work but i whateves inject works but it crashes cause vertex buffer is too small
-//    @Inject(method = "<init>(Ljava/lang/String;Ljava/lang/String;)V", at = @At(value ="INVOKE",
-//            target ="Lcom/badlogic/gdx/graphics/VertexAttributes;<init>([Lcom/badlogic/gdx/graphics/VertexAttribute;)V", shift = At.Shift.AFTER))
-//    private void testInject(CallbackInfo ci) {
-//        VertexAttribute[] vertex = new VertexAttribute[]{Shadows.posAttrib, Shadows.lightingAttrib,  Shadows.uvIdxAttrib, Shadows.normal_attrib }; // only works if nobody else updates vertex Attributes might want to change
-//        this.allVertexAttributesObj = new VertexAttributes(vertex);
-//
-//
-//    }
 
 
     @Inject(method = "bind(Lcom/badlogic/gdx/graphics/Camera;)V", at = @At("TAIL"))//value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V")) // Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V

@@ -31,7 +31,7 @@ public abstract class BlockModelJsonMixin {
             case 5 -> 5;
             case 6 -> 3;
             default -> 7;
-//0;//FOUND THE ISSUE any slab/stair inside doesnt get a block occulusion value because they shoiuld be occcoluded so i need to find another way
+
         };
 
 
