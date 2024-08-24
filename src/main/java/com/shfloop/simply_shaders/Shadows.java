@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Shadows {
     public static float normal_float;
-    public static Camera lastUsedCamera; // could be used to in a mixin with chunkbatch to get the rendercamera regardless of what state game is in and whatever camera wants to be created
+
     public static Vector3 lastUsedCameraPos;
     public static boolean shaders_on = false;
     public static int time_of_day = 0;

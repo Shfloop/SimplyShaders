@@ -1,8 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+
 import com.badlogic.gdx.math.Matrix4;
 import com.shfloop.simply_shaders.Shadows;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//FIXME the mixins dont initalize fast enough to actually change the chunk shader
+
 
 @Mixin(ChunkShader.class)
 public abstract class ChunkShaderMixin extends GameShader {

@@ -22,7 +22,7 @@ public abstract class BlockModelJsonMixin {
             value = "INVOKE", target = "addVert(Lfinalforeach/cosmicreach/rendering/IMeshData;FFFFFISII)I")) // hopefully this finds the right spot
 
     private void addVerticiesInject(CallbackInfo ci, @Local BlockModelJsonCuboidFace f) { // just needs to update the normal helper class normal value based on the local fi
-        Shadows.normal_float =(int) switch (f.vertexIndexD) { // there might be a better way to do this
+        Shadows.normal_float =switch (f.vertexIndexD) { // there might be a better way to do this
             //TODO look into this it might be causing issues
             case 1 -> 2; // i can replace this with just an updated vertex shader vec3 normal array
             case 2 -> 4;
