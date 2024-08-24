@@ -1,10 +1,15 @@
 package com.shfloop.simply_shaders;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 import finalforeach.cosmicreach.chat.commands.Command;
@@ -25,14 +30,18 @@ public class SimplyShaders implements ModInitializer {
 	public static RenderFBO buffer ; //this might be a good way to go about this but im not really sure
     public static Mesh screenQuad;
 
+    public static FrameBuffer fbo;
 
 
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Simply Shaders Initialized!");
 		Command.registerCommand(CommandTime::new, "time");
+        System.out.println("IS IT RUNNING GL30" + Gdx.graphics.isGL30Available());
+        //fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        buildFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         try {
-            buffer = new RenderFBO();
+            buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -68,6 +77,7 @@ public class SimplyShaders implements ModInitializer {
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
         screenQuad.setVertices(verts);
 
+
 //        FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(quadVertices.length);
 //        verticesBuffer.put(quadVertices).flip();
 //
@@ -91,6 +101,19 @@ public class SimplyShaders implements ModInitializer {
 //        if (verticesBuffer != null) {
 //            MemoryUtil.memFree(verticesBuffer);
 //        }
+    }
+
+    //call this onInitialize and whenever the window resizes
+    public void buildFBO(int width, int height) {
+        if (fbo != null) fbo.dispose();
+
+        GLFrameBuffer.FrameBufferBuilder framebb = new GLFrameBuffer.FrameBufferBuilder(width,height);
+        framebb.addColorTextureAttachment(GL32.GL_RGBA8, GL32.GL_RGBA, GL32.GL_UNSIGNED_BYTE); //not sure which to use
+        framebb.addColorTextureAttachment(GL32.GL_RGBA8, GL32.GL_RGBA, GL32.GL_UNSIGNED_BYTE);
+        framebb.addDepthRenderBuffer(GL32.GL_DEPTH_COMPONENT24);
+
+        fbo = framebb.build();
+
     }
 }
 
