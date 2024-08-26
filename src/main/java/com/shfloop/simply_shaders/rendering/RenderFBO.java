@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.shfloop.simply_shaders.ShadowTexture;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -19,10 +20,12 @@ public class RenderFBO {
     private final int fboHandle;
     private int WIDTH;
     private int HEIGHT;
-    private static BufferTexture[] renderTextures = new BufferTexture[2];
+    private static BufferTexture[] renderTextures = new BufferTexture[3];
 //    public static TextureRegion fboTexture = new TextureRegion(fbo.getColorBufferTexture());
     public BufferTexture attachment0;
     public BufferTexture attachment1;
+    public BufferTexture attachment2;
+    public ShadowTexture depthTex0;
     public RenderFBO(int width, int height) throws Exception {
 
         this.WIDTH = width;
@@ -35,19 +38,28 @@ public class RenderFBO {
 
         attachment1 = new BufferTexture("colorTex1",WIDTH,HEIGHT, GL32.GL_RGBA);
         renderTextures[1] = attachment1;
+        attachment2 = new BufferTexture("colorTex2",WIDTH,HEIGHT, GL32.GL_RGBA);
+        renderTextures[2] = attachment2;
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, attachment0.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT1, GL20.GL_TEXTURE_2D, attachment1.getID(), 0);
+        Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT2, GL20.GL_TEXTURE_2D, attachment2.getID(), 0);
     //TODO probably need a depth texture as well
 
-       int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
+
+
+        depthTex0 = new ShadowTexture(WIDTH,HEIGHT, GL20.GL_DEPTH_COMPONENT);
+        Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, GL20.GL_TEXTURE_2D, depthTex0.id, 0);
+       int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1,GL32.GL_COLOR_ATTACHMENT2 };
 //       GL32.glDrawBuffers(drawBuffers);
 
-       int renderBuffer = Gdx.gl.glGenRenderbuffer();
-       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, renderBuffer);
-       Gdx.gl.glRenderbufferStorage(GL32.GL_RENDERBUFFER,GL32.GL_DEPTH24_STENCIL8, WIDTH,HEIGHT);
-       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0); //unbind renderbuffer
-       Gdx.gl.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, renderBuffer);
+
+        //get rid of renderbuffer and instead use a depth texture so i can sample it after in final
+//       int renderBuffer = Gdx.gl.glGenRenderbuffer();
+//       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, renderBuffer);
+//       Gdx.gl.glRenderbufferStorage(GL32.GL_RENDERBUFFER,GL32.GL_DEPTH24_STENCIL8, WIDTH,HEIGHT);
+//       Gdx.gl.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0); //unbind renderbuffer
+//       Gdx.gl.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, renderBuffer);
 
         //GL32.glDrawBuffer(GL32.GL_COLOR_ATTACHMENT0);
 
@@ -71,6 +83,7 @@ public class RenderFBO {
         //make renderTextures Null after
         this.attachment0.dispose();
         this.attachment1.dispose();
+        this.attachment2.dispose();
     }
     //instead of binding the same uniforms that dont change each render
     //bind them only once when framebuffer is created (also after shaders are created/reloaded)
