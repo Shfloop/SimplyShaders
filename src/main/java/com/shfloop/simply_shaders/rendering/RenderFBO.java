@@ -20,11 +20,12 @@ public class RenderFBO {
     private final int fboHandle;
     private int WIDTH;
     private int HEIGHT;
-    private static BufferTexture[] renderTextures = new BufferTexture[3];
+    private static BufferTexture[] renderTextures = new BufferTexture[4];
 //    public static TextureRegion fboTexture = new TextureRegion(fbo.getColorBufferTexture());
     public BufferTexture attachment0;
     public BufferTexture attachment1;
     public BufferTexture attachment2;
+    public BufferTexture attachment3;
     public ShadowTexture depthTex0;
     public RenderFBO(int width, int height) throws Exception {
 
@@ -40,17 +41,20 @@ public class RenderFBO {
         renderTextures[1] = attachment1;
         attachment2 = new BufferTexture("colorTex2",WIDTH,HEIGHT, GL32.GL_RGBA);
         renderTextures[2] = attachment2;
+        attachment3 = new BufferTexture("colorTex3", WIDTH,HEIGHT, GL32.GL_RGBA);
+        renderTextures[3] = attachment3;
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, attachment0.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT1, GL20.GL_TEXTURE_2D, attachment1.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT2, GL20.GL_TEXTURE_2D, attachment2.getID(), 0);
+        Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT3, GL20.GL_TEXTURE_2D, attachment3.getID(), 0);
     //TODO probably need a depth texture as well
 
 
 
         depthTex0 = new ShadowTexture(WIDTH,HEIGHT, GL20.GL_DEPTH_COMPONENT);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, GL20.GL_TEXTURE_2D, depthTex0.id, 0);
-       int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1,GL32.GL_COLOR_ATTACHMENT2 };
+       int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1,GL32.GL_COLOR_ATTACHMENT2, GL32.GL_COLOR_ATTACHMENT3 };
 //       GL32.glDrawBuffers(drawBuffers);
 
 
@@ -84,6 +88,7 @@ public class RenderFBO {
         this.attachment0.dispose();
         this.attachment1.dispose();
         this.attachment2.dispose();
+        this.attachment3.dispose();
     }
     //instead of binding the same uniforms that dont change each render
     //bind them only once when framebuffer is created (also after shaders are created/reloaded)

@@ -27,12 +27,15 @@ public class FinalShader extends GameShader {
         texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum);
         texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
         texNum= this.bindOptionalTextureI("colorTex2", SimplyShaders.buffer.attachment2.getID(),texNum);
+        texNum= this.bindOptionalTextureI("colorTex3", SimplyShaders.buffer.attachment3.getID(),texNum);
 
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
         Sky sky = Sky.currentSky;
         this.bindOptionalUniform3f("skyAmbientColor", sky.currentAmbientColor);
+        this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
+        this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
 //        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 //        Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, texId);
 

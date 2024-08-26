@@ -33,7 +33,7 @@ public class Shadows {
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
-    private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl"};
+    private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl", "composite0.vert.glsl", "composite0.frag.glsl"};
 
     static {
         //not sure what viewport size i should be using
@@ -54,6 +54,9 @@ public class Shadows {
 
         generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
         generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
+
+        generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
+        generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl"); //fixme not needed exactly so i should make it if its not used
 
         ShaderGenerator.copyBaseShader("chunk.frag.glsl");
         ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
@@ -210,6 +213,18 @@ public class Shadows {
         System.out.println("Turning Shaders OFF");
         ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
         ShaderGenerator.copyBaseShader("chunk.vert.glsl");
+
+        ShaderGenerator generator = new ShaderGenerator();
+        try {
+            generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
+            generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
+
+            generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
+            generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl");
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //TODO add other shaders
         if (shadow_map != null) {
