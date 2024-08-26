@@ -21,7 +21,7 @@ public class Shadows {
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
-    public static Vector3 tmpNormalVec;
+
     //nolonger used in .1.44
 //    public static VertexAttribute posAttrib = VertexAttribute.Position();
 //    public static VertexAttribute uvIdxAttrib = new VertexAttribute(32, 1, 5126, false, "a_uvIdx");
