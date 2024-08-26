@@ -150,6 +150,19 @@ public class InGameMixin extends GameState {
         //then i need to do the final render so that ui displays properly
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void stopRenderBuffer(CallbackInfo ci) {
+        //do composite rendes on the same screen quad;
+
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST); // disable it so screen quad doesnt get removed
+
+        GameShader composite0 = GameShaderInterface.getShader().get(10);// FIXME need a better way to keep track of shaders
+        composite0.bind(rawWorldCamera);
+
+        SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
+
+        composite0.unbind();
+
+
+
         //bind framebuffer 0
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
         //screen should alreayd be cleared and i dont think it woudl matter much
