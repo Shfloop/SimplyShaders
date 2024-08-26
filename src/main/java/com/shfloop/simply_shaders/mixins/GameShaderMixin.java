@@ -30,6 +30,7 @@ public abstract class GameShaderMixin   {
         new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
         ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
         new FinalShader("InternalShader/internal.final.vert.glsl", "InternalShader/internal.final.frag.glsl");
+        new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl");
     }
 
 
