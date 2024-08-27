@@ -14,12 +14,12 @@ import java.util.Arrays;
 @Mixin(EntityShader.class)
 public class EntityShaderMixin {
     @Inject(method = "bind", at = @At("TAIL"))
-    private void addDrawBuffersEntity(CallbackInfo ci) {
-        int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};
-        if (!Arrays.equals(RenderFBO.lastDrawBuffers, drawBuffers)) {
-            GL32.glDrawBuffers(drawBuffers);
-            RenderFBO.lastDrawBuffers = drawBuffers;
-            //System.out.println("entitySHADERBUFFER");
-        }
+    private void addDrawBuffersEntity(CallbackInfo ci) { // not needed
+//        int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};
+//        if (!Arrays.equals(RenderFBO.lastDrawBuffers, drawBuffers)) {
+//            GL32.glDrawBuffers(drawBuffers);
+//            RenderFBO.lastDrawBuffers = drawBuffers;
+//            //System.out.println("entitySHADERBUFFER");
+//        }
     }
 }

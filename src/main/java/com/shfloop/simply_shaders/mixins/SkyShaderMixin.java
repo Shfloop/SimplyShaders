@@ -14,13 +14,13 @@ import java.util.Arrays;
 public class SkyShaderMixin {
     @Inject(method = "bind", at = @At("TAIL"))
     private void addDrawBuffersSky(CallbackInfo ci) {
-        int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT2};
-
-        if (!Arrays.equals(RenderFBO.lastDrawBuffers , drawBuffers)) {
-            GL32.glDrawBuffers(drawBuffers);
-            RenderFBO.lastDrawBuffers = drawBuffers;
-           // System.out.println("SKYSHADERBUFFER");
-
-        }
+//        int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT2}; //not needed
+//
+//        if (!Arrays.equals(RenderFBO.lastDrawBuffers , drawBuffers)) {
+//            GL32.glDrawBuffers(drawBuffers);
+//            RenderFBO.lastDrawBuffers = drawBuffers;
+//           // System.out.println("SKYSHADERBUFFER");
+//
+//        }
     }
 }

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlockGame.class)
 
-public class BlockGameMixin {
+public abstract class BlockGameMixin {
     private static float timeSinceResize;
     private static boolean needsResize;
 
@@ -23,6 +23,7 @@ public class BlockGameMixin {
     }
     @Inject(method = "render()V", at = @At("TAIL"))
     private void renderFboResizeCheck(CallbackInfo ci) {
+        //so resize doesnt spam delete and create framebuffers / textures
         if (needsResize ) {
             timeSinceResize += Gdx.graphics.getDeltaTime();
             if (timeSinceResize > 0.1) { // this could probably be even lesss atleast on my pc resize was called about every 0.02
@@ -34,7 +35,7 @@ public class BlockGameMixin {
 
     @Inject(method = "resize", at = @At("TAIL"))
     private void injectCaptureResize(CallbackInfo ci) {
-       //resize gets called around every 30 ms when the window sizxe changes (not when being held)
+       //resize gets called around every 30 ms when the window sizxe changes
         //set a variable to current resize time and in my framebuffer check current time and if time difference is greater than 40ms go ahead with the update
 
        timeSinceResize = 0;

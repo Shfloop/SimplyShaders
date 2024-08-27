@@ -127,5 +127,10 @@ public class SimplyShaders implements ModInitializer {
         }
 
     }
+    public static enum newShaderType {
+        FRAG,
+        VERT,
+        IMPORTED
+    }
 }
 

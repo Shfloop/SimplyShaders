@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.IOException;
 
 @Mixin(InGame.class)
-public class InGameMixin extends GameState {
+public abstract class InGameMixin extends GameState {
 
     @Shadow
     static protected PerspectiveCamera rawWorldCamera;
@@ -148,8 +148,8 @@ public class InGameMixin extends GameState {
         GL32.glClearBufferfv(GL32.GL_COLOR,  4, transparent);
         //System.out.println("RENDERSTART");
         SimplyShaders.inRender = true;
-        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};// drawbuffers for sky star shader
-        GL32.glDrawBuffers(drawBuffers);
+//        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};// drawbuffers for sky star shader not needed since its in gameshader now
+//        GL32.glDrawBuffers(drawBuffers);
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
 //        GameSingletons.zoneRenderer.render(playerZone, rawWorldCamera);
 //        SimplyShaders.fbo.end();
@@ -171,7 +171,7 @@ public class InGameMixin extends GameState {
         SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
 
         composite0.unbind();
-
+        SimplyShaders.inRender = false;// should stop finalshader from from drying to call drawbuffers
        // System.out.println("Composite done");
 
         //bind framebuffer 0
@@ -194,7 +194,7 @@ public class InGameMixin extends GameState {
         SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
         finalShader.unbind();
         //System.out.println("DONE QUAD");
-        SimplyShaders.inRender = false;
+
         //need to bind vertexarray
         //need to bind the textuere maybe
         //need to call glDrawArrays(GL_TRIANGLE,0,6)
