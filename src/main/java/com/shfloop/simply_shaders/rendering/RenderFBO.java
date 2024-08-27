@@ -17,15 +17,18 @@ import java.nio.Buffer;
 
 
 public class RenderFBO {
+    public static int[] lastDrawBuffers;
+    public static int[] allDrawBuffers;
     private final int fboHandle;
     private int WIDTH;
     private int HEIGHT;
-    private static BufferTexture[] renderTextures = new BufferTexture[4];
+    private static BufferTexture[] renderTextures = new BufferTexture[8];//for now ill only add 8 textures to render too
 //    public static TextureRegion fboTexture = new TextureRegion(fbo.getColorBufferTexture());
     public BufferTexture attachment0;
     public BufferTexture attachment1;
     public BufferTexture attachment2;
     public BufferTexture attachment3;
+    public BufferTexture attachment4;
     public ShadowTexture depthTex0;
     public RenderFBO(int width, int height) throws Exception {
 
@@ -43,20 +46,23 @@ public class RenderFBO {
         renderTextures[2] = attachment2;
         attachment3 = new BufferTexture("colorTex3", WIDTH,HEIGHT, GL32.GL_RGBA);
         renderTextures[3] = attachment3;
+        attachment4 = new BufferTexture("colorTex4", WIDTH,HEIGHT, GL32.GL_RGBA);
+        renderTextures[3] = attachment4;
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, attachment0.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT1, GL20.GL_TEXTURE_2D, attachment1.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT2, GL20.GL_TEXTURE_2D, attachment2.getID(), 0);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT3, GL20.GL_TEXTURE_2D, attachment3.getID(), 0);
+        Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT4, GL20.GL_TEXTURE_2D, attachment4.getID(), 0);
     //TODO probably need a depth texture as well
 
 
 
         depthTex0 = new ShadowTexture(WIDTH,HEIGHT, GL20.GL_DEPTH_COMPONENT);
         Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, GL20.GL_TEXTURE_2D, depthTex0.id, 0);
-       int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1,GL32.GL_COLOR_ATTACHMENT2, GL32.GL_COLOR_ATTACHMENT3 };
+        lastDrawBuffers = new int[]{GL32.GL_COLOR_ATTACHMENT0, GL32.GL_COLOR_ATTACHMENT1, GL32.GL_COLOR_ATTACHMENT2, GL32.GL_COLOR_ATTACHMENT3, GL32.GL_COLOR_ATTACHMENT4};
 //       GL32.glDrawBuffers(drawBuffers);
-
+        allDrawBuffers = new int[]{GL32.GL_COLOR_ATTACHMENT0, GL32.GL_COLOR_ATTACHMENT1, GL32.GL_COLOR_ATTACHMENT2, GL32.GL_COLOR_ATTACHMENT3, GL32.GL_COLOR_ATTACHMENT4};
 
         //get rid of renderbuffer and instead use a depth texture so i can sample it after in final
 //       int renderBuffer = Gdx.gl.glGenRenderbuffer();
@@ -67,7 +73,7 @@ public class RenderFBO {
 
         //GL32.glDrawBuffer(GL32.GL_COLOR_ATTACHMENT0);
 
-        GL32.glDrawBuffers(drawBuffers);
+        GL32.glDrawBuffers(lastDrawBuffers);
         //GL20.glReadBuffer(GL20.GL_NONE);
         if (Gdx.gl.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE ) {
             throw new Exception("Could not create FrameBuffer");
@@ -89,6 +95,7 @@ public class RenderFBO {
         this.attachment1.dispose();
         this.attachment2.dispose();
         this.attachment3.dispose();
+        this.attachment4.dispose();
     }
     //instead of binding the same uniforms that dont change each render
     //bind them only once when framebuffer is created (also after shaders are created/reloaded)
@@ -117,6 +124,8 @@ public class RenderFBO {
         System.out.println("Finished binding render textures");
     }
 
+
+
 }
 //the framebuffer needs to be created and all textures need to be created 0-7
 //
@@ -137,5 +146,10 @@ i can create the renderbuffer whenever the shaders are done being created (InGam
 //the framebuffer doesnt need to be recreated when shaders reload
 //after shaders init. anytime scrveern resized, but the static bindRenderTextures can be called after every shader reload
 so i  think i can create framebuffer when ingame creates and dispose when ingame disposed and than rereate it each time screen resizes
+
+
+
+
+it sounds like each textures is its own framebuffer?
 
  */

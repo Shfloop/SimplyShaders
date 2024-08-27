@@ -11,11 +11,18 @@ import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Sky;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL32;
+
+import java.util.Arrays;
 
 public class FinalShader extends GameShader {
-    public FinalShader(String vertexShader, String fragmentShader) {
+    private boolean isComposite;
+    private final int[] drawBuffers ;
+    public FinalShader(String vertexShader, String fragmentShader, int[] usedBuffers, boolean isComposite) {
         super(vertexShader,fragmentShader);
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
+        drawBuffers = usedBuffers;
+        this.isComposite = isComposite;
     }
     public void bind(Camera worldCamera) {
         super.bind(worldCamera);
@@ -24,18 +31,25 @@ public class FinalShader extends GameShader {
         //this.bindOptionalTextureI("colorTex0", SimplyShaders.fbo.getTextureAttachments().get(0).getTextureObjectHandle(), texNum);
 
 
-        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum);
+        //the final shader cant have this happen because it doesnt have a framebuffer
+        if (!Arrays.equals(RenderFBO.lastDrawBuffers , drawBuffers) && isComposite) {
+            GL32.glDrawBuffers(drawBuffers);
+            RenderFBO.lastDrawBuffers = drawBuffers;
+           // System.out.println("FinalSHADERBUFFER");
+        }
+
+        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum); //this should also change based on shader
         texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
         texNum= this.bindOptionalTextureI("colorTex2", SimplyShaders.buffer.attachment2.getID(),texNum);
         texNum= this.bindOptionalTextureI("colorTex3", SimplyShaders.buffer.attachment3.getID(),texNum);
+        texNum= this.bindOptionalTextureI("colorTex4", SimplyShaders.buffer.attachment4.getID(),texNum);
 
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
         Sky sky = Sky.currentSky;
         this.bindOptionalUniform3f("skyAmbientColor", sky.currentAmbientColor);
-        this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
-        this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+
 //        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 //        Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, texId);
 

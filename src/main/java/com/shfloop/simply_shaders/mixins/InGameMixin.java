@@ -27,6 +27,7 @@ import java.io.IOException;
 
 @Mixin(InGame.class)
 public class InGameMixin extends GameState {
+
     @Shadow
     static protected PerspectiveCamera rawWorldCamera;
 
@@ -139,8 +140,16 @@ public class InGameMixin extends GameState {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
         Sky sky = Sky.currentSky;
-
+        GL32.glDrawBuffers(RenderFBO.allDrawBuffers);
         ScreenUtils.clear(sky.currentSkyColor, true);
+
+        //Sky Should not be drawn to other color attachments only number 0
+        final float[] transparent = {0,0,0,0};
+        GL32.glClearBufferfv(GL32.GL_COLOR,  4, transparent);
+        //System.out.println("RENDERSTART");
+        SimplyShaders.inRender = true;
+        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};// drawbuffers for sky star shader
+        GL32.glDrawBuffers(drawBuffers);
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
 //        GameSingletons.zoneRenderer.render(playerZone, rawWorldCamera);
 //        SimplyShaders.fbo.end();
@@ -153,6 +162,8 @@ public class InGameMixin extends GameState {
         //do composite rendes on the same screen quad;
 
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST); // disable it so screen quad doesnt get removed
+        //i think i walso want to disable gl blend
+        Gdx.gl.glDisable(GL20.GL_BLEND); //gl blend is enabled in batched zone renderer
 
         GameShader composite0 = GameShaderInterface.getShader().get(10);// FIXME need a better way to keep track of shaders
         composite0.bind(rawWorldCamera);
@@ -161,7 +172,7 @@ public class InGameMixin extends GameState {
 
         composite0.unbind();
 
-
+       // System.out.println("Composite done");
 
         //bind framebuffer 0
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
@@ -172,7 +183,7 @@ public class InGameMixin extends GameState {
 
         //SimplyShaders.fbo.end();
         //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
-
+        //System.out.println("Starting quad render");
        GameShader finalShader = GameShaderInterface.getShader().get(9);
         finalShader.bind(rawWorldCamera);
         //finalShader.bindOptionalInt("colorTex0", texHandle);
@@ -182,6 +193,8 @@ public class InGameMixin extends GameState {
 
         SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
         finalShader.unbind();
+        //System.out.println("DONE QUAD");
+        SimplyShaders.inRender = false;
         //need to bind vertexarray
         //need to bind the textuere maybe
         //need to call glDrawArrays(GL_TRIANGLE,0,6)
@@ -190,5 +203,9 @@ public class InGameMixin extends GameState {
         //MIGHT NEED TO USE GLBIINDFRAGDATALOCATION on all shaders to bind the correct output to attachment
 
         // so i think i should just use a sprite batch
+
+
+
+        //so i need a directive in the shader that tells simply shaders which drawbuffers to enable and in which order
     }
 }

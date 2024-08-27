@@ -4,14 +4,19 @@ import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Arrays;
 
 
 @Mixin(ChunkShader.class)
@@ -26,6 +31,20 @@ public abstract class ChunkShaderMixin extends GameShader {
 
     @Inject(method = "bind(Lcom/badlogic/gdx/graphics/Camera;)V", at = @At("TAIL"))//value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V")) // Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V
     private void injectShaderParam(CallbackInfo ci ) {
+        //for each shader bind call i need to say what the render targets are for now ill use gldrawbuffers
+        int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
+        //System.out.print(Arrays.toString(drawBuffers));
+        //System.out.println(Arrays.toString(RenderFBO.lastDrawBuffers));
+        //chunk shader is used for held item shader
+        if (SimplyShaders.inRender &&!Arrays.equals(RenderFBO.lastDrawBuffers, drawBuffers)) {
+            GL32.glDrawBuffers(drawBuffers);
+            RenderFBO.lastDrawBuffers = drawBuffers;
+            //System.out.println("ChunkSHADERBUFFER");
+
+        }
+
+
+
         if (Shadows.shaders_on && InGame.world != null) { //should find a better way to do this
 
             this.bindOptionalUniformMatrix("lightSpaceMatrix", Shadows.getCamera().combined);

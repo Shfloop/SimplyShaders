@@ -29,6 +29,7 @@ public class SimplyShaders implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("SimplyShaders Mod");
 	public static RenderFBO buffer ; //this might be a good way to go about this but im not really sure
     public static Mesh screenQuad;
+    public static boolean inRender = false;
 
     public static FrameBuffer fbo;
 
@@ -113,6 +114,17 @@ public class SimplyShaders implements ModInitializer {
         framebb.addDepthRenderBuffer(GL32.GL_DEPTH_COMPONENT24);
 
         fbo = framebb.build();
+
+    }
+    public static void resize(){
+        if (buffer != null) {
+            buffer.dispose();
+            try {
+                buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 }
