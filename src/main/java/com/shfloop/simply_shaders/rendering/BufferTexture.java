@@ -24,6 +24,8 @@ public class BufferTexture {
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL20.GL_RGBA,this.width,this.height,0,pixel_format,GL20.GL_UNSIGNED_BYTE, (ByteBuffer) null);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_LINEAR);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_LINEAR);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_CLAMP_TO_BORDER);
+        GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_CLAMP_TO_BORDER);
         //GL20.glBindTexture(GL20.GL_TEXTURE_2D, 0);
     }
     public int getWidth() {

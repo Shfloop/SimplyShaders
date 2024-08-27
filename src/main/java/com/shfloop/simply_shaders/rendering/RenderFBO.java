@@ -56,7 +56,7 @@ public class RenderFBO {
 
         lastDrawBuffers = allDrawBuffers;
         GL32.glDrawBuffers(lastDrawBuffers);
-
+        //frameuffer fails if the game is minimized
         if (Gdx.gl.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE ) {
             throw new Exception("Could not create FrameBuffer");
         }
