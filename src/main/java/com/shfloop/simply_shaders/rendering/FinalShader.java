@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL32;
 import java.util.Arrays;
 
 public class FinalShader extends GameShader {
-    private boolean isComposite;
+    private final boolean isComposite;
     private final int[] drawBuffers ;
     public FinalShader(String vertexShader, String fragmentShader, int[] usedBuffers, boolean isComposite) {
         super(vertexShader,fragmentShader);
@@ -38,11 +38,15 @@ public class FinalShader extends GameShader {
            // System.out.println("FinalSHADERBUFFER");
         }
 
-        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum); //this should also change based on shader
-        texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
-        texNum= this.bindOptionalTextureI("colorTex2", SimplyShaders.buffer.attachment2.getID(),texNum);
-        texNum= this.bindOptionalTextureI("colorTex3", SimplyShaders.buffer.attachment3.getID(),texNum);
-        texNum= this.bindOptionalTextureI("colorTex4", SimplyShaders.buffer.attachment4.getID(),texNum);
+//        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum); //this should also change based on shader
+//        texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
+//        texNum= this.bindOptionalTextureI("colorTex2", SimplyShaders.buffer.attachment2.getID(),texNum);
+//        texNum= this.bindOptionalTextureI("colorTex3", SimplyShaders.buffer.attachment3.getID(),texNum);
+//        texNum= this.bindOptionalTextureI("colorTex4", SimplyShaders.buffer.attachment4.getID(),texNum);
+        //may want to go back with set strings, not sure whats better
+        for (BufferTexture tex: RenderFBO.renderTextures) {
+            texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
+        }
 
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
