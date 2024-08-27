@@ -9,6 +9,7 @@ import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,8 +30,8 @@ public abstract class GameShaderMixin   {
         new ChunkShader("InternalShader/internal.shadowpass.vert.glsl","InternalShader/internal.shadowpass.frag.glsl");
         new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
         ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
-        new FinalShader("InternalShader/internal.final.vert.glsl", "InternalShader/internal.final.frag.glsl");
-        new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl");
+        new FinalShader("InternalShader/internal.final.vert.glsl", "InternalShader/internal.final.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, false);
+        new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, true); //this wont write out to any of them so it shouldnt matter
     }
 
 

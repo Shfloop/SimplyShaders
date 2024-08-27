@@ -17,7 +17,9 @@
     "BlockGameMixin",
     "EntityModelInstanceMixin",
     "EntityModelInterface",
-    "SkyMixin"
+    "SkyMixin",
+    "SkyShaderMixin",
+    "EntityShaderMixin"
 
   ],
   "injectors": {
