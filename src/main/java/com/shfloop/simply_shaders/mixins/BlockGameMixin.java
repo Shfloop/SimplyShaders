@@ -27,8 +27,14 @@ public abstract class BlockGameMixin {
         if (needsResize ) {
             timeSinceResize += Gdx.graphics.getDeltaTime();
             if (timeSinceResize > 0.1) { // this could probably be even lesss atleast on my pc resize was called about every 0.02
-                needsResize = false;
-                SimplyShaders.resize();
+                if (BlockGame.isFocused) {
+                    needsResize = false;
+                    SimplyShaders.resize();
+                } else {
+                    System.out.println("STOPPPED RESIZE"); // this gets spammed
+                    //instead just set needs resized to false cause it should call resize once the window regains focus
+                    needsResize = false;
+                }
             }
         }
     }
