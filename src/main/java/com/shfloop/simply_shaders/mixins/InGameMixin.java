@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
@@ -165,12 +166,12 @@ public abstract class InGameMixin extends GameState {
         //i think i walso want to disable gl blend
         Gdx.gl.glDisable(GL20.GL_BLEND); //gl blend is enabled in batched zone renderer
 
-        GameShader composite0 = GameShaderInterface.getShader().get(10);// FIXME need a better way to keep track of shaders
-        composite0.bind(rawWorldCamera);
-
-        SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
-
-        composite0.unbind();
+//        GameShader composite0 = GameShaderInterface.getShader().get(10);// FIXME need a better way to keep track of shaders
+//        composite0.bind(rawWorldCamera);
+//
+//        SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
+//
+//        composite0.unbind();
         SimplyShaders.inRender = false;// should stop finalshader from from drying to call drawbuffers
        // System.out.println("Composite done");
 
@@ -184,7 +185,7 @@ public abstract class InGameMixin extends GameState {
         //SimplyShaders.fbo.end();
         //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
         //System.out.println("Starting quad render");
-       GameShader finalShader = GameShaderInterface.getShader().get(9);
+       GameShader finalShader = FinalShader.DEFAULT_FINAL_SHADER;
         finalShader.bind(rawWorldCamera);
         //finalShader.bindOptionalInt("colorTex0", texHandle);
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);

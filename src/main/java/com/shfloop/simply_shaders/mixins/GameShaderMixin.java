@@ -3,6 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.FinalShader;
@@ -36,11 +37,11 @@ public abstract class GameShaderMixin   {
     @Inject(method = "initShaders()V", at = @At("Tail")) // making it head should populate the mods assets with the replacement shaders
     static private void addShadowPassShaders(CallbackInfo ci) {
         //Instead i should just make a shader pack and have this be in it
-        new ChunkShader("InternalShader/internal.shadowpass.vert.glsl","InternalShader/internal.shadowpass.frag.glsl");
-        new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
-        ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
-        new FinalShader("InternalShader/internal.final.vert.glsl", "InternalShader/internal.final.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, false);
-        new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, true); //this wont write out to any of them so it shouldnt matter
+        //new ChunkShader("InternalShader/internal.shadowpass.vert.glsl","InternalShader/internal.shadowpass.frag.glsl");
+        //new EntityShader("InternalShader/internal.shadowEntity.vert.glsl","InternalShader/internal.shadowEntity.frag.glsl");
+        //ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("InternalShader/internal.chunk.vert.glsl", "InternalShader/internal.chunk.frag.glsl");
+       FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
+        //new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, true); //this wont write out to any of them so it shouldnt matter
     }
 
     @Inject(method = "bind", at = @At("TAIL"))
@@ -51,6 +52,8 @@ public abstract class GameShaderMixin   {
             RenderFBO.lastDrawBuffers = shaderDrawBuffers;
         }
     }
+
+///mixin to start of gameshaderinit shaders so i can initialize shaderpackloader
 
 
 
@@ -104,7 +107,8 @@ public abstract class GameShaderMixin   {
     //adding field to each GameShader
     private int[] shaderDrawBuffers;
     private String loadShaderFile(String shaderName, SimplyShaders.newShaderType shaderType) {
-        String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n");
+       // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //
+        String[] rawShaderLines = ShaderPackLoader.loadShader( shaderName);
         StringBuilder sb = new StringBuilder();
         String version = "";
         String define = shaderName.replaceAll("[-/. ()]", "_");

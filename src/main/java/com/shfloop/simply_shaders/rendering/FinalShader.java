@@ -16,12 +16,13 @@ import org.lwjgl.opengl.GL32;
 import java.util.Arrays;
 
 public class FinalShader extends GameShader {
+    public static FinalShader DEFAULT_FINAL_SHADER;
     private final boolean isComposite;
-    private final int[] drawBuffers ;
-    public FinalShader(String vertexShader, String fragmentShader, int[] usedBuffers, boolean isComposite) {
+
+    public FinalShader(String vertexShader, String fragmentShader, boolean isComposite) {
         super(vertexShader,fragmentShader);
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
-        drawBuffers = usedBuffers;
+
         this.isComposite = isComposite;
     }
     public void bind(Camera worldCamera) {
@@ -31,12 +32,7 @@ public class FinalShader extends GameShader {
         //this.bindOptionalTextureI("colorTex0", SimplyShaders.fbo.getTextureAttachments().get(0).getTextureObjectHandle(), texNum);
 
 
-        //the final shader cant have this happen because it doesnt have a framebuffer
-        if (!Arrays.equals(RenderFBO.lastDrawBuffers , drawBuffers) && isComposite) {
-            GL32.glDrawBuffers(drawBuffers);
-            RenderFBO.lastDrawBuffers = drawBuffers;
-           // System.out.println("FinalSHADERBUFFER");
-        }
+
 
 //        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum); //this should also change based on shader
 //        texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
