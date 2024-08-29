@@ -98,7 +98,7 @@ public class ShaderPackLoader {
                 //TODO replace with program
                 Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/assets/shaders/" + selectedPack);
                 try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
-                    Path path = fs.getPath("ShadersV3", fileName);
+                    Path path = fs.getPath( fileName);
                         System.out.println(path);
                     return Files.readString(path).split("\n");
                 } catch (InvalidPathException e) {
@@ -201,10 +201,13 @@ public class ShaderPackLoader {
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 for (int i = 0; i < 8; i++) {
                     String compositeName = "composite" + i;
-                    Path path = fs.getPath( i + ".frag.glsl");
+                    Path path = fs.getPath( compositeName + ".frag.glsl");
                     //will cause invalid pathexception if it doesnt exits
-                    new FinalShader(compositeName + ".vert.glsl", compositeName + ".frag.glsl", true);
-                    packShaders.add(allShaders.pop());
+                    if (Files.exists(path)) {
+                        new FinalShader(compositeName + ".vert.glsl", compositeName + ".frag.glsl", true);
+                        packShaders.add(allShaders.pop());
+                    }
+
                 }
             } catch (IOException e) {
                 throw new RuntimeException("ZIP fs cant be created");

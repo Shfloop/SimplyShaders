@@ -37,20 +37,20 @@ public class SimplyShaders implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Simply Shaders Initialized!");
-        System.out.println("loading from resources");
-        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-        System.out.println("loading from zip");
-        ShaderPackLoader.shaderPackOn = true;
-        ShaderPackLoader.selectedPack = "ShadersV3.zip";
-        ShaderPackLoader.isZipPack = true;
-        //ShaderPackLoader.loadUserShaders("ShadersV3.zip");
-        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-        System.out.println("loading from unzipped");
-        ShaderPackLoader.selectedPack = "ShadersV3";
-        ShaderPackLoader.isZipPack = false;
-       // ShaderPackLoader.loadUserShaders("ShadersV3");
-        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-        ShaderPackLoader.shaderPackOn = false;
+//        System.out.println("loading from resources");
+//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+//        System.out.println("loading from zip");
+//        ShaderPackLoader.shaderPackOn = true;
+//        ShaderPackLoader.selectedPack = "ShadersV3.zip";
+//        ShaderPackLoader.isZipPack = true;
+//        //ShaderPackLoader.loadUserShaders("ShadersV3.zip");
+//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+//        System.out.println("loading from unzipped");
+//        ShaderPackLoader.selectedPack = "ShadersV3";
+//        ShaderPackLoader.isZipPack = false;
+//       // ShaderPackLoader.loadUserShaders("ShadersV3");
+//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+//        ShaderPackLoader.shaderPackOn = false;
 
 
 
