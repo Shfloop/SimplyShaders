@@ -37,8 +37,26 @@ public class SimplyShaders implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Simply Shaders Initialized!");
+        System.out.println("loading from resources");
+        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+        System.out.println("loading from zip");
+        ShaderPackLoader.shaderPackOn = true;
+        ShaderPackLoader.selectedPack = "ShadersV3.zip";
+        ShaderPackLoader.isZipPack = true;
+        //ShaderPackLoader.loadUserShaders("ShadersV3.zip");
+        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+        System.out.println("loading from unzipped");
+        ShaderPackLoader.selectedPack = "ShadersV3";
+        ShaderPackLoader.isZipPack = false;
+       // ShaderPackLoader.loadUserShaders("ShadersV3");
+        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
+        ShaderPackLoader.shaderPackOn = false;
+
+
+
+
 		Command.registerCommand(CommandTime::new, "time");
-        System.out.println("IS IT RUNNING GL30" + Gdx.graphics.isGL30Available());
+        //System.out.println("IS IT RUNNING GL30" + Gdx.graphics.isGL30Available());
         //fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
        // buildFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         try {

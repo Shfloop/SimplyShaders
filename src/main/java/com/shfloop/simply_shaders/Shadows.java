@@ -45,21 +45,21 @@ public class Shadows {
     }
     public static void initShadowShaders() throws Exception {
 
-        ShaderGenerator generator = new ShaderGenerator();
-        generator.copyContent("shadowpass.frag.glsl", "InternalShader/internal.shadowpass.frag.glsl");
-        generator.copyContent("shadowpass.vert.glsl", "InternalShader/internal.shadowpass.vert.glsl"); //this should create the file and paths if its not already there
-
-        generator.copyContent("shadowEntity.frag.glsl", "InternalShader/internal.shadowEntity.frag.glsl");
-        generator.copyContent("shadowEntity.vert.glsl", "InternalShader/internal.shadowEntity.vert.glsl");
-
-        generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
-        generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
-
-        generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
-        generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl"); //fixme not needed exactly so i should make it if its not used
-
-        ShaderGenerator.copyBaseShader("chunk.frag.glsl");
-        ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
+//        ShaderGenerator generator = new ShaderGenerator();
+//        generator.copyContent("shadowpass.frag.glsl", "InternalShader/internal.shadowpass.frag.glsl");
+//        generator.copyContent("shadowpass.vert.glsl", "InternalShader/internal.shadowpass.vert.glsl"); //this should create the file and paths if its not already there
+//
+//        generator.copyContent("shadowEntity.frag.glsl", "InternalShader/internal.shadowEntity.frag.glsl");
+//        generator.copyContent("shadowEntity.vert.glsl", "InternalShader/internal.shadowEntity.vert.glsl");
+//
+//        generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
+//        generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
+//
+//        generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
+//        generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl"); //fixme not needed exactly so i should make it if its not used
+//
+//        ShaderGenerator.copyBaseShader("chunk.frag.glsl");
+//        ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
 
         //TODO add other shaders to this
 
@@ -147,7 +147,7 @@ public class Shadows {
         System.out.println("Copying shaders from: " + SaveLocation.getSaveFolderLocation() + ShaderGenerator.currentShaderPackFolder);
         if (ShaderGenerator.currentShaderPackFolder.endsWith("zip/")) {// i add a / at the end when setting currentshaderpackFolder
             for (String s : SHADERS_TO_COPY) {
-                ShaderGenerator.copyShaderFromZip(s);
+                ShaderGenerator.copyShaderFromZip(s); //FIXME need to remove
             }
         } else {
             for (String s : SHADERS_TO_COPY) {
@@ -208,6 +208,8 @@ public class Shadows {
 
         forceUpdate = true; // whenever the sun changes the next render pass will force update the new camera with new direction
     }
+
+    // for shader files all i need to do is switch the default static shaders for each shader type
     public static void cleanup()  {
         //if copy base shaders fails the game need to stop for good isnt much i can doi to recover
         System.out.println("Turning Shaders OFF");
