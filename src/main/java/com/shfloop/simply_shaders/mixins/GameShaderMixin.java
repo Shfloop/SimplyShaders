@@ -43,6 +43,20 @@ public abstract class GameShaderMixin   {
        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
         //new FinalShader("InternalShader/internal.composite0.vert.glsl","InternalShader/internal.composite0.frag.glsl", new int[]{GL32.GL_COLOR_ATTACHMENT3}, true); //this wont write out to any of them so it shouldnt matter
     }
+    @Overwrite
+    public static void reloadAllShaders() {
+        System.out.println("Reloading all Shaders");
+        if (ShaderPackLoader.shaderPackOn) {
+            for (GameShader shader: ShaderPackLoader.shader1) {
+                shader.reload();
+            }
+        } else {
+            for (GameShader shader: GameShaderInterface.getShader()) {
+                shader.reload();
+            }
+        }
+        System.out.println("Reloaded all Shaders");
+    }
 
     @Inject(method = "bind", at = @At("TAIL"))
     private void bindDrawBuffers(CallbackInfo ci) {

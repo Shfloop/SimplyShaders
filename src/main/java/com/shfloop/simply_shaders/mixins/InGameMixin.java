@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
@@ -76,7 +77,7 @@ public abstract class InGameMixin extends GameState {
     private void injectDispose(CallbackInfo ci) {
 
             Shadows.cleanup();
-            ChunkShader.reloadAllShaders();
+            //ChunkShader.reloadAllShaders(); base game shaders dont need to be reloaed as they will never change just need to swap out the defaulty static shaders and remesh
             SimplyShaders.buffer.dispose();
             SimplyShaders.buffer = null;
 
@@ -87,13 +88,13 @@ public abstract class InGameMixin extends GameState {
         if(Shadows.shaders_on) {
             if (!Shadows.initalized) {
                 try {
-                    Shadows.turnShadowsOn();
+                    Shadows.turnShadowsOn(); //turning shadows on will reload each shader
 
                 } catch (Exception e) {
                     //if the shadows cant be turned on just call cleanup
                     Shadows.cleanup();
                 }
-                ChunkShader.reloadAllShaders();
+                //ChunkShader.reloadAllShaders();
             }
 
             Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
@@ -172,6 +173,19 @@ public abstract class InGameMixin extends GameState {
 //        SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
 //
 //        composite0.unbind();
+        if (ShaderPackLoader.shaderPackOn) {
+            if (ShaderPackLoader.shader1.size >=10) {
+                for(int i = 9; i < ShaderPackLoader.shader1.size; i++) {
+                    FinalShader composite = (FinalShader)  ShaderPackLoader.shader1.get(i);
+                    composite.bind(rawWorldCamera);
+                    SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
+                    composite.unbind();
+                }
+            }
+        }
+
+
+
         SimplyShaders.inRender = false;// should stop finalshader from from drying to call drawbuffers
        // System.out.println("Composite done");
 

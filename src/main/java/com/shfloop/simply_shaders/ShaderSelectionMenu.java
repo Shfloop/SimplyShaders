@@ -267,7 +267,7 @@ public class ShaderSelectionMenu extends GameState{
         if (allShaders.size == 0) { // if there arent any packs in the folder we dont want to turn on the shaders
             return;
         }
-        ShaderGenerator.currentShaderPackFolder = "shaders/"+ allShaders.get(last_selected_idx - 1) + "/"; // Last selected idx needs to be -1 cause i dont have the enable shader buitton in allshaders but its in the scroll ilst
+        ShaderPackLoader.selectedPack = allShaders.get(last_selected_idx - 1) ; // Last selected idx needs to be -1 cause i dont have the enable shader buitton in allshaders but its in the scroll ilst
         //Shadows.shaders_on = shadersOn; /
         //gonna ghange it first cvause it migth be a aproblem if cleanup is called but the render still happens with shaders on
         if (InGame.world != null) {
@@ -284,7 +284,7 @@ public class ShaderSelectionMenu extends GameState{
 
 
             }
-            ChunkShader.reloadAllShaders();
+            //ChunkShader.reloadAllShaders();
         } else if (!Shadows.shaders_on) {
             Shadows.cleanup(); //dont think i need to call reload shaders
         }

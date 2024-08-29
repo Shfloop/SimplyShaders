@@ -6,13 +6,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.io.SaveLocation;
+import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
+import finalforeach.cosmicreach.rendering.shaders.EntityShader;
 import finalforeach.cosmicreach.world.Sky;
 
 import java.io.IOException;
 
 public class Shadows {
     public static float normal_float;
-
+    public static ChunkShader SHADOW_CHUNK;
+    public static EntityShader SHADOW_ENTITY;
     public static Vector3 lastUsedCameraPos;
     public static boolean shaders_on = false;
     public static int time_of_day = 0;
@@ -85,17 +88,18 @@ public class Shadows {
     public static void turnShadowsOn()  {
         System.out.println("Turning Shaders On");
 
-        try {
-            copyExternalShaderFiles();
-        } catch (IOException e) { //reaplce the files
-           cleanup();
-            e.printStackTrace();
-            System.out.print("ERROR   ");
-            System.out.println(e);
-            Shadows.shaders_on = false;
-            initalized = false;
-            return;
-        }
+//        try {
+//           // copyExternalShaderFiles(); instead of copying files we just wantt oreplace all default static shaders and make an array for the current one
+//        } catch (IOException e) { //reaplce the files
+//           cleanup();
+//            e.printStackTrace();
+//            System.out.print("ERROR   ");
+//            System.out.println(e);
+//            Shadows.shaders_on = false;
+//            initalized = false;
+//            return;
+//        }
+        ShaderPackLoader.switchToShaderPack();
 
 //        ShaderGenerator.copyShader("chunk.frag.glsl");
 //        ShaderGenerator.copyShader("chunk.vert.glsl");
@@ -213,20 +217,21 @@ public class Shadows {
     public static void cleanup()  {
         //if copy base shaders fails the game need to stop for good isnt much i can doi to recover
         System.out.println("Turning Shaders OFF");
-        ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
-        ShaderGenerator.copyBaseShader("chunk.vert.glsl");
-
-        ShaderGenerator generator = new ShaderGenerator();
-        try {
-            generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
-            generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
-
-            generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
-            generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl");
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
+//        ShaderGenerator.copyBaseShader("chunk.vert.glsl");
+//
+//        ShaderGenerator generator = new ShaderGenerator();
+//        try {
+//            generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
+//            generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
+//
+//            generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
+//            generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl");
+//        }
+//        catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+        ShaderPackLoader.switchToDefaultPack();
 
         //TODO add other shaders
         if (shadow_map != null) {
