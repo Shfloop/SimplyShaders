@@ -24,7 +24,7 @@ public abstract class  EntityModelInstanceMixin {
             "Lcom/badlogic/gdx/graphics/Mesh;render(Lcom/badlogic/gdx/graphics/glutils/ShaderProgram;I)V"))
     private void newEntityRenderInject(CallbackInfo ci, @Local Camera worldCamera) {
         if (Shadows.shadowPass) {
-            GameShader temp =GameShaderInterface.getShader().get(7);
+            GameShader temp = Shadows.SHADOW_ENTITY;
             temp.bind(worldCamera);
             //Todo for now just bind the textures even though they arent really needed
             temp.bindOptionalTexture("texDiffuse",((EntityModelInterface)entityModel).getDiffuseTexture(), 0);
