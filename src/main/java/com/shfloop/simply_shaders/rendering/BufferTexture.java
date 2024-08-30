@@ -2,6 +2,7 @@ package com.shfloop.simply_shaders.rendering;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 
 import java.nio.ByteBuffer;
 
@@ -21,7 +22,7 @@ public class BufferTexture {
 
 
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.id);
-        GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL20.GL_RGBA,this.width,this.height,0,pixel_format,GL20.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+        GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL32.GL_RGBA16F,this.width,this.height,0,pixel_format,GL20.GL_FLOAT, (ByteBuffer) null);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_LINEAR);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_LINEAR);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_CLAMP_TO_BORDER);
