@@ -64,6 +64,9 @@ public class ShaderPackLoader {
         //remesh
     }
     public static void remeshAllRegions() {
+        if (InGame.world == null) {
+            return;
+        }
         //this needs to
         for (Zone zone: InGame.world.getZones()) {
             for (Region reg: zone.getRegions()) {
