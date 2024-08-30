@@ -16,6 +16,7 @@ import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
@@ -228,7 +229,11 @@ public abstract class InGameMixin extends GameState {
         SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
         finalShader.unbind();
         //System.out.println("DONE QUAD");
-
+        if (!UI.renderUI) {
+            //i think i just need to clear the screen
+            Gdx.gl.glActiveTexture(33984);
+            Gdx.gl.glBindTexture(3553, 0); // this is called after uirender so it might be important
+        }
         //need to bind vertexarray
         //need to bind the textuere maybe
         //need to call glDrawArrays(GL_TRIANGLE,0,6)
