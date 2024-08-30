@@ -120,7 +120,7 @@ public abstract class InGameMixin extends GameState {
 
 
 
-            Gdx.gl.glBindFramebuffer(36160, 0);
+            Gdx.gl.glBindFramebuffer(36160, 0); // might not have to call this if im setting a different framebuffer
             Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Gdx.gl.glClear(org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT | org.lwjgl.opengl.GL20.GL_COLOR_BUFFER_BIT); // might not need this
 
@@ -142,12 +142,31 @@ public abstract class InGameMixin extends GameState {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
         Sky sky = Sky.currentSky;
+
+
+
+       // ScreenUtils.clear(sky.currentSkyColor, true); // this clears all color buffers
+        //dont want to use ScreenUtils cause glClear clears all FBA to the same color;
         GL32.glDrawBuffers(RenderFBO.allDrawBuffers);
-        ScreenUtils.clear(sky.currentSkyColor, true);
+        RenderFBO.lastDrawBuffers = RenderFBO.allDrawBuffers;
+        //i need to set lastdrawbuffers or else performance tanks
 
         //Sky Should not be drawn to other color attachments only number 0
-        final float[] transparent = {0,0,0,0};
-        GL32.glClearBufferfv(GL32.GL_COLOR,  4, transparent);
+        final float[] skyColor = {sky.currentSkyColor.r, sky.currentSkyColor.g, sky.currentSkyColor.b, sky.currentSkyColor.a};
+        GL32.glClearBufferfv(GL32.GL_COLOR, 0, skyColor);
+
+        final float[] white = {1.0f,1.0f,1.0f,1.0f};
+        GL32.glClearBufferfv(GL32.GL_DEPTH, 0, white);
+        GL32.glClearBufferfv(GL32.GL_COLOR,  1, white);
+
+       final float[] transparent = {0,0,0,0};
+
+
+
+       for (int i =2; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
+           GL32.glClearBufferfv(GL32.GL_COLOR,  i, transparent);
+       }
+
         //System.out.println("RENDERSTART");
         SimplyShaders.inRender = true;
 //        int[] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0};// drawbuffers for sky star shader not needed since its in gameshader now
