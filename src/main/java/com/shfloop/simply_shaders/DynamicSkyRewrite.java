@@ -31,6 +31,10 @@ public class DynamicSkyRewrite extends Sky {
 //        Zone playerZone = InGame.getLocalPlayer().getZone(world);
 //        lastTUpdate = (int) playerZone.getCurrentWorldTick();
     }
+    public void reMesh() {
+        this.skyShader = SkyShader.SKY_SHADER;
+        this.skyMesh = null;
+    }
     public void drawSky(Camera worldCamera) {
         if (this.skyMesh == null) {
             MeshBuilder meshBuilder = new MeshBuilder();
