@@ -12,6 +12,7 @@ import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.*;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Region;
+import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.io.BufferedReader;
@@ -53,6 +54,7 @@ public class ShaderPackLoader {
         }
         //remesh?
         remeshAllRegions();
+        remeashAllSkies();
 
     }
     public static void switchToDefaultPack() {
@@ -76,6 +78,13 @@ public class ShaderPackLoader {
             }
 
         }
+    }
+    public static void remeashAllSkies() {
+        for (Sky sky: Sky.skyChoices) {
+            sky.starMesh = null;
+        }
+      DynamicSkyRewrite temp =   (DynamicSkyRewrite) Sky.skyChoices.get(2);
+        temp.reMesh();
     }
 
     //not sure what it does if i call .split so it might eb better
