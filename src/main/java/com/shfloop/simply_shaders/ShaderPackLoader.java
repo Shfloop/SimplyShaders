@@ -10,10 +10,7 @@ import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.*;
-import finalforeach.cosmicreach.world.Chunk;
-import finalforeach.cosmicreach.world.Region;
-import finalforeach.cosmicreach.world.Sky;
-import finalforeach.cosmicreach.world.Zone;
+import finalforeach.cosmicreach.world.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,8 +80,8 @@ public class ShaderPackLoader {
         for (Sky sky: Sky.skyChoices) {
             sky.starMesh = null;
         }
-      DynamicSkyRewrite temp =   (DynamicSkyRewrite) Sky.skyChoices.get(2);
-        temp.reMesh();
+      DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
+        temp.starMesh = null;
     }
 
     //not sure what it does if i call .split so it might eb better

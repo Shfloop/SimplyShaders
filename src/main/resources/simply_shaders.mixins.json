@@ -8,8 +8,6 @@
     "MainMenuMixin",
     "OptionsMenuMixin",
     "ChunkShaderMixin",
-
-    "BlockModelJsonCuboidMixin",
     "GameShaderMixin",
     "GameShaderInterface",
     "InGameMixin",
@@ -17,9 +15,8 @@
     "BlockGameMixin",
     "EntityModelInstanceMixin",
     "EntityModelInterface",
-    "SkyMixin",
-    "SkyShaderMixin",
-    "EntityShaderMixin"
+    "DynamicSkyMixin"
+
 
   ],
   "injectors": {

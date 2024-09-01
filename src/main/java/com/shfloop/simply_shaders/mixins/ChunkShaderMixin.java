@@ -33,18 +33,6 @@ public abstract class ChunkShaderMixin extends GameShader {
 
     @Inject(method = "bind(Lcom/badlogic/gdx/graphics/Camera;)V", at = @At("TAIL"))//value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V")) // Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V
     private void injectShaderParam(CallbackInfo ci ,@Local int texNum) {
-        //for each shader bind call i need to say what the render targets are for now ill use gldrawbuffers
-        //int [] drawBuffers = {GL32.GL_COLOR_ATTACHMENT0,GL32.GL_COLOR_ATTACHMENT1};
-        //System.out.println("VariableTest " + this.id); //this will work to distinguish terrain from water shader
-        //System.out.print(Arrays.toString(drawBuffers));
-        //System.out.println(Arrays.toString(RenderFBO.lastDrawBuffers));
-        //chunk shader is used for held item shader
-//        if (SimplyShaders.inRender &&!Arrays.equals(RenderFBO.lastDrawBuffers, drawBuffers)) {
-//            GL32.glDrawBuffers(drawBuffers);
-//            RenderFBO.lastDrawBuffers = drawBuffers;
-//            //System.out.println("ChunkSHADERBUFFER");
-//
-//        } replaced
 
 
 

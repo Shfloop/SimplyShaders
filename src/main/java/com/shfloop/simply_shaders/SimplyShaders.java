@@ -3,25 +3,18 @@ package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
-import finalforeach.cosmicreach.chat.commands.Command;
-import com.shfloop.simply_shaders.commands.CommandTime;
 
 import org.lwjgl.opengl.GL32;
-import org.lwjgl.system.MemoryUtil;
 import org.quiltmc.loader.api.ModContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.FloatBuffer;
 
 import static org.lwjgl.system.MemoryUtil.memFree;
 
@@ -37,28 +30,7 @@ public class SimplyShaders implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Simply Shaders Initialized!");
-//        System.out.println("loading from resources");
-//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-//        System.out.println("loading from zip");
-//        ShaderPackLoader.shaderPackOn = true;
-//        ShaderPackLoader.selectedPack = "ShadersV3.zip";
-//        ShaderPackLoader.isZipPack = true;
-//        //ShaderPackLoader.loadUserShaders("ShadersV3.zip");
-//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-//        System.out.println("loading from unzipped");
-//        ShaderPackLoader.selectedPack = "ShadersV3";
-//        ShaderPackLoader.isZipPack = false;
-//       // ShaderPackLoader.loadUserShaders("ShadersV3");
-//        System.out.println(ShaderPackLoader.loadShader("chunk.frag.glsl")[0]);
-//        ShaderPackLoader.shaderPackOn = false;
 
-
-
-
-		Command.registerCommand(CommandTime::new, "time");
-        //System.out.println("IS IT RUNNING GL30" + Gdx.graphics.isGL30Available());
-        //fbo = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-       // buildFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         try {
             buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } catch (Exception e) {
@@ -97,29 +69,7 @@ public class SimplyShaders implements ModInitializer {
         screenQuad.setVertices(verts);
 
 
-//        FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(quadVertices.length);
-//        verticesBuffer.put(quadVertices).flip();
-//
-//        int quadVAO = GL32.glGenVertexArrays();
-//        int quadVBO = GL32.glGenBuffers();
-//        GL32.glBindVertexArray(quadVAO);
-//        GL32.glBindBuffer(GL32.GL_ARRAY_BUFFER, quadVBO);
-//        GL32.glBufferData(GL32.GL_ARRAY_BUFFER,verticesBuffer, GL32.GL_STATIC_DRAW);
-//
-//        memFree(verticesBuffer);
-//
-//        GL32.glVertexAttribPointer(0, 2, GL32.GL_FLOAT, GL32.GL_FALSE,0,0);
-//        GL32.glBindBuffer(GL32.GL_ARRAY_BUFFER, 0);
-//
-//        GL32.glEnableVertexAttribArray(0);
-//
-//        GL32.glEnableVertexAttribArray(1);
-//        GL32.glVertexAttribPointer(1, 2, GL32.GL_FLOAT, GL32.GL_FALSE, 0,0);
-//
-//        GL32.glBindVertexArray(0);
-//        if (verticesBuffer != null) {
-//            MemoryUtil.memFree(verticesBuffer);
-//        }
+
     }
 
     //call this onInitialize and whenever the window resizes
