@@ -23,8 +23,8 @@ public class DynamicSkyRewrite extends Sky {
     int lastT =Shadows.time_of_day ;
     int timeT = lastT;
     int lastTUpdate;
-    public DynamicSkyRewrite(String nameLangKey) {
-        super(nameLangKey, new Color(Color.BLACK), new Color(Color.WHITE), true);
+    public DynamicSkyRewrite(String skyId, String nameLangKey) {
+        super(skyId, nameLangKey, new Color(Color.BLACK), new Color(Color.WHITE), true);
         this.skyShader = SkyShader.SKY_SHADER;
         //need to initalize the lastTupdate to the current time so it doesnt update on f6 reload
 //        World world = InGame.world;
@@ -114,9 +114,9 @@ public class DynamicSkyRewrite extends Sky {
             Shadows.time_of_day =  timeT ; //this doesnt work if the cycle time is changed
             if (Shadows.shaders_on) {
                 if (Shadows.lastUsedCameraPos != null) { //feel bad doing this but easy fix
-                    Shadows.forceUpdate = true; //TODO this should really just be a method input
+                   //TODO this should really just be a method input
                     Shadows.getCamera().direction.set(new Vector3(this.sunDirection.x * -1 , this.sunDirection.y * -1, this.sunDirection.z * -1));
-                    Shadows.updateCenteredCamera();
+                    Shadows.updateCenteredCamera(true);
 
                 }
 

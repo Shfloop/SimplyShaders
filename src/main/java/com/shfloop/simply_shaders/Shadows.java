@@ -32,7 +32,7 @@ public class Shadows {
 //    public static VertexAttribute lightingAttrib = new VertexAttribute(4, 4, "a_lighting");
 //
 //    public static VertexAttribute normal_attrib = new VertexAttribute(32, 1, "as_normal_dir");
-   public static boolean forceUpdate = false;
+
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
@@ -44,35 +44,9 @@ public class Shadows {
         sunCamera.near = 0.05F;
         sunCamera.far = 2000.0F;
 
-        calcSunDirection();
+        //calcSunDirection();
     }
-    public static void initShadowShaders() throws Exception {
 
-//        ShaderGenerator generator = new ShaderGenerator();
-//        generator.copyContent("shadowpass.frag.glsl", "InternalShader/internal.shadowpass.frag.glsl");
-//        generator.copyContent("shadowpass.vert.glsl", "InternalShader/internal.shadowpass.vert.glsl"); //this should create the file and paths if its not already there
-//
-//        generator.copyContent("shadowEntity.frag.glsl", "InternalShader/internal.shadowEntity.frag.glsl");
-//        generator.copyContent("shadowEntity.vert.glsl", "InternalShader/internal.shadowEntity.vert.glsl");
-//
-//        generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
-//        generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
-//
-//        generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
-//        generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl"); //fixme not needed exactly so i should make it if its not used
-//
-//        ShaderGenerator.copyBaseShader("chunk.frag.glsl");
-//        ShaderGenerator.copyBaseShader("chunk.vert.glsl"); //also do this just reset them on startup
-
-        //TODO add other shaders to this
-
-       //i need a base shader in resources for shadow pass cause it still nedes to compile on startup
-
-
-
-
-
-    }
     public static void reloadShaders() { //dont need to call reload shaders because that happens after this gets called by chunkshader
         if (shaders_on) {
             cleanup();
@@ -88,26 +62,10 @@ public class Shadows {
     public static void turnShadowsOn()  {
         System.out.println("Turning Shaders On");
 
-//        try {
-//           // copyExternalShaderFiles(); instead of copying files we just wantt oreplace all default static shaders and make an array for the current one
-//        } catch (IOException e) { //reaplce the files
-//           cleanup();
-//            e.printStackTrace();
-//            System.out.print("ERROR   ");
-//            System.out.println(e);
-//            Shadows.shaders_on = false;
-//            initalized = false;
-//            return;
-//        }
+
         ShaderPackLoader.switchToShaderPack();
 
-//        ShaderGenerator.copyShader("chunk.frag.glsl");
-//        ShaderGenerator.copyShader("chunk.vert.glsl");
-//        ShaderGenerator.copyShader("shadowpass.frag.glsl");
-//        ShaderGenerator.copyShader("shadowpass.vert.glsl");
-//
-//        ShaderGenerator.copyShader("shadowEntity.frag.glsl");
-//        ShaderGenerator.copyShader("shadowEntity.vert.glsl");
+
         //TODO add other shaders
         System.out.println("creating Shadow map");
         try { shadow_map= new ShadowMap();}
@@ -123,15 +81,7 @@ public class Shadows {
         }
         initalized = true;
 
-        //Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky")); //i think this should work
-//        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
-//            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
-//            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
-//            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
-//
-//        } else {
-//            Sky.skyChoices.set(2, new DynamicSkyRewrite("Dynamic_Sky"));
-//        }
+
         System.out.println("Finished Loading Shaders");
         //after shaders are loaded bind the render textures
         if (SimplyShaders.buffer != null) {
@@ -145,28 +95,14 @@ public class Shadows {
        // ChunkShader.reloadAllShaders();
     }
 
-    private static void copyExternalShaderFiles() throws IOException {
 
-        System.out.println("SAVE LOCATION " + SaveLocation.getSaveFolderLocation());
-        System.out.println("Copying shaders from: " + SaveLocation.getSaveFolderLocation() + ShaderGenerator.currentShaderPackFolder);
-        if (ShaderGenerator.currentShaderPackFolder.endsWith("zip/")) {// i add a / at the end when setting currentshaderpackFolder
-            for (String s : SHADERS_TO_COPY) {
-                ShaderGenerator.copyShaderFromZip(s); //FIXME need to remove
-            }
-        } else {
-            for (String s : SHADERS_TO_COPY) {
-                ShaderGenerator.copyShader(s);
-            }
-        }
-
-    }
 
     public static OrthographicCamera getCamera() {
         // needs to check the current view frustrum how do i differ it from Menu cam vs player cam does matter cause shadow map will be different needs a way to take the current camera
 
         return sunCamera;
     }
-    public static void updateCenteredCamera() { // can just be called every render
+    public static void updateCenteredCamera(boolean forceUpdate) { // can just be called every render
 
         Vector3 player_center = lastUsedCameraPos.cpy();
 
@@ -174,7 +110,7 @@ public class Shadows {
         if (!forceUpdate && dist_traveled < 3.0) { //three blocks is better
             return; // if the player hasnt traveled far enough from last sun camera pos than return early so no update happens
         }
-        forceUpdate = false;
+
         lastCameraPos = lastUsedCameraPos.cpy();
         //System.out.println("UPDATE CAMERA CENTER");
         //im fairly confident this will make sun camera look at center of player/camera
@@ -210,27 +146,14 @@ public class Shadows {
         sunCamera.direction.set(-0.514496f, -0.857493f, -0.0f).rotate(dayPerc, 1.0F, 0.0F, 1.0F);
         sunCamera.update();
 
-        forceUpdate = true; // whenever the sun changes the next render pass will force update the new camera with new direction
+         // whenever the sun changes the next render pass will force update the new camera with new direction
     }
 
     // for shader files all i need to do is switch the default static shaders for each shader type
     public static void cleanup()  {
         //if copy base shaders fails the game need to stop for good isnt much i can doi to recover
         System.out.println("Turning Shaders OFF");
-//        ShaderGenerator.copyBaseShader("chunk.frag.glsl"); //may want shadows to just have a shadergenerator object instead of having both be static
-//        ShaderGenerator.copyBaseShader("chunk.vert.glsl");
-//
-//        ShaderGenerator generator = new ShaderGenerator();
-//        try {
-//            generator.copyContent("final.frag.glsl", "InternalShader/internal.final.frag.glsl");
-//            generator.copyContent("final.vert.glsl", "InternalShader/internal.final.vert.glsl");
-//
-//            generator.copyContent("composite0.frag.glsl", "InternalShader/internal.composite0.frag.glsl");
-//            generator.copyContent("composite0.vert.glsl", "InternalShader/internal.composite0.vert.glsl");
-//        }
-//        catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+
         ShaderPackLoader.switchToDefaultPack();
 
         //TODO add other shaders
@@ -238,37 +161,10 @@ public class Shadows {
             shadow_map.cleanup(); //:(
         }
         initalized = false;
-        //Shadows.shaders_on = false; // dont call this in cleanup!!!
-//        if (Sky.skyChoices.indexOf(Sky.currentSky, true) == 2) {
-//            //if the dynamic sky is enabled when turning on shaders we want to replace it with the shader custom sky
-//            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
-//            Sky.currentSky = (Sky) Sky.skyChoices.get(2);
-//
-//        } else {
-//            Sky.skyChoices.set(2, new DynamicSkyClone("Dynamic_Sky"));
-//        }
-        //ChunkShader.reloadAllShaders();
-        //Sky.skyChoices.set(1, new DynamicSkyClone("Dynamic_Sky")); //sees if this works
+
 
     }
-    public static void  updateTime(int newTime) {
-      int temp  = newTime % cycleLength;
-      if (temp < 0) {
-          temp += cycleLength; //keep things positive
-      }
-         Shadows.time_of_day = temp;
-        Shadows.updateTime = true;
 
-        if (Sky.skyChoices.indexOf(Sky.currentSky, true) != 2 && shaders_on) {
-            //means i want to manually update shadows outside of dynamic sky
-
-            Shadows.calcSunDirection();
-            if (lastUsedCameraPos != null) {
-                Shadows.updateCenteredCamera();
-            }
-
-        }
-    }
 
 
 }
