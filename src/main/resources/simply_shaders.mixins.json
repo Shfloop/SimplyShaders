@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "client": [
-    "MainMenuMixin",
     "OptionsMenuMixin",
     "ChunkShaderMixin",
     "GameShaderMixin",
@@ -15,7 +14,8 @@
     "BlockGameMixin",
     "EntityModelInstanceMixin",
     "EntityModelInterface",
-    "DynamicSkyMixin"
+    "DynamicSkyMixin",
+    "SkyInterface"
 
 
   ],

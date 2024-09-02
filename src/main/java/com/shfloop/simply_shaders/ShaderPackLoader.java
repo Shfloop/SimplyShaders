@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
+import com.shfloop.simply_shaders.mixins.SkyInterface;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -80,12 +81,15 @@ public class ShaderPackLoader {
         for (Sky sky: Sky.skyChoices) {
             sky.starMesh = null;
         }
-      DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
-        temp.starMesh = null;
+
+        Sky.skyChoices.set(0, new DynamicSky("base:dynamic_sky", "Dynamic_Sky"));
+        DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
+        Sky.currentSky = temp;
+        SkyInterface.getSkies().put("base:dynamic_sky", temp);
     }
 
-    //not sure what it does if i call .split so it might eb better
-    //probably be better to use an inputstream of some kind
+    //not sure what it does if i call .split
+    // probably be better to use an inputstream of some kind
     public static String[] loadShader(String fileName) { //wil just be the shader name ex chunk.frag.glsl no folders
 
         // if its loading a pack it will start with "/shaders/"

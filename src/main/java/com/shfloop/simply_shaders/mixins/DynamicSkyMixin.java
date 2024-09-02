@@ -2,6 +2,7 @@ package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.math.Vector3;
 import com.shfloop.simply_shaders.Shadows;
+import finalforeach.cosmicreach.rendering.shaders.SkyShader;
 import finalforeach.cosmicreach.world.DynamicSky;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract  class DynamicSkyMixin {
     private static float lastUpdateTime;
 
+    @Shadow protected SkyShader skyShader;
     @Shadow
     protected Vector3 sunDirection;
     @Shadow protected float i;
@@ -31,4 +33,5 @@ public abstract  class DynamicSkyMixin {
 
         }
     }
+
 }
