@@ -6,17 +6,14 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 
-import org.lwjgl.opengl.GL32;
 import org.quiltmc.loader.api.ModContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class SimplyShaders implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("SimplyShaders Mod");
@@ -24,7 +21,7 @@ public class SimplyShaders implements ModInitializer {
     public static Mesh screenQuad;
     public static boolean inRender = false;
 
-    public static FrameBuffer fbo;
+
 
 
 	@Override
@@ -61,7 +58,7 @@ public class SimplyShaders implements ModInitializer {
         verts[i++] = 1f; // y4
         verts[i++] = 0;
         verts[i++] = 0f; // u4
-        verts[i++] = 1f; // v4
+        verts[i] = 1f; // v4
 
          screenQuad = new Mesh(true, 4,0,
                 new VertexAttribute(VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE),
@@ -73,17 +70,7 @@ public class SimplyShaders implements ModInitializer {
     }
 
     //call this onInitialize and whenever the window resizes
-    public void buildFBO(int width, int height) {
-        if (fbo != null) fbo.dispose();
 
-        GLFrameBuffer.FrameBufferBuilder framebb = new GLFrameBuffer.FrameBufferBuilder(width,height);
-        framebb.addColorTextureAttachment(GL32.GL_RGBA8, GL32.GL_RGBA, GL32.GL_UNSIGNED_BYTE); //not sure which to use
-        framebb.addColorTextureAttachment(GL32.GL_RGBA8, GL32.GL_RGBA, GL32.GL_UNSIGNED_BYTE);
-        framebb.addDepthRenderBuffer(GL32.GL_DEPTH_COMPONENT24);
-
-        fbo = framebb.build();
-
-    }
     public static void resize(){
         if (buffer != null) {
             buffer.dispose();
@@ -95,7 +82,7 @@ public class SimplyShaders implements ModInitializer {
         }
 
     }
-    public static enum newShaderType {
+    public enum newShaderType {
         FRAG,
         VERT,
         IMPORTED
