@@ -12,6 +12,5 @@ public class MainMenuMixin {
     @Inject(method = "create", at = @At("HEAD"))
     private void injected(CallbackInfo ci) {
         SimplyShaders.LOGGER.info("Example mixin logged!");
-        System.out.println("TEST");
     }
 }
