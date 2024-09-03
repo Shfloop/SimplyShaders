@@ -18,7 +18,6 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 
     @Override
     public void setLastUpdateTime(float time) {
-        System.out.println("NEW TIME: " + i + " LAST: " + lastUpdateTime);
         this.lastUpdateTime = time;
 
     }

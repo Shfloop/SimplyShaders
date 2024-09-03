@@ -14,7 +14,6 @@ public class CommandTimeMixin  {
     private void updateDynamicSkySunUpdate(CallbackInfo ci) {
         if(Sky.currentSky.skyId.equals("base:dynamic_sky")) {
             ((DynamicSkyInterface) Sky.currentSky).setLastUpdateTime(0);
-            System.out.println("SETTING LAST UPDATE");
         }
 
     }
