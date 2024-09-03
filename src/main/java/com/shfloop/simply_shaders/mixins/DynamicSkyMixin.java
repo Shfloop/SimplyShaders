@@ -1,6 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.math.Vector3;
+import com.shfloop.simply_shaders.DynamicSkyInterface;
 import com.shfloop.simply_shaders.Shadows;
 import finalforeach.cosmicreach.rendering.shaders.SkyShader;
 import finalforeach.cosmicreach.world.DynamicSky;
@@ -12,8 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 
 @Mixin(DynamicSky.class)
-public abstract  class DynamicSkyMixin {
-    private static float lastUpdateTime;
+public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
+    public float lastUpdateTime;
+
+    @Override
+    public void setLastUpdateTime(float time) {
+        System.out.println("NEW TIME: " + i + " LAST: " + lastUpdateTime);
+        this.lastUpdateTime = time;
+
+    }
 
     @Shadow protected SkyShader skyShader;
     @Shadow
@@ -25,7 +33,7 @@ public abstract  class DynamicSkyMixin {
         if (Shadows.shaders_on) {
             sunDirection.rotate(45f, 1.0f,0.0f,0.0f);
             final float UPDATES_PER_ROTATION = 360.0f / 4000f;
-            if(Shadows.lastUsedCameraPos != null &&  i > (lastUpdateTime + UPDATES_PER_ROTATION) % 360) {
+            if(Shadows.lastUsedCameraPos != null &&  Math.abs(i) > (lastUpdateTime + UPDATES_PER_ROTATION) % 360) {
                 lastUpdateTime = i;
                 Shadows.getCamera().direction.set(new Vector3(sunDirection.x * -1 , sunDirection.y * -1, sunDirection.z * -1));
                 Shadows.updateCenteredCamera(true);
@@ -33,5 +41,6 @@ public abstract  class DynamicSkyMixin {
 
         }
     }
+
 
 }
