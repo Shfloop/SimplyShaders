@@ -103,6 +103,9 @@ public class Shadows {
         return sunCamera;
     }
     public static void updateCenteredCamera(boolean forceUpdate) { // can just be called every render
+        if (lastUsedCameraPos == null) {
+            return;
+        }
 
         Vector3 player_center = lastUsedCameraPos.cpy();
 
