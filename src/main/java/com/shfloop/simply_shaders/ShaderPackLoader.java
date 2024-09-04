@@ -5,11 +5,15 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
+import com.shfloop.simply_shaders.mixins.ItemModelBlockInterface;
+import com.shfloop.simply_shaders.mixins.ItemRendererInterfaceMixin;
 import com.shfloop.simply_shaders.mixins.SkyInterface;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
+import finalforeach.cosmicreach.rendering.items.ItemModel;
+import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
 import finalforeach.cosmicreach.rendering.shaders.*;
 import finalforeach.cosmicreach.world.*;
 
@@ -17,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class ShaderPackLoader {
@@ -87,6 +92,16 @@ public class ShaderPackLoader {
         Sky.currentSky = temp;
         SkyInterface.getSkies().put("base:dynamic_sky", temp);
     }
+//    public static void changeItemShader() { // i think i can do this without remeshing everything
+//    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) { // this just needs to go through held items
+//        if (model instanceof ItemModelBlock) {
+//            ((ItemModelBlockInterface)model).setShader();
+//        }
+//
+//    } //2d items dont need to get new shader i just need to change entity shader for them to work
+//
+//
+//    }
 
     //not sure what it does if i call .split
     // probably be better to use an inputstream of some kind
