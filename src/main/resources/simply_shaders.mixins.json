@@ -16,7 +16,10 @@
     "EntityModelInterface",
     "DynamicSkyMixin",
     "SkyInterface",
-    "CommandTimeMixin"
+    "CommandTimeMixin",
+    "ItemRendererInterfaceMixin",
+    "ItemModelBlockMixin",
+    "ItemModel2DMixin"
 
 
   ],
