@@ -36,7 +36,7 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 
             if(forceUpdate) {
 
-                lastUpdateTime = i;
+                lastUpdateTime = i - UPDATES_PER_ROTATION;
                 forceUpdate = false;
             }
             if (i < (lastUpdateTime + UPDATES_PER_ROTATION) ) {
