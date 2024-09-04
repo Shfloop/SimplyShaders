@@ -17,10 +17,11 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
     public float lastUpdateTime;
 
     @Override
-    public void setLastUpdateTime(float time) {
-        this.lastUpdateTime = time;
-
+    public void setLastUpdateTime() {
+        forceUpdate = true;
     }
+
+    public boolean forceUpdate = true;
 
     @Shadow protected SkyShader skyShader;
     @Shadow
@@ -32,11 +33,20 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
         if (Shadows.shaders_on) {
             sunDirection.rotate(45f, 1.0f,0.0f,0.0f);
             final float UPDATES_PER_ROTATION = 360.0f / 4000f;
-            if(Shadows.lastUsedCameraPos != null &&  Math.abs(i) > (lastUpdateTime + UPDATES_PER_ROTATION) % 360) {
+
+            if(forceUpdate) {
+
                 lastUpdateTime = i;
-                Shadows.getCamera().direction.set(new Vector3(sunDirection.x * -1 , sunDirection.y * -1, sunDirection.z * -1));
-                Shadows.updateCenteredCamera(true);
+                forceUpdate = false;
             }
+            if (i < (lastUpdateTime + UPDATES_PER_ROTATION) ) {
+                return;
+            }
+
+            lastUpdateTime = i;
+            Shadows.getCamera().direction.set(new Vector3(sunDirection.x * -1 , sunDirection.y * -1, sunDirection.z * -1));
+            Shadows.updateCenteredCamera(true);
+
 
         }
     }
