@@ -9,6 +9,7 @@ import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.world.Sky;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
@@ -49,6 +50,10 @@ public class FinalShader extends GameShader {
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
         Sky sky = Sky.currentSky;
         this.bindOptionalUniform3f("skyAmbientColor", sky.currentAmbientColor);
+        this.bindOptionalInt("renderFar",GraphicsSettings.renderDistanceInChunks.getValue() * 32); //i think chunks are still 32
+        //this.bindOptionalInt("renderNear", GraphicsSettings.renderDistanceInChunks.getValue() * 32);
+
+        //Todo add near and far for render distance dependent fog
 
 //        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 //        Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, texId);
