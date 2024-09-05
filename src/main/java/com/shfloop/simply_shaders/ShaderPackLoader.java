@@ -58,6 +58,7 @@ public class ShaderPackLoader {
         //remesh?
         remeshAllRegions();
         remeashAllSkies();
+        changeItemShader();
 
     }
     public static void switchToDefaultPack() {
@@ -66,6 +67,7 @@ public class ShaderPackLoader {
         useArray2 = false;
         setDefaultShaders();
         remeshAllRegions();
+        changeItemShader();
         //remesh
     }
     public static void remeshAllRegions() {
@@ -92,16 +94,17 @@ public class ShaderPackLoader {
         Sky.currentSky = temp;
         SkyInterface.getSkies().put("base:dynamic_sky", temp);
     }
-//    public static void changeItemShader() { // i think i can do this without remeshing everything
-//    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) { // this just needs to go through held items
-//        if (model instanceof ItemModelBlock) {
-//            ((ItemModelBlockInterface)model).setShader();
-//        }
-//
-//    } //2d items dont need to get new shader i just need to change entity shader for them to work
-//
-//
-//    }
+    public static void changeItemShader() { // i think i can do this without remeshing everything
+    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) { // this just needs to go through held items
+        if (model instanceof ItemModelBlock) {
+            System.out.println("Changing model Shader");
+            ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER); //Maybe this works
+        }
+
+    } //2d items dont need to get new shader i just need to change entity shader for them to work
+
+
+    }
 
     //not sure what it does if i call .split
     // probably be better to use an inputstream of some kind
@@ -179,6 +182,7 @@ public class ShaderPackLoader {
         EntityShader.ENTITY_SHADER = (EntityShader) allShaders.get(4);
         //for now dont f with death screen (5)
         FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(6);
+        Shadows.BLOCK_ENTITY_SHADER = (ChunkShader) ChunkShader.DEFAULT_BLOCK_SHADER;
     }
 
     //create the new array based onthe shaderpack folder
@@ -212,6 +216,8 @@ public class ShaderPackLoader {
 
         FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
         packShaders.add(allShaders.pop());
+
+        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader("blockEntity.vert.glsl", "blockEntity.frag.glsl");
 
         //add the rest from the pack  shadow , shadowentity, ? composite0-8 as many as given
 

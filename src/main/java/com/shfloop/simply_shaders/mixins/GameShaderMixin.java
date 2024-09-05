@@ -1,18 +1,13 @@
 package com.shfloop.simply_shaders.mixins;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
-import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.RuntimeInfo;
-import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
-import finalforeach.cosmicreach.rendering.shaders.EntityShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
@@ -34,6 +29,7 @@ public abstract class GameShaderMixin   {
     static private void addShadowPassShaders(CallbackInfo ci) {
 
        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
+        Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
 
     }
     @Overwrite
@@ -137,7 +133,7 @@ public abstract class GameShaderMixin   {
                     }
                 }
             } else if (trimmed.startsWith("#import \"") && trimmed.endsWith("\"")) {
-                String importedShaderName = shaderLine.replaceFirst("#import \"", "").replace("\\", "/");
+                String importedShaderName = trimmed.replaceFirst("#import \"", "").replace("\\", "/");
                 importedShaderName = importedShaderName.substring(0, importedShaderName.length() - 1);
                 sb.append(loadShaderFile(importedShaderName, SimplyShaders.newShaderType.IMPORTED) + "\n");
             } else if (trimmed.startsWith("/*") && trimmed.endsWith("*/")) {

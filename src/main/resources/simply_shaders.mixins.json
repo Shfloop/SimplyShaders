@@ -19,7 +19,8 @@
     "CommandTimeMixin",
     "ItemRendererInterfaceMixin",
     "ItemModelBlockMixin",
-    "ItemModel2DMixin"
+    "ItemModel2DMixin",
+    "ItemModelBlockInterface"
 
 
   ],

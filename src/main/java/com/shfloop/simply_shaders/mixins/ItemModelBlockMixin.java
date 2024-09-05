@@ -6,13 +6,19 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.shfloop.simply_shaders.Shadows;
+import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.lwjgl.opengl.GL20;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemModelBlock.class)
 public abstract class  ItemModelBlockMixin extends ItemModel {
@@ -23,7 +29,17 @@ public abstract class  ItemModelBlockMixin extends ItemModel {
     @Shadow
     protected static Matrix4 tmpHeldMat4;
 
+    //not sure why this doesnt work but
+//    @Redirect(method = "<init>", at = @At(value = "INVOKE_ASSIGN",
+//            target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;getShaderForBlockState(Lfinalforeach/cosmicreach/blocks/BlockState;)Lfinalforeach/cosmicreach/rendering/shaders/GameShader;"))
+//    private static GameShader redirectBlockEntityShader(BlockState b) {
+//        return Shadows.BLOCK_ENTITY_SHADER;
+//    }
 
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void replaceBlockEntityShader(CallbackInfo ci) {
+        ((ItemModelBlockInterface)(Object)this).setShader(Shadows.BLOCK_ENTITY_SHADER);
+    }
     /*
 
     Overwrites ItemModelBlock render held Item
