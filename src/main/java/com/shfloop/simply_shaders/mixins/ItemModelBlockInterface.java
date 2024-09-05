@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ItemModelBlock.class)
-public interface ItemModelBlockInterface {
+public   interface ItemModelBlockInterface {
     @Accessor("shader")
-    public default void setShader(GameShader shader) {throw new AssertionError();}
+    public void setShader(GameShader shader);
 }

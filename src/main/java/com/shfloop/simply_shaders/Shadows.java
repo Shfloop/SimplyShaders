@@ -13,7 +13,7 @@ import finalforeach.cosmicreach.world.Sky;
 import java.io.IOException;
 
 public class Shadows {
-    public static float normal_float;
+    public static  ChunkShader BLOCK_ENTITY_SHADER  ;
     public static ChunkShader SHADOW_CHUNK;
     public static EntityShader SHADOW_ENTITY;
     public static Vector3 lastUsedCameraPos;
