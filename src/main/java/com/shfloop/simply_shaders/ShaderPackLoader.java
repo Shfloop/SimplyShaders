@@ -226,6 +226,7 @@ public class ShaderPackLoader {
         packShaders.add(allShaders.pop());
 
         Shadows.BLOCK_ENTITY_SHADER = new ChunkShader("blockEntity.vert.glsl", "blockEntity.frag.glsl");
+        packShaders.add(allShaders.pop());
 
         //add the rest from the pack  shadow , shadowentity, ? composite0-8 as many as given
 
