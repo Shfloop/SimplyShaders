@@ -21,11 +21,6 @@ repositories {
     }
 
     maven {
-        name "crmReleases"
-        url "https://maven.crmodders.dev/releases"
-    }
-
-    maven {
         name "JitPack"
         url "https://jitpack.io"
     }
@@ -67,9 +62,9 @@ dependencies {
     cosmicreach "finalforeach:cosmicreach:${cosmic_reach_version}"
 
     // Cosmic Quilt
-    internal "dev.crmodders:cosmicquilt:${cosmic_quilt_version}"
+    internal "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
     // Modmenu
-//    internal "dev.crmodders:modmenu:${modmenu_version}"
+//    internal "org.codeberg.CRModders:modmenu:${modmenu_version}"
 
 
     // FluxAPI
