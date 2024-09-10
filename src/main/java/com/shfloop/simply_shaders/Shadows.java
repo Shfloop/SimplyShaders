@@ -8,6 +8,7 @@ import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
+import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.world.Sky;
 
 import java.io.IOException;
@@ -39,8 +40,9 @@ public class Shadows {
     private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl", "composite0.vert.glsl", "composite0.frag.glsl"};
 
     static {
+        //the gl viewport should be whatever the texture size is but i think the camera viewport should be whatever the shadow distance is so default like 256
         //not sure what viewport size i should be using
-        sunCamera =  new OrthographicCamera(400, 400); // should change this to be initialized on the player instead
+        sunCamera =  new OrthographicCamera(256, 256); // should change this to be initialized on the player instead
         sunCamera.near = 0.05F;
         sunCamera.far = 2000.0F;
 
@@ -117,8 +119,8 @@ public class Shadows {
         lastCameraPos = lastUsedCameraPos.cpy();
         //System.out.println("UPDATE CAMERA CENTER");
         //im fairly confident this will make sun camera look at center of player/camera
-        Shadows.sunCamera.viewportHeight = 400;
-        Shadows.sunCamera.viewportWidth =400; // redundant but ill see what it does
+       // Shadows.sunCamera.viewportHeight = 400;
+        //Shadows.sunCamera.viewportWidth =400; // redundant but ill see what it does
 
 
         Vector3 old_direction = Shadows.sunCamera.direction.cpy();

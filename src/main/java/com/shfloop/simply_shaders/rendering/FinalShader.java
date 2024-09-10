@@ -48,10 +48,20 @@ public class FinalShader extends GameShader {
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
+        if (Shadows.initalized) {
+            texNum= this.bindOptionalTextureI("shadowMap", Shadows.shadow_map.getDepthMapTexture().id, texNum);
+        }
+
         Sky sky = Sky.currentSky;
         this.bindOptionalUniform3f("skyAmbientColor", sky.currentAmbientColor);
-        this.bindOptionalInt("renderFar",GraphicsSettings.renderDistanceInChunks.getValue() * 32); //i think chunks are still 32
+        this.bindOptionalInt("renderFar",GraphicsSettings.renderDistanceInChunks.getValue() * 16); //chunks are 16 blocks wide
+        this.bindOptionalUniform3f("cameraDirection", worldCamera.direction); //i might be able to find this in final shader
+        this.bindOptionalMatrix4("invProjView", worldCamera.invProjectionView);
+
+        this.bindOptionalMatrix4("u_projViewTrans", worldCamera.combined);
         //this.bindOptionalInt("renderNear", GraphicsSettings.renderDistanceInChunks.getValue() * 32);
+        this.bindOptionalMatrix4("u_proj", worldCamera.projection);
+        this.bindOptionalMatrix4("u_view", worldCamera.view);
 
         //Todo add near and far for render distance dependent fog
 

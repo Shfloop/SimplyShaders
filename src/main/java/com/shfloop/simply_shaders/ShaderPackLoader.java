@@ -8,6 +8,7 @@ import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
@@ -106,12 +107,15 @@ public class ShaderPackLoader {
 
     }
     public static void updateEntityShader() {
-
-        for (Entity e: InGameInterface.getLocalPlayer().getZone(InGameInterface.getWorld()).allEntities) {
-            if (e.modelInstance instanceof EntityModelInstance) {
-                ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);
+        if (GameState.currentGameState instanceof InGame) {
+            for (Entity e: InGameInterface.getLocalPlayer().getZone(InGameInterface.getWorld()).allEntities) {
+                if (e.modelInstance instanceof EntityModelInstance) {
+                    ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);
+                }
             }
         }
+
+
     }
 
     //not sure what it does if i call .split
