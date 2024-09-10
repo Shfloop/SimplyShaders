@@ -10,6 +10,7 @@ import com.shfloop.simply_shaders.SimplyShaders;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
+import finalforeach.cosmicreach.util.ResourceLocation;
 import finalforeach.cosmicreach.world.Sky;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
@@ -25,6 +26,9 @@ public class FinalShader extends GameShader {
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
 
         this.isComposite = isComposite;
+    }
+    public static void initFinalShader() {
+        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader((new ResourceLocation("simply_shaders", "final.vert.glsl")).toPath(), (new ResourceLocation("simply_shaders","final.frag.glsl")).toPath() ,  false);
     }
     public void bind(Camera worldCamera) {
         super.bind(worldCamera);

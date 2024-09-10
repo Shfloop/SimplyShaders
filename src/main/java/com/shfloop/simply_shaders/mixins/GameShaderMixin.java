@@ -28,7 +28,8 @@ public abstract class GameShaderMixin   {
     @Inject(method = "initShaders()V", at = @At("Tail")) //
     static private void addShadowPassShaders(CallbackInfo ci) {
 
-       FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
+        FinalShader.initFinalShader();
+
         Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
 
     }
@@ -76,7 +77,7 @@ public abstract class GameShaderMixin   {
             ShaderProgram.prependVertexCode = "";
             ShaderProgram.prependFragmentCode = "";
         }
-
+        System.out.println("GAMESHADER NAME " + this.vertexShaderFileName);
         String vert = loadShaderFile(this.vertexShaderFileName, SimplyShaders.newShaderType.VERT); //preprocess doesnt do anything atm
         String frag = loadShaderFile(this.fragShaderFileName, SimplyShaders.newShaderType.FRAG);
         tempThis.validateShader(this.vertexShaderFileName, vert, this.fragShaderFileName, frag);
