@@ -271,8 +271,9 @@ public class ShaderPackLoader {
 
         packShaders.add(allShaders.get(5)); //TODO
 
-        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader("item_shader.vert.glsl", "item_shader.frag.glgl");
+        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader("item_shader.vert.glsl", "item_shader.frag.glsl");
         packShaders.add(allShaders.pop());
+
 
         FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
         packShaders.add(allShaders.pop());
