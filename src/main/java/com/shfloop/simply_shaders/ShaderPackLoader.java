@@ -13,8 +13,10 @@ import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
+import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
+import finalforeach.cosmicreach.rendering.items.ItemThingModel;
 import finalforeach.cosmicreach.rendering.shaders.*;
 import finalforeach.cosmicreach.util.AnsiColours;
 import finalforeach.cosmicreach.util.ResourceLocation;
@@ -104,6 +106,8 @@ public class ShaderPackLoader {
     for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) { // this just needs to go through held items
         if (model instanceof ItemModelBlock) {
             ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER); //Maybe this works
+        } else if (model instanceof ItemThingModel) {
+            ((ItemThingModelInterface)model).setProgram(ItemShader.DEFAULT_ITEM_SHADER);
         }
 
     } //2d items dont need to get new shader i just need to change entity shader for them to work
@@ -111,7 +115,7 @@ public class ShaderPackLoader {
 
     }
     public static void updateEntityShader() {
-        if (GameState.currentGameState instanceof InGame) {
+        if (InGame.world != null) {
             for (Entity e: InGameInterface.getLocalPlayer().getZone(InGameInterface.getWorld()).allEntities) {
                 if (e.modelInstance instanceof EntityModelInstance) {
                     ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);

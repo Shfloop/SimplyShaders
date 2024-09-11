@@ -22,7 +22,9 @@
     "ItemModel2DMixin",
     "ItemModelBlockInterface",
     "InGameInterface",
-    "EntityModelInstanceInterface"
+    "EntityModelInstanceInterface",
+    "ItemThingModelMixin",
+    "ItemThingModelInterface"
 
 
   ],
