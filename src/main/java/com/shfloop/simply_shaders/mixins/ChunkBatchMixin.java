@@ -67,7 +67,7 @@ public abstract class ChunkBatchMixin {
         In order to efficiently swap shaders im overwriting this
      */
 
-    public void render(Zone zone, Camera worldCamera) {
+    public void render(Zone zone, Camera worldCamera) { //FIXME ChunkWater shaders are being bound on each call taking up excess time
         if (this.seenCount == seenStep) {
             if (this.needToRebuild) {
                 this.rebuildMesh(combined);
