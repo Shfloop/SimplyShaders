@@ -2,33 +2,34 @@ package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.gamestates.GameState;
+
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
-import finalforeach.cosmicreach.items.Item;
+
 import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
-import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
+
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
 import finalforeach.cosmicreach.rendering.items.ItemThingModel;
 import finalforeach.cosmicreach.rendering.shaders.*;
 import finalforeach.cosmicreach.util.AnsiColours;
-import finalforeach.cosmicreach.util.ResourceLocation;
+
+import finalforeach.cosmicreach.util.Identifier;
+
 import finalforeach.cosmicreach.world.*;
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.PrintStream;
 import java.nio.file.*;
-import java.util.Iterator;
-import java.util.Scanner;
+
 
 public class ShaderPackLoader {
     //called from GameShaderMixin to load the shader based off shader selection (loaded from settings)
@@ -128,8 +129,8 @@ public class ShaderPackLoader {
 
     //not sure what it does if i call .split
     // probably be better to use an inputstream of some kind
-    public static String[] loadShader(String fileName) { //wil just be the shader name ex chunk.frag.glsl no folders
-
+    public static String[] loadShader(Identifier location) { //wil just be the shader name ex chunk.frag.glsl no folders
+        //if shaderpack on then it should be base location so i basicaaly just need to replace the namespace with folder name
         // if its loading a pack it will start with "/shaders/"
         // else im going to be loading hte jar shader
         if (ShaderPackLoader.shaderPackOn) { //it true needs to load from mods assets shaders/ packname/ program/"shader"
@@ -138,18 +139,18 @@ public class ShaderPackLoader {
             //shaders will be in program folder
             //take the current selected file handle - i need to do something seperate if its a zip[ folder
 
-
+            System.out.println(location.getName());
             //TOdo make an assets map so packs dont keep loading the same common files that already have been found
             if (!isZipPack) { // load from regular gdx file absolute
                 //cant use load asset caues it will add it to the all assets which would interfere with getting vanillal stuff
-              FileHandle unzippedFile = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders/" + ShaderPackLoader.selectedPack +  "/" + fileName);
+              FileHandle unzippedFile = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders/" + ShaderPackLoader.selectedPack +  "/" + location.getName()); //ive excluded /shaders when creating shaderpack shaders
                 System.out.println(unzippedFile);
               return unzippedFile.readString().split("\n");
             } else {
                 //TODO replace with program
                 Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/assets/shaders/" + selectedPack);
                 try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
-                    Path path = fs.getPath( fileName);
+                    Path path = fs.getPath(location.getName());
                         System.out.println(path);
                     return Files.readString(path).split("\n");
                 } catch (InvalidPathException e) {
@@ -161,68 +162,7 @@ public class ShaderPackLoader {
                 }
             }
         } else {
-            //load from internal
-            //the base game shaders should still work
-            //but idk
-            //use resource location now
-            String namespace = "base";
-            if (fileName.startsWith("assets/")) {
-                int indexOfNamespace = 7;
-                int endOfNamespace = fileName.indexOf("/", indexOfNamespace ); //should be true this is a workaround anyway
-                namespace = fileName.substring(indexOfNamespace , endOfNamespace );
-                fileName = fileName.substring(endOfNamespace );
-            }
-            ResourceLocation location = new ResourceLocation(namespace, fileName);
-            if ( GameAssetLoader.ALL_ASSETS.containsKey(fileName)) { // this would only get base shaders if shaderpack is on
-                return GameAssetLoader.ALL_ASSETS.get(fileName).readString().split("\n");
-            }
-            //Gdx says it falls back to classpath so i think this is okay
-            FileHandle classpathLocationFile = Gdx.files.classpath("assets/%s/%s".formatted(location.getNamespace(), location.getName()));
-            PrintStream var7;
-            String var10001 ;
-            if (classpathLocationFile.exists()) {
-                var7 = System.out;
-                var10001 = String.valueOf(AnsiColours.PURPLE);
-                var7.println("Loading " + var10001 + "\"" + location.getName() + "\"" + String.valueOf(AnsiColours.RESET) + " from Java Mod " + String.valueOf(AnsiColours.GREEN) + "\"" + location.getNamespace() + "\"" + String.valueOf(AnsiColours.WHITE));
-                return classpathLocationFile.readString().split("\n");
-            } else { //old way of doing it
-                FileHandle vanillaLocationFile = Gdx.files.internal(location.getName());
-                if (vanillaLocationFile.exists()) {
-                    var7 = System.out;
-                    var10001 = String.valueOf(AnsiColours.YELLOW);
-                    var7.println("Loading " + var10001 + "\"" + location.getName() + "\"" + String.valueOf(AnsiColours.RESET) + " from Cosmic Reach (Deprecated path)");
-
-                    return vanillaLocationFile.readString().split("\n");
-                } else {
-                    System.out.println("Old from jar");
-                    FileHandle fileFromJar = Gdx.files.internal("shaders/" + fileName);
-                   // GameAssetLoader.ALL_ASSETS.put(fileName, fileFromJar); i dont think base game uses this
-                    return fileFromJar.readString().split("\n");
-                }
-            }
-
-//            //this only needs to load final.frag/final.vert
-//            FileHandle handle = Gdx.files.classpath("baseShaders/" + fileName); //classpath just does resourceasStram
-//            System.out.println(handle.path());
-//            if (handle.exists()) { //could just look for default shader as well
-//                System.out.println(" from resources");
-//                GameAssetLoader.ALL_ASSETS.put(fileName, handle);
-//                return handle.readString().split("\n");
-//            }
-//            else {
-//                //loading from jar either the new way with resource location or old way from jar
-//                FileHandle classpathLocationFile = Gdx.files.classpath("assets/%s/%s".formatted(location.getNamespace(), location.getName()));
-//            }
-//
-//            else { //now depreceated way
-//                System.out.println("Old from jar");
-//                FileHandle fileFromJar = Gdx.files.internal("shaders/" + fileName);
-//                GameAssetLoader.ALL_ASSETS.put(fileName, fileFromJar);
-//                return fileFromJar.readString().split("\n");
-//            }
-            //System.out.println(handle.path());
-            //System.out.println(SaveLocation.getSaveFolderLocation())
-
+          return  GameAssetLoader.loadAsset(location).readString().split("\n");
         }
 
 
@@ -258,40 +198,40 @@ public class ShaderPackLoader {
         Array<GameShader> allShaders = GameShaderInterface.getShader();
 
 
-        ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader("chunk.vert.glsl", "chunk.frag.glsl");
+        ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk.vert.glsl"), Identifier.of("shaders/chunk.frag.glsl"));
         packShaders.add(allShaders.pop()); //i dont want to infinitly add shaders to allshaders
 
-        ChunkShader.WATER_BLOCK_SHADER = new ChunkShader("chunk-water.vert.glsl", "chunk-water.frag.glsl");
+        ChunkShader.WATER_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk-water.vert.glsl"), Identifier.of("shaders/chunk-water.frag.glsl"));
         packShaders.add(allShaders.pop());
 
-        SkyStarShader.SKY_STAR_SHADER = new SkyStarShader("sky-star.vert.glsl", "sky-star.frag.glsl");
+        SkyStarShader.SKY_STAR_SHADER = new SkyStarShader(Identifier.of("shaders/sky-star.vert.glsl"), Identifier.of("shaders/sky-star.frag.glsl"));
         packShaders.add(allShaders.pop());
 
-        SkyShader.SKY_SHADER =  new SkyShader("sky.vert.glsl", "sky.frag.glsl");
+        SkyShader.SKY_SHADER =  new SkyShader(Identifier.of("shaders/sky.vert.glsl"), Identifier.of("shaders/sky.frag.glsl"));
         packShaders.add(allShaders.pop());
 
-        EntityShader.ENTITY_SHADER =  new EntityShader("entity.vert.glsl", "entity.frag.glsl");
+        EntityShader.ENTITY_SHADER =  new EntityShader(Identifier.of("shaders/entity.vert.glsl"), Identifier.of("shaders/entity.frag.glsl"));
         packShaders.add(allShaders.pop());
 
         packShaders.add(allShaders.get(5)); //TODO
 
-        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader("item_shader.vert.glsl", "item_shader.frag.glsl");
+        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader(Identifier.of("shaders/item_shader.vert.glsl"), Identifier.of("shaders/item_shader.frag.glsl"));
         packShaders.add(allShaders.pop());
 
 
-        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader("final.vert.glsl", "final.frag.glsl",  false);
+        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"),  false);
         packShaders.add(allShaders.pop());
 
-        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader("blockEntity.vert.glsl", "blockEntity.frag.glsl");
+        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
         packShaders.add(allShaders.pop());
 
         //add the rest from the pack  shadow , shadowentity, ? composite0-8 as many as given
 
 
-        Shadows.SHADOW_CHUNK = new ChunkShader("shadowChunk.vert.glsl", "shadowChunk.frag.glsl");
+        Shadows.SHADOW_CHUNK = new ChunkShader(Identifier.of("shaders/shadowChunk.vert.glsl"), Identifier.of("shaders/shadowChunk.frag.glsl"));
         packShaders.add(allShaders.pop());
 
-        Shadows.SHADOW_ENTITY = new EntityShader("shadowEntity.vert.glsl", "shadowEntity.frag.glsl");
+        Shadows.SHADOW_ENTITY = new EntityShader(Identifier.of("shaders/shadowEntity.vert.glsl"), Identifier.of("shaders/shadowEntity.frag.glsl"));
         packShaders.add(allShaders.pop());
 
         //load composite and settings here maybe
@@ -300,11 +240,11 @@ public class ShaderPackLoader {
             Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/assets/shaders/" + selectedPack);
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 for (int i = 0; i < 8; i++) {
-                    String compositeName = "composite" + i;
+                    String compositeName = "shaders/composite" + i;
                     Path path = fs.getPath( compositeName + ".frag.glsl");
                     //will cause invalid pathexception if it doesnt exits
                     if (Files.exists(path)) {
-                        new FinalShader(compositeName + ".vert.glsl", compositeName + ".frag.glsl", true);
+                        new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
                         packShaders.add(allShaders.pop());
                     }
 
@@ -318,12 +258,12 @@ public class ShaderPackLoader {
             }
         } else {
             for (int i = 0; i < 8; i++ ) {
-                String compositeName = "composite" + i;
+                String compositeName = "shaders/composite" + i;
                 System.out.println(compositeName);
                 FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
 
                 if (compositeTest.exists()) {
-                    new FinalShader(compositeName + ".vert.glsl", compositeName + ".frag.glsl", true);
+                    new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
                     packShaders.add(allShaders.pop());
                 } else {
 

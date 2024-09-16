@@ -23,9 +23,7 @@ import java.util.Arrays;
 @Mixin(ChunkShader.class)
 public abstract class ChunkShaderMixin extends GameShader {
     private String shaderType;
-    public ChunkShaderMixin(String vertexShader, String fragmentShader) {
-        super(vertexShader, fragmentShader);
-    }
+
     //TODO i should add an entity shader mixin to add normals to entities
 
 

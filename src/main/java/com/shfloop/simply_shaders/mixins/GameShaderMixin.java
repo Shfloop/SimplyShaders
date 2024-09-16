@@ -9,6 +9,7 @@ import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.RuntimeInfo;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import finalforeach.cosmicreach.util.Identifier;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,8 +64,8 @@ public abstract class GameShaderMixin   {
 
 
     @Shadow
-    protected String vertexShaderFileName;
-    @Shadow String fragShaderFileName;
+    protected Identifier vertexShaderId;
+    @Shadow Identifier fragShaderId;
     @Overwrite
     public void reload() {
         GameShader tempThis = ((GameShader) (Object)this); //maybe this works
@@ -77,16 +78,16 @@ public abstract class GameShaderMixin   {
             ShaderProgram.prependVertexCode = "";
             ShaderProgram.prependFragmentCode = "";
         }
-        System.out.println("GAMESHADER NAME " + this.vertexShaderFileName);
-        String vert = loadShaderFile(this.vertexShaderFileName, SimplyShaders.newShaderType.VERT); //preprocess doesnt do anything atm
-        String frag = loadShaderFile(this.fragShaderFileName, SimplyShaders.newShaderType.FRAG);
-        tempThis.validateShader(this.vertexShaderFileName, vert, this.fragShaderFileName, frag);
+
+        String vert = loadShaderFile(this.vertexShaderId, SimplyShaders.newShaderType.VERT); //preprocess doesnt do anything atm
+        String frag = loadShaderFile(this.fragShaderId, SimplyShaders.newShaderType.FRAG);
+        tempThis.validateShader(this.vertexShaderId, vert, this.fragShaderId, frag);
         ShaderProgram.pedantic = true;
         tempThis.shader = new ShaderProgram(vert, frag);
-        System.out.println("Compiling shader(" + this.vertexShaderFileName + ", " + this.fragShaderFileName + ")...");
+        System.out.println("Compiling shader(" + this.vertexShaderId + ", " + this.fragShaderId + ")...");
         if (!tempThis.shader.isCompiled()) {
             String log = tempThis.shader.getLog();
-            throw new RuntimeException(this.getClass().getSimpleName() + " is not compiled!\n" + log);
+            throw new RuntimeException(this.getClass().getSimpleName() + " is not compiled!\nShader files: " + this.vertexShaderId + ", " + this.fragShaderId + "\n" + log);
         } else {
             for(String u : tempThis.shader.getUniforms()) {
                 if (u.contains(".")) {
@@ -110,14 +111,15 @@ public abstract class GameShaderMixin   {
 
     //adding field to each GameShader
     private int[] shaderDrawBuffers;
-    private String loadShaderFile(String shaderName, SimplyShaders.newShaderType shaderType) {
+    private String loadShaderFile(Identifier shaderId, SimplyShaders.newShaderType shaderType) {
        // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //
-        String[] rawShaderLines = ShaderPackLoader.loadShader( shaderName);
+        String[] rawShaderLines = ShaderPackLoader.loadShader( shaderId);
         StringBuilder sb = new StringBuilder();
         String version = "";
-        String define = shaderName.replaceAll("[-/. ()]", "_");
+        String define = shaderId.getName().replaceAll("[-/. ()]", "_");
         sb.append("#ifndef " + define + "\n");
         sb.append("#define " + define + "\n");
+
         boolean foundDrawBuffer = false;
         for(String shaderLine : rawShaderLines) {
             String trimmed = shaderLine.trim(); // Fix CRLF causing crashes
@@ -136,7 +138,8 @@ public abstract class GameShaderMixin   {
             } else if (trimmed.startsWith("#import \"") && trimmed.endsWith("\"")) {
                 String importedShaderName = trimmed.replaceFirst("#import \"", "").replace("\\", "/");
                 importedShaderName = importedShaderName.substring(0, importedShaderName.length() - 1);
-                sb.append(loadShaderFile(importedShaderName, SimplyShaders.newShaderType.IMPORTED) + "\n");
+                Identifier importedId = Identifier.of(importedShaderName);
+                sb.append(loadShaderFile(importedId, SimplyShaders.newShaderType.IMPORTED) + "\n");
             } else if (trimmed.startsWith("/*") && trimmed.endsWith("*/")) {
                foundDrawBuffer = findDrawBuffers(trimmed);
             }else {
