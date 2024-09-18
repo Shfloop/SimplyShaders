@@ -52,6 +52,7 @@ public class FinalShader extends GameShader {
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
         if (Shadows.initalized) {
             texNum= this.bindOptionalTextureI("shadowMap", Shadows.shadow_map.getDepthMapTexture().id, texNum);
+            this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);
         }
 
         Sky sky = Sky.currentSky;
