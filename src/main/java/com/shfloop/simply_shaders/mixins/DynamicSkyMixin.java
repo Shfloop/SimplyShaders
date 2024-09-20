@@ -1,5 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.shfloop.simply_shaders.DynamicSkyInterface;
 import com.shfloop.simply_shaders.Shadows;
@@ -42,9 +44,13 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 //            if (i < (lastUpdateTime + UPDATES_PER_ROTATION) ) {
 //                return;
 //            }
+            Vector3 norSunVector = sunDirection.cpy();
+            norSunVector.nor();
+
+
 
             lastUpdateTime = i;
-            Shadows.getCamera().direction.set(new Vector3(sunDirection.x * -1 , sunDirection.y * -1, sunDirection.z * -1));
+            Shadows.getCamera().direction.set(new Vector3(norSunVector.x * -1 , norSunVector.y * -1, norSunVector.z * -1));
             Shadows.updateCenteredCamera(true);
 
 

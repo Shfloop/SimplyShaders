@@ -103,10 +103,10 @@ public class ShaderPackLoader {
         Sky.currentSky = temp;
         SkyInterface.getSkies().put("base:dynamic_sky", temp);
     }
-    public static void changeItemShader() { // i think i can do this without remeshing everything
-    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) { // this just needs to go through held items
+    public static void changeItemShader() {
+    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) {
         if (model instanceof ItemModelBlock) {
-            ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER); //Maybe this works
+            ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER);
         } else if (model instanceof ItemThingModel) {
             ((ItemThingModelInterface)model).setProgram(ItemShader.DEFAULT_ITEM_SHADER);
         }
