@@ -189,12 +189,7 @@ public class ShaderPackLoader {
     //create the new array based onthe shaderpack folder
     //
     private static void initShaderPack(Array<GameShader> packShaders) throws IOException {
-        ///this is stupid but idk what else to do
-        // i need to create a new array whena shaderpack is switched
-        //ill have 3 arrays of shaders
-        //default which i keep having to pop
-        //shaders 1
-        //and then shadesr 2 which will only be used when switching between shaders packs so the world doesnt crash on reload
+
         Array<GameShader> allShaders = GameShaderInterface.getShader();
 
 

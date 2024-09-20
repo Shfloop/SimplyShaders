@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.math.Vector3;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
+import finalforeach.cosmicreach.chat.Chat;
+import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
@@ -64,8 +66,18 @@ public class Shadows {
     public static void turnShadowsOn()  {
         System.out.println("Turning Shaders On");
 
+        try {
+            ShaderPackLoader.switchToShaderPack();
+        } catch (RuntimeException e) {
 
-        ShaderPackLoader.switchToShaderPack();
+            ShaderPackLoader.switchToDefaultPack();
+            //System.out.println(e.getMessage());
+            Chat.MAIN_CHAT.sendMessage(InGame.world, InGame.getLocalPlayer(), null, e.getMessage());
+            Shadows.shaders_on = false;
+            initalized = false;
+            return;
+        }
+
 
 
         //TODO add other shaders
