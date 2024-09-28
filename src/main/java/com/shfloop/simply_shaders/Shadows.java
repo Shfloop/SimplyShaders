@@ -135,7 +135,7 @@ public class Shadows {
 //        }
 
 
-        if(dist_traveled > 2.0) {
+        if(dist_traveled > 2.0) { //look at a another way to do this iris seems to calc when crossing block borders
             lastCameraPos = lastUsedCameraPos.cpy();
             Shadows.sunCamera.position.set(lastCameraPos);
             Shadows.sunCamera.update();
