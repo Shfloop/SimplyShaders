@@ -1,73 +1,82 @@
 plugins {
-    id "application"
+    id "java"
+    id "cosmicloom"
     id "maven-publish"
 }
 
-repositories {
-    ivy {
-        name "Cosmic Reach"
-        url "https://github.com/CRModders/CosmicArchive/raw/main/versions/pre-alpha/" //add versions/pre-alpha/ to teh end 
-        patternLayout {
-            artifact "/Cosmic Reach-[revision].jar"
-        }
-        // This is required in Gradle 6.0+ as metadata file (ivy.xml) is mandatory
-        metadataSources {
-            artifact()
-        }
-
-        content {
-            includeGroup "finalforeach"
-        }
-    }
-
-    maven {
-        name "crmReleases"
-        url "https://maven.crmodders.dev/releases"
-    }
-
-    maven {
-        name "JitPack"
-        url "https://jitpack.io"
-    }
-    maven {
-        name "Quilt"
-        url "https://maven.quiltmc.org/repository/release"
-    }
-    maven {
-        name "Fabric"
-        url "https://maven.fabricmc.net/"
-    }
-    maven {
-        name "Sponge"
-        url "https://repo.spongepowered.org/maven/"
-    }
-
-    mavenCentral()
+loom {
+    accessWidenerPath = file("src/main/resources/simply_shaders.accesswidener")
 }
 
+//repositories {
+//    ivy {
+//        name "Cosmic Reach"
+//        url "https://github.com/CRModders/CosmicArchive/raw/main/versions/pre-alpha/" //add versions/pre-alpha/ to teh end
+//        patternLayout {
+//            artifact "/Cosmic Reach-[revision].jar"
+//        }
+//        // This is required in Gradle 6.0+ as metadata file (ivy.xml) is mandatory
+//        metadataSources {
+//            artifact()
+//        }
+//
+//        content {
+//            includeGroup "finalforeach"
+//        }
+//    }
+//
+//    maven {
+//        name "crmReleases"
+//        url "https://maven.crmodders.dev/releases"
+//    }
+//
+//    maven {
+//        name "JitPack"
+//        url "https://jitpack.io"
+//    }
+//    maven {
+//        name "Quilt"
+//        url "https://maven.quiltmc.org/repository/release"
+//    }
+//    maven {
+//        name "Fabric"
+//        url "https://maven.fabricmc.net/"
+//    }
+//    maven {
+//        name "Sponge"
+//        url "https://repo.spongepowered.org/maven/"
+//    }
+//
+//    mavenCentral()
+//}
 
-configurations {
-    cosmicreach // Config to provide the Cosmic Reach project
-    compileOnly.extendsFrom(cosmicreach) // Allows cosmic reach to be used in the codebase
 
-    internal { // Allows to include something without it being in the maven (recommended to be used when including mods)
-        visible = false
-        canBeConsumed = false
-        canBeResolved = false
-    }
-    compileClasspath.extendsFrom(internal)
-    runtimeClasspath.extendsFrom(internal)
-    testCompileClasspath.extendsFrom(internal)
-    testRuntimeClasspath.extendsFrom(internal)
-}
+//configurations {
+//    cosmicreach // Config to provide the Cosmic Reach project
+//    compileOnly.extendsFrom(cosmicreach) // Allows cosmic reach to be used in the codebase
+//
+//    internal { // Allows to include something without it being in the maven (recommended to be used when including mods)
+//        visible = false
+//        canBeConsumed = false
+//        canBeResolved = false
+//    }
+//    compileClasspath.extendsFrom(internal)
+//    runtimeClasspath.extendsFrom(internal)
+//    testCompileClasspath.extendsFrom(internal)
+//    testRuntimeClasspath.extendsFrom(internal)
+//}
 
 
 dependencies {
     // Cosmic Reach jar
-    cosmicreach "finalforeach:cosmicreach:${cosmic_reach_version}"
+    //cosmicreach "finalforeach:cosmicreach:${cosmic_reach_version}"
 
     // Cosmic Quilt
-    internal "dev.crmodders:cosmicquilt:${cosmic_quilt_version}"
+   // internal "dev.crmodders:cosmicquilt:${cosmic_quilt_version}"
+    //internal "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
+    cosmicReach(loom.getCosmicReach(cosmic_reach_version))
+
+    modImplementation(loom.getCosmicQuilt(cosmic_quilt_version))
     // Modmenu
 //    internal "dev.crmodders:modmenu:${modmenu_version}"
 
@@ -99,27 +108,27 @@ processResources {
 }
 
 
-application {
-    // As Quilt is our loader, use its main class at:
-    mainClass = "org.quiltmc.loader.impl.launch.knot.KnotClient"
-}
+//application {
+//    // As Quilt is our loader, use its main class at:
+//    mainClass = "dev.crmodders.cosmicquilt.loader.knot.KnotClient"
+//}
 
 
-applicationDefaultJvmArgs = [
-        "-Dloader.development=true", // Allows stuff to be found through the classpath
-        "-Dloader.gameJarPath=" + configurations.cosmicreach.asPath, // Defines path to Cosmic Reach
-]
+//applicationDefaultJvmArgs = [
+//        "-Dloader.development=true", // Allows stuff to be found through the classpath
+//        "-Dloader.gameJarPath=" + configurations.cosmicreach.asPath, // Defines path to Cosmic Reach
+//]
 
-run {
-    // To run this project in the game, depend on the creation of jar task
-    dependsOn "jar"
-
-    // Change the run directory
-    File runningDir = new File("run/")
-    if (!runningDir.exists())
-        runningDir.mkdirs()
-    tasks.run.workingDir = runningDir
-}
+//run {
+//    // To run this project in the game, depend on the creation of jar task
+//    dependsOn "jar"
+//
+//    // Change the run directory
+//    File runningDir = new File("run/")
+//    if (!runningDir.exists())
+//        runningDir.mkdirs()
+//    tasks.run.workingDir = runningDir
+//}
 
 
 

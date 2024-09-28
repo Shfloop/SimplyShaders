@@ -24,7 +24,11 @@
     "InGameInterface",
     "EntityModelInstanceInterface",
     "ItemThingModelMixin",
-    "ItemThingModelInterface"
+    "ItemThingModelInterface",
+    "BlockModelJsonCuboidMixin",
+    "BlockModelJsonMixin",
+    "BlockMixin",
+    "BlockStateMixin"
 
 
   ],
