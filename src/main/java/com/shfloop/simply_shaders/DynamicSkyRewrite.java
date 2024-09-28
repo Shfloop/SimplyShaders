@@ -116,7 +116,8 @@ public class DynamicSkyRewrite extends Sky {
                 if (Shadows.lastUsedCameraPos != null) { //feel bad doing this but easy fix
                    //TODO this should really just be a method input
                     Shadows.getCamera().direction.set(new Vector3(this.sunDirection.x * -1 , this.sunDirection.y * -1, this.sunDirection.z * -1));
-                    Shadows.updateCenteredCamera(true);
+                    Shadows.getCamera().update();
+                    //Shadows.updateCenteredCamera();
 
                 }
 

@@ -49,8 +49,8 @@ public class Shadows {
         //the gl viewport should be whatever the texture size is but i think the camera viewport should be whatever the shadow distance is so default like 256
         //not sure what viewport size i should be using
         sunCamera =  new OrthographicCamera(256, 256); // should change this to be initialized on the player instead
-        sunCamera.near = 0.05F;
-        sunCamera.far = 2000.0F;
+        sunCamera.near = -256.0f; //NEGATIVE NEAR PLANE!!!!!! THAT'S HOW I GET GOOD SHADOWS
+        sunCamera.far =256.0f;
 
         //calcSunDirection();
     }
@@ -122,7 +122,7 @@ public class Shadows {
 
         return sunCamera;
     }
-    public static void updateCenteredCamera(boolean forceUpdate) { // can just be called every render
+    public static void updateCenteredCamera() { // can just be called every render
         if (lastUsedCameraPos == null) {
             return;
         }
@@ -130,31 +130,40 @@ public class Shadows {
         Vector3 player_center = lastUsedCameraPos.cpy();
 
         double dist_traveled =  Math.sqrt((lastCameraPos.x - player_center.x) * (lastCameraPos.x - player_center.x) + (lastCameraPos.y - player_center.y) * (lastCameraPos.y - player_center.y) + (lastCameraPos.z - player_center.z) * (lastCameraPos.z - player_center.z));
-        if (!forceUpdate && dist_traveled < 3.0) { //three blocks is better
-            return; // if the player hasnt traveled far enough from last sun camera pos than return early so no update happens
-        }
+//        if (!forceUpdate && dist_traveled < 3.0) { //three blocks is better
+//            return; // if the player hasnt traveled far enough from last sun camera pos than return early so no update happens
+//        }
 
-        lastCameraPos = lastUsedCameraPos.cpy();
+
+        if(dist_traveled > 2.0) {
+            lastCameraPos = lastUsedCameraPos.cpy();
+            Shadows.sunCamera.position.set(lastCameraPos);
+            Shadows.sunCamera.update();
+
+        }
+         //probably move this somewhere else but its fine here
+
         //System.out.println("UPDATE CAMERA CENTER");
         //im fairly confident this will make sun camera look at center of player/camera
        // Shadows.sunCamera.viewportHeight = 400;
         //Shadows.sunCamera.viewportWidth =400; // redundant but ill see what it does
 
 
-        Vector3 old_direction = Shadows.sunCamera.direction.cpy();
+        //Vector3 old_direction = Shadows.sunCamera.direction.cpy();
         //IS THIS REALLY IT???
-        final float SUN_DISTANCE = 000f; // the direction is opposite of what i want so this fixes it
-        Shadows.sunCamera.position.x = player_center.x + old_direction.x * SUN_DISTANCE;
-        Shadows.sunCamera.position.y = player_center.y + old_direction.y * SUN_DISTANCE;
-        Shadows.sunCamera.position.z = player_center.z + old_direction.z * SUN_DISTANCE;
-        Vector3 sun_pos = Shadows.sunCamera.position.cpy();
-        double dist_to_player = Math.sqrt((sun_pos.x - player_center.x) * (sun_pos.x - player_center.x) + (sun_pos.y - player_center.y) * (sun_pos.y - player_center.y) + (sun_pos.z - player_center.z) * (sun_pos.z - player_center.z));
-        Shadows.sunCamera.far = (float)dist_to_player + 256.0f;
-        Shadows.sunCamera.near = (float)dist_to_player - 256.0f;
+//        final float SUN_DISTANCE = 000f; // the direction is opposite of what i want so this fixes it
+//        Shadows.sunCamera.position.x = player_center.x + old_direction.x * SUN_DISTANCE;
+//        Shadows.sunCamera.position.y = player_center.y + old_direction.y * SUN_DISTANCE;
+//        Shadows.sunCamera.position.z = player_center.z + old_direction.z * SUN_DISTANCE;
+
+//        Vector3 sun_pos = Shadows.sunCamera.position.cpy();
+//        double dist_to_player = Math.sqrt((sun_pos.x - player_center.x) * (sun_pos.x - player_center.x) + (sun_pos.y - player_center.y) * (sun_pos.y - player_center.y) + (sun_pos.z - player_center.z) * (sun_pos.z - player_center.z));
+//        Shadows.sunCamera.far = (float)dist_to_player + 256.0f;
+//        Shadows.sunCamera.near = (float)dist_to_player - 256.0f;
 
 
 
-        Shadows.sunCamera.update();
+
     }
     public static void calcSunDirection() {
 //        float temp_time = time_of_day - 960  ;

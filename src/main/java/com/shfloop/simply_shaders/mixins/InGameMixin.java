@@ -99,7 +99,7 @@ public abstract class InGameMixin extends GameState {
             }
 
             Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
-            Shadows.updateCenteredCamera(false);
+            Shadows.updateCenteredCamera();
 
 
 

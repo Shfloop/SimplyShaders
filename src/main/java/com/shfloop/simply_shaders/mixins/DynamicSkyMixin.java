@@ -51,7 +51,8 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 
             lastUpdateTime = i;
             Shadows.getCamera().direction.set(new Vector3(norSunVector.x * -1 , norSunVector.y * -1, norSunVector.z * -1));
-            Shadows.updateCenteredCamera(true);
+            Shadows.getCamera().update();
+            //Shadows.updateCenteredCamera(true);
 
 
         }
