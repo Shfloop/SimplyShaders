@@ -4,12 +4,15 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.shfloop.simply_shaders.mixins.GameShaderInterface;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.world.Sky;
 
@@ -25,6 +28,7 @@ public class Shadows {
     public static boolean updateTime = false;
     public static int cycleLength = 38400;
     public static boolean doDaylightCycle = true;
+
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
@@ -71,8 +75,10 @@ public class Shadows {
         } catch (RuntimeException e) {
 
             ShaderPackLoader.switchToDefaultPack();
-            //System.out.println(e.getMessage());
-            Chat.MAIN_CHAT.sendMessage(InGame.world, InGame.getLocalPlayer(), null, e.getMessage());
+            System.out.println("ERROR in Shader pack loading");
+            Chat.MAIN_CHAT.sendMessage(InGame.world, InGame.getLocalPlayer(), null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
+            //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
+            GameShaderInterface.getShader().pop();
             Shadows.shaders_on = false;
             initalized = false;
             return;
@@ -136,7 +142,8 @@ public class Shadows {
 
 
         Vector3 old_direction = Shadows.sunCamera.direction.cpy();
-        final float SUN_DISTANCE = -2000f; // the direction is opposite of what i want so this fixes it
+        //IS THIS REALLY IT???
+        final float SUN_DISTANCE = 000f; // the direction is opposite of what i want so this fixes it
         Shadows.sunCamera.position.x = player_center.x + old_direction.x * SUN_DISTANCE;
         Shadows.sunCamera.position.y = player_center.y + old_direction.y * SUN_DISTANCE;
         Shadows.sunCamera.position.z = player_center.z + old_direction.z * SUN_DISTANCE;

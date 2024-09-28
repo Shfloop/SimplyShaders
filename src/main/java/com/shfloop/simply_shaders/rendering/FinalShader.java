@@ -65,6 +65,9 @@ public class FinalShader extends GameShader {
         //this.bindOptionalInt("renderNear", GraphicsSettings.renderDistanceInChunks.getValue() * 32);
         this.bindOptionalMatrix4("u_proj", worldCamera.projection);
         this.bindOptionalMatrix4("u_view", worldCamera.view);
+       // this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+
+
 
         //Todo add near and far for render distance dependent fog
 
