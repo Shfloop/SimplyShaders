@@ -1,22 +1,14 @@
 package com.shfloop.simply_shaders;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
-import finalforeach.cosmicreach.rendering.shaders.GameShader;
-import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.world.Sky;
+import java.util.HashMap;
 
-import java.io.IOException;
 
 public class Shadows {
     public static  ChunkShader BLOCK_ENTITY_SHADER  ;
@@ -29,6 +21,9 @@ public class Shadows {
     public static int cycleLength = 38400;
     public static boolean doDaylightCycle = true;
 
+    public static float shaderBlockGroupId;
+
+    public static HashMap<String, Integer > blockPropertiesIDMap = new HashMap<String, Integer>();
 
     private static OrthographicCamera sunCamera;
     public static ShadowMap shadow_map;
@@ -51,6 +46,7 @@ public class Shadows {
         sunCamera =  new OrthographicCamera(256, 256); // should change this to be initialized on the player instead
         sunCamera.near = -256.0f; //NEGATIVE NEAR PLANE!!!!!! THAT'S HOW I GET GOOD SHADOWS
         sunCamera.far =256.0f;
+        blockPropertiesIDMap.put("base:leaves_poplar", 32);
 
         //calcSunDirection();
     }

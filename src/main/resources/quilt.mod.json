@@ -40,5 +40,6 @@
     ]
   },
 
-  "mixin": "simply_shaders.mixins.json"
+  "mixin": "simply_shaders.mixins.json",
+  "access_widener": "simply_shaders.accesswidener"
 }

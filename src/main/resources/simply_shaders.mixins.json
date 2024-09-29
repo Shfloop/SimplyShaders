@@ -26,8 +26,6 @@
     "ItemThingModelMixin",
     "ItemThingModelInterface",
     "BlockModelJsonCuboidMixin",
-    "BlockModelJsonMixin",
-    "BlockMixin",
     "BlockStateMixin"
 
 
