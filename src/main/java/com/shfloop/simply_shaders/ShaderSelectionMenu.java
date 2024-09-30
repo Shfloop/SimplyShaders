@@ -72,7 +72,7 @@ public class ShaderSelectionMenu extends GameState{
             this.previousState = previousState;
 
 
-            final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders";
+            final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks";
             final File shaderDir = new File(shaderRoot);
             shaderDir.mkdirs();
             String[] allShaderFolders = shaderDir.list();
@@ -247,7 +247,7 @@ public class ShaderSelectionMenu extends GameState{
 
                     try {
                         String saveFolderLocation = SaveLocation.getSaveFolderLocation();
-                        File  saveFolder = new File(saveFolderLocation + "/mods/assets/shaders");
+                        File  saveFolder = new File(saveFolderLocation + "/mods/shaderpacks");
                         saveFolder.mkdirs(); //they should already be made once the mod initializes but whatevs
                         SaveLocation.OpenFolderWithFileManager(saveFolder);
                     } catch (IOException var2) {

@@ -41,8 +41,6 @@ public class ShaderPackLoader {
     public static String selectedPack;
     public static boolean isZipPack = false;
     public static Array<GameShader> shader1;
-    public static Array<GameShader> shader2;
-    private static boolean useArray2 = false;
 
 
     //also want this to init the shaders
@@ -72,7 +70,6 @@ public class ShaderPackLoader {
     public static void switchToDefaultPack() {
         shaderPackOn = false;
         isZipPack = false;
-        useArray2 = false;
         setDefaultShaders();
         remeshAllRegions();
         changeItemShader();
@@ -127,45 +124,42 @@ public class ShaderPackLoader {
 
     }
 
-    //not sure what it does if i call .split
+
     // probably be better to use an inputstream of some kind
     public static String[] loadShader(Identifier location) { //wil just be the shader name ex chunk.frag.glsl no folders
-        //if shaderpack on then it should be base location so i basicaaly just need to replace the namespace with folder name
-        // if its loading a pack it will start with "/shaders/"
-        // else im going to be loading hte jar shader
-        if (ShaderPackLoader.shaderPackOn) { //it true needs to load from mods assets shaders/ packname/ program/"shader"
-            //loading a custom pack shader
-            //need to check if its a zip folder
-            //shaders will be in program folder
-            //take the current selected file handle - i need to do something seperate if its a zip[ folder
 
-            System.out.println(location.getName());
-            //TOdo make an assets map so packs dont keep loading the same common files that already have been found
-            if (!isZipPack) { // load from regular gdx file absolute
-                //cant use load asset caues it will add it to the all assets which would interfere with getting vanillal stuff
-              FileHandle unzippedFile = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders/" + ShaderPackLoader.selectedPack +  "/" + location.getName()); //ive excluded /shaders when creating shaderpack shaders
-                System.out.println(unzippedFile);
-              return unzippedFile.readString().split("\n");
-            } else {
-                //TODO replace with program
-                Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/assets/shaders/" + selectedPack);
-                try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
-                    Path path = fs.getPath(location.getName());
-                        System.out.println(path);
-                    return Files.readString(path).split("\n");
-                } catch (InvalidPathException e) {
-                    //crash for now but FIXME
-                    throw new RuntimeException("FILE doesnt exist in zip");
-                } catch (IOException e) {
-                    throw new RuntimeException("Could not read the file in zip");
+        if (ShaderPackLoader.shaderPackOn) {
 
-                }
-            }
+
+            Identifier temp = Identifier.of("shaderpacks/" + selectedPack, location.getName());
+            //in case of shaders from pack for now i dont have defaulting so ill just crash
+            return loadFromZipOrUnzipShaderPack(temp);
+         //TOdo make an assets map so packs dont keep loading the same common files that already have been found
+
         } else {
           return  GameAssetLoader.loadAsset(location).readString().split("\n");
         }
 
 
+    }
+    public static String[] loadFromZipOrUnzipShaderPack(Identifier location) throws InvalidPathException {
+        if (isZipPack) {
+            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), location.getNamespace()); // in case of shaderpacks namespace will be shaderpacks/PACKNAME
+            try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
+                Path path = fs.getPath(location.getName());
+                System.out.println(path);
+                return Files.readString(path).split("\n");
+            }  catch (IOException e) {
+                throw new RuntimeException("Could not read the file in zip");
+
+            }
+        } else {
+            FileHandle handle = GameAssetLoader.loadAsset(location);
+            if (handle == null) {
+                throw new InvalidPathException(location.toPath(), " File Not Found"); //Game Asset Loader already prints error so i can just catch and continue
+            }
+           return handle.readString().split("\n");
+        }
     }
 
 
@@ -231,8 +225,8 @@ public class ShaderPackLoader {
 
         //load composite and settings here maybe
         //composite shaders start at 9
-        if (isZipPack) {
-            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/assets/shaders/" + selectedPack);
+        if (isZipPack) { //TODO redo this so the pack can specify which composite it wants to use so i can enable /disable them without removing them from pack
+            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "shaderpacks/" + selectedPack);
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 for (int i = 0; i < 8; i++) {
                     String compositeName = "shaders/composite" + i;
@@ -255,7 +249,7 @@ public class ShaderPackLoader {
             for (int i = 0; i < 8; i++ ) {
                 String compositeName = "shaders/composite" + i;
                 System.out.println(compositeName);
-                FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/assets/shaders/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
+                FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "shaderpacks/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
 
                 if (compositeTest.exists()) {
                     new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
