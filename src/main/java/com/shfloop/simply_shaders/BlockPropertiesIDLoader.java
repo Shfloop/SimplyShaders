@@ -43,7 +43,6 @@ public class BlockPropertiesIDLoader {
 
             }
             items[i] = (float) ((currentDefaultID << 8) | (shaderGroupID & 255));
-            System.out.print(items[i]);
         }
 
     }
