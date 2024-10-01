@@ -3,6 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
@@ -55,7 +56,7 @@ public abstract class InGameMixin extends GameState {
 //                Shadows.cleanup();
 //            }
 //        }
-
+        Shadows.lastUsedCameraPos = new Vector3(0,0,0);
     }
 
     @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at =@At("TAIL"))
@@ -83,6 +84,10 @@ public abstract class InGameMixin extends GameState {
             SimplyShaders.buffer = null;
 
     }
+    private final float[] temporarySkyColor = {0,0,0,0};
+    private final float[] TRANSPARENT = {0,0,0,0};
+    private final float[] WHITE = {1.0f,1.0f,1.0f,1.0f};
+
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
     private void injectInGameRender(CallbackInfo ci, @Local Zone playerZone) {
         //this is causing fps to drop by 1/3
@@ -98,10 +103,14 @@ public abstract class InGameMixin extends GameState {
                 //ChunkShader.reloadAllShaders();
             }
 
-            Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
+            Shadows.lastUsedCameraPos.set(rawWorldCamera.position);
+
+
+
+            //Shadows.lastUsedCameraPos = rawWorldCamera.position.cpy();
+
+
             Shadows.updateCenteredCamera();
-
-
 
             Gdx.gl.glBindFramebuffer(36160, Shadows.shadow_map.getDepthMapFbo());
             Gdx.gl.glViewport(0,0, Shadows.shadow_map.getDepthMapTexture().getWidth(), Shadows.shadow_map.getDepthMapTexture().getHeight());
@@ -153,19 +162,21 @@ public abstract class InGameMixin extends GameState {
         //i need to set lastdrawbuffers or else performance tanks
 
         //Sky Should not be drawn to other color attachments only number 0
-        final float[] skyColor = {sky.currentSkyColor.r, sky.currentSkyColor.g, sky.currentSkyColor.b, sky.currentSkyColor.a};
-        GL32.glClearBufferfv(GL32.GL_COLOR, 0, skyColor);
+        temporarySkyColor[0] = sky.currentSkyColor.r;
+        temporarySkyColor[1] = sky.currentSkyColor.g;
+        temporarySkyColor[2] = sky.currentSkyColor.b;
+        temporarySkyColor[3] = sky.currentSkyColor.a;
 
-        final float[] white = {1.0f,1.0f,1.0f,1.0f};
-        GL32.glClearBufferfv(GL32.GL_DEPTH, 0, white);
-        GL32.glClearBufferfv(GL32.GL_COLOR,  1, white);
+        GL32.glClearBufferfv(GL32.GL_COLOR, 0, temporarySkyColor);
 
-       final float[] transparent = {0,0,0,0};
+        GL32.glClearBufferfv(GL32.GL_DEPTH, 0, WHITE);
+        GL32.glClearBufferfv(GL32.GL_COLOR,  1, WHITE);
+
 
 
 
        for (int i =2; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
-           GL32.glClearBufferfv(GL32.GL_COLOR,  i, transparent);
+           GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
        }
 
         //System.out.println("RENDERSTART");

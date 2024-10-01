@@ -17,7 +17,7 @@ public class Shadows {
     public static  ChunkShader BLOCK_ENTITY_SHADER  ;
     public static ChunkShader SHADOW_CHUNK;
     public static EntityShader SHADOW_ENTITY;
-    public static Vector3 lastUsedCameraPos;
+    public static Vector3 lastUsedCameraPos ;
     public static boolean shaders_on = false;
     public static int time_of_day = 0;
     public static boolean updateTime = false;
@@ -114,18 +114,17 @@ public class Shadows {
         return sunCamera;
     }
     public static void updateCenteredCamera() { // can just be called every render
-        if (lastUsedCameraPos == null) {
-            return;
-        }
 
-        Vector3 player_center = lastUsedCameraPos.cpy();
 
-        double dist_traveled =  Math.sqrt((lastCameraPos.x - player_center.x) * (lastCameraPos.x - player_center.x) + (lastCameraPos.y - player_center.y) * (lastCameraPos.y - player_center.y) + (lastCameraPos.z - player_center.z) * (lastCameraPos.z - player_center.z));
+       // Vector3 player_center = lastUsedCameraPos.cpy();
+        float dist_traveled = lastUsedCameraPos.dst(lastCameraPos);
+        //double dist_traveled =  Math.sqrt((lastCameraPos.x - player_center.x) * (lastCameraPos.x - player_center.x) + (lastCameraPos.y - player_center.y) * (lastCameraPos.y - player_center.y) + (lastCameraPos.z - player_center.z) * (lastCameraPos.z - player_center.z));
 
 
 
         if(dist_traveled > 2.0) { //look at a another way to do this iris seems to calc when crossing block borders
-            lastCameraPos = lastUsedCameraPos.cpy();
+            //lastCameraPos = lastUsedCameraPos.cpy();
+            lastCameraPos.set(lastUsedCameraPos);
             Shadows.sunCamera.position.set(lastCameraPos);
             Shadows.sunCamera.update();
 

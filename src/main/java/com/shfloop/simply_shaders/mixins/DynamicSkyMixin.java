@@ -34,10 +34,15 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 
         if (Shadows.shaders_on) {
             sunDirection.rotate(45f, 1.0f,0.0f,0.0f);
-            Vector3 norSunVector = sunDirection.cpy();
-            norSunVector.nor();
-            lastUpdateTime = i;
-            Shadows.getCamera().direction.set(new Vector3(norSunVector.x * -1 , norSunVector.y * -1, norSunVector.z * -1));
+            Vector3 cameraDirection = Shadows.getCamera().direction;
+            cameraDirection.x = sunDirection.x * -1;
+            cameraDirection.y = sunDirection.y * -1;
+            cameraDirection.z = sunDirection.z * -1;
+            cameraDirection.nor();
+//            Vector3 norSunVector = sunDirection.cpy();
+//            norSunVector.nor();
+//            lastUpdateTime = i;
+//            Shadows.getCamera().direction.set(new Vector3(norSunVector.x * -1 , norSunVector.y * -1, norSunVector.z * -1));
             Shadows.getCamera().update();
         }
     }
