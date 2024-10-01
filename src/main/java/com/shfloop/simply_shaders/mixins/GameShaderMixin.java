@@ -34,18 +34,21 @@ public abstract class GameShaderMixin   {
         Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
 
     }
+    //TODO get rid of this overwrite
     @Overwrite
     public static void reloadAllShaders() {
-        System.out.println("Reloading all Shaders");
         if (ShaderPackLoader.shaderPackOn) {
-            for (GameShader shader: ShaderPackLoader.shader1) {
-                shader.reload();
-            }
-        } else {
-            for (GameShader shader: GameShaderInterface.getShader()) {
-                shader.reload();
-            }
+//            for (GameShader shader: ShaderPackLoader.shader1) {
+//                shader.reload();
+//            }
+            return;
+    }
+        System.out.println("Reloading all Shaders");
+
+        for (GameShader shader: GameShaderInterface.getShader()) {
+            shader.reload();
         }
+
         System.out.println("Reloaded all Shaders");
     }
 

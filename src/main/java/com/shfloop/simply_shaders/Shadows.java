@@ -47,11 +47,11 @@ public class Shadows {
     }
 
     public static void reloadShaders() { //dont need to call reload shaders because that happens after this gets called by chunkshader
-        BlockPropertiesIDLoader.updateChunkTexBuf();
         if (shaders_on) {
             cleanup();
             try {
                 turnShadowsOn();
+
             } catch (Exception e) {
 
                 throw new RuntimeException(e);

@@ -3,7 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.ObjectIntMap;
-import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.BlockPropertiesIDLoader;
 import com.shfloop.simply_shaders.TexBufferContainer;
 import finalforeach.cosmicreach.rendering.blockmodels.BlockModelJsonCuboid;
 
@@ -51,7 +51,7 @@ public abstract class BlockModelJsonCuboidMixin {
         myTmpFloats.floats[8] = vertPos.x;
         myTmpFloats.floats[9] = vertPos.y;
         myTmpFloats.floats[10] = vertPos.z;
-        myTmpFloats.floats[11] = Shadows.shaderBlockGroupId;
+        myTmpFloats.floats[11] = BlockPropertiesIDLoader.shaderBlockGroupId;
         int fIdx = myFloatsToIdx.get(myTmpFloats, -1);
         if (fIdx == -1) {
             fIdx = floats.size / TexBufferContainer.NUM_FLOATS_PER_FACE_UVTEXBUFF;
@@ -67,7 +67,8 @@ public abstract class BlockModelJsonCuboidMixin {
             floats.add(vertPos.x);
             floats.add(vertPos.y);
             floats.add(vertPos.z);
-            floats.add(Shadows.shaderBlockGroupId);
+            floats.add(BlockPropertiesIDLoader.shaderBlockGroupId);
+            //System.out.println(Shadows.shaderBlockGroupId);
         }
 
         return fIdx;

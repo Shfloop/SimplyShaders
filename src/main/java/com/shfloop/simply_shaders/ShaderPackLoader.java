@@ -51,6 +51,7 @@ public class ShaderPackLoader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        BlockPropertiesIDLoader.updateChunkTexBuf();
         //remesh?
         remeshAllRegions();
         remeashAllSkies();
@@ -132,6 +133,10 @@ public class ShaderPackLoader {
         }
 
 
+    }
+    public static String[] loadFromZipOrUnzipShaderPack(String fileName) throws  InvalidPathException {
+        Identifier location = Identifier.of("shaderpacks/" + selectedPack, fileName);
+       return loadFromZipOrUnzipShaderPack(location);
     }
     public static String[] loadFromZipOrUnzipShaderPack(Identifier location) throws InvalidPathException {
         if (isZipPack) {
@@ -217,7 +222,7 @@ public class ShaderPackLoader {
         //load composite and settings here maybe
         //composite shaders start at 9
         if (isZipPack) { //TODO redo this so the pack can specify which composite it wants to use so i can enable /disable them without removing them from pack
-            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "shaderpacks/" + selectedPack);
+            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), "/mods/shaderpacks/" + selectedPack);
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 for (int i = 0; i < 8; i++) {
                     String compositeName = "shaders/composite" + i;
@@ -226,6 +231,8 @@ public class ShaderPackLoader {
                     if (Files.exists(path)) {
                         new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
                         packShaders.add(allShaders.pop());
+                    } else {
+                        break;
                     }
 
                 }
@@ -240,7 +247,7 @@ public class ShaderPackLoader {
             for (int i = 0; i < 8; i++ ) {
                 String compositeName = "shaders/composite" + i;
                 System.out.println(compositeName);
-                FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "shaderpacks/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
+                FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
 
                 if (compositeTest.exists()) {
                     new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
