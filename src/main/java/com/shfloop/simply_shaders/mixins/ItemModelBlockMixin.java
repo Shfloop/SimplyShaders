@@ -30,11 +30,7 @@ public abstract class  ItemModelBlockMixin extends ItemModel {
     protected static Matrix4 tmpHeldMat4;
 
     //not sure why this doesnt work but
-//    @Redirect(method = "<init>", at = @At(value = "INVOKE_ASSIGN",
-//            target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;getShaderForBlockState(Lfinalforeach/cosmicreach/blocks/BlockState;)Lfinalforeach/cosmicreach/rendering/shaders/GameShader;"))
-//    private static GameShader redirectBlockEntityShader(BlockState b) {
-//        return Shadows.BLOCK_ENTITY_SHADER;
-//    }
+
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void replaceBlockEntityShader(CallbackInfo ci) {

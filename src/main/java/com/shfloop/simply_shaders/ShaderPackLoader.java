@@ -32,29 +32,20 @@ import java.nio.file.*;
 
 
 public class ShaderPackLoader {
-    //called from GameShaderMixin to load the shader based off shader selection (loaded from settings)
-    //needs to get the String of whatever file it gets
-    //im fine with returning a string because i only want to load shaderPacks
-    //can either be from GDx.classpath or Gdx.absolute (unzipped folder) or a zipped folder in mods/assets/shaders
-
     public static boolean shaderPackOn = false;
     public static String selectedPack;
     public static boolean isZipPack = false;
     public static Array<GameShader> shader1;
 
 
-    //also want this to init the shaders
-    //probably be easier to keep track of shader arrays here
-
     public static void switchToShaderPack() {
         //check if folder is zip pack
         isZipPack = selectedPack.endsWith(".zip");
 
         //should init shaderpack for new array
-       // useArray2 = shaderPackOn; //wont work cause shader 1 wont be used after we start using shader2
+
         shaderPackOn = true;
-       // initShaderPack(useArray2 ? shader2 : shader1); // if shaderpackon is true when switching it means we are switching from a shader pack so ive got to use shader2 so the game doesnt crash when remeshing
-        shader1 = new Array<>();
+       shader1 = new Array<>();
         try {
             initShaderPack(shader1);
         } catch (IOException e) {
@@ -126,7 +117,7 @@ public class ShaderPackLoader {
 
 
     // probably be better to use an inputstream of some kind
-    public static String[] loadShader(Identifier location) { //wil just be the shader name ex chunk.frag.glsl no folders
+    public static String[] loadShader(Identifier location) {
 
         if (ShaderPackLoader.shaderPackOn) {
 

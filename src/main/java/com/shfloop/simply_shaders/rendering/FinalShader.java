@@ -32,16 +32,7 @@ public class FinalShader extends GameShader {
         super.bind(worldCamera);
         int texNum= 0;
 
-        //this.bindOptionalTextureI("colorTex0", SimplyShaders.fbo.getTextureAttachments().get(0).getTextureObjectHandle(), texNum);
 
-
-
-
-//        texNum= this.bindOptionalTextureI("colorTex0", SimplyShaders.buffer.attachment0.getID(),texNum); //this should also change based on shader
-//        texNum= this.bindOptionalTextureI("colorTex1", SimplyShaders.buffer.attachment1.getID(),texNum);
-//        texNum= this.bindOptionalTextureI("colorTex2", SimplyShaders.buffer.attachment2.getID(),texNum);
-//        texNum= this.bindOptionalTextureI("colorTex3", SimplyShaders.buffer.attachment3.getID(),texNum);
-//        texNum= this.bindOptionalTextureI("colorTex4", SimplyShaders.buffer.attachment4.getID(),texNum);
         //may want to go back with set strings, not sure whats better
         for (BufferTexture tex: RenderFBO.renderTextures) {
             texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
@@ -69,12 +60,9 @@ public class FinalShader extends GameShader {
 
 
 
-        //Todo add near and far for render distance dependent fog
 
-//        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-//        Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, texId);
 
-                //this.bindOptionalInt(SimplyShaders.buffer.attachment0.getName(),texId);
+
     }
     private int bindOptionalTextureI(String uniform_name, int id,int texNum) {
         int u = this.shader.getUniformLocation(uniform_name);

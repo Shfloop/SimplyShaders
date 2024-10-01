@@ -84,29 +84,3 @@ public class RenderFBO {
 
 
 }
-//the framebuffer needs to be created and all textures need to be created 0-7
-//
-//then i need to go thorugh all the shaders (preferabbly after created but before its unbound) and bind optional the texture id to the shader so it can use it
-//default the shader will outColor to the first attachment of the framebuffer
-//so every shader can stay the same and than final just needs to take the first framebuffer attachment and show it to the actuall buffer
-//
-//
-//each time ht escreen resizsd i need to delete the framebuffer and attachments and recreate it (textures mught not be the saem ) so i need to gothrough each shader and bind optional the new textuer id
-//
-//so for final fsh and vsh just needds to take whatever textures it wants to and
-//
-//i would probably want to see how many textures the program is actually using so im not allocating 70MB of Vram to the textures when only a couple might be used
-
-/*
-i can create the renderbuffer whenever the shaders are done being created (InGame;Create())
-//i dont want to recreate the shaders everytime the the screen is resized
-//the framebuffer doesnt need to be recreated when shaders reload
-//after shaders init. anytime scrveern resized, but the static bindRenderTextures can be called after every shader reload
-so i  think i can create framebuffer when ingame creates and dispose when ingame disposed and than rereate it each time screen resizes
-
-
-
-
-it sounds like each textures is its own framebuffer?
-
- */
