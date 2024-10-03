@@ -2,14 +2,11 @@ package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -39,7 +36,7 @@ public class Shadows {
     static {
 
         sunCamera =  new OrthographicCamera(256, 256); // should change this to be initialized on the player instead
-        sunCamera.near = -256.0f;
+        sunCamera.near = -512.0f;
         sunCamera.far = 256.0f;
         blockPropertiesIDMap.put("base:leaves_poplar", 32);
 

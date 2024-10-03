@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -15,7 +14,6 @@ import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.world.Sky;
@@ -26,8 +24,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.io.IOException;
 
 @Mixin(InGame.class)
 public abstract class InGameMixin extends GameState {
@@ -122,6 +118,8 @@ public abstract class InGameMixin extends GameState {
             GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
 
             Gdx.gl.glDepthMask(true);
+            //Gdx.gl.glCullFace(GL20.GL_BACK);
+            Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
             for (Entity e : playerZone.allEntities) {
                 e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
