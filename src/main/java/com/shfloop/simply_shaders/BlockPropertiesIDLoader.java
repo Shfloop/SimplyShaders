@@ -52,17 +52,18 @@ public class BlockPropertiesIDLoader {
         }
 
         for (String block: line.split(" ")) {
-            if (block.contains("\\")) {
+            String trimmed = block.trim();
+            if (trimmed.contains("\\")) {
                 //add " \" and continue on next line
                 return true;
             } else {
-                if (shaderBlockIDMap.getOrDefault(block, -1) != -1) {
+                if (shaderBlockIDMap.getOrDefault(trimmed, -1) != -1) {
                     //means its a duplicate and the shader shouldnt continue
-                    throw new RuntimeException("Duplicate Block entry in block.properties: " + block);
+                    throw new RuntimeException("Duplicate Block entry in block.properties: " + trimmed);
                 }
                 //check if the block is an empty string or just space
-                if (!block.trim().isEmpty()) {
-                    shaderBlockIDMap.put(block, ID);
+                if (!trimmed.isEmpty()) {
+                    shaderBlockIDMap.put(trimmed, ID);
                 }
 
             }
