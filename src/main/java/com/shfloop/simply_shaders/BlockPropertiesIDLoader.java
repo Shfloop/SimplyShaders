@@ -26,7 +26,7 @@ public class BlockPropertiesIDLoader {
 
         shaderBlockIDMap = new HashMap<>(); // clear the hashmap each time pack is loaded
         //TODO the base game ChunkTexBufferis changed during base game aswell look into changin git at shader runtime
-        loadProperties("shaders/block.properties");
+        loadProperties("block.properties");
 
 
 
