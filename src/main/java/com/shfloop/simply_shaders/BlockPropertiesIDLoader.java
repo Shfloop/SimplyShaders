@@ -20,6 +20,7 @@ public class BlockPropertiesIDLoader {
     public static HashMap<String, Integer > baseGeneratedBlockIDMap = new HashMap<>();
     public static ArrayList<String> baseGeneratedBlockIDArray = new ArrayList<>();
     public static HashMap<String, Integer > shaderBlockIDMap = new HashMap<>();
+    public static boolean packEnableShadows = true;
 
 
     public static void updateChunkTexBuf() {
@@ -72,6 +73,7 @@ public class BlockPropertiesIDLoader {
     }
 
     public static void loadProperties(String filePath) {
+        packEnableShadows = false; //default to false if it cant find a pack.shadows
         try {
             String[] contents = ShaderPackLoader.loadFromZipOrUnzipShaderPack(filePath);
             //in the future i shold probably add compilation directives
@@ -100,6 +102,10 @@ public class BlockPropertiesIDLoader {
                         continueNextLine = true;
                         continue;
                     }
+                } else if (line.startsWith("pack.shadows")) {
+                    int blockIDEnd = line.indexOf('=');
+                    String test = line.substring(blockIDEnd + 1);
+                    packEnableShadows = test.trim().equals("true");
                 }
             }
         } catch (InvalidPathException e) {

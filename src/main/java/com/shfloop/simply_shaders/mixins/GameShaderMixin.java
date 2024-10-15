@@ -116,7 +116,7 @@ public abstract class GameShaderMixin   {
     private int[] shaderDrawBuffers;
     private String loadShaderFile(Identifier shaderId, SimplyShaders.newShaderType shaderType) {
        // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //
-        String[] rawShaderLines = ShaderPackLoader.loadShader( shaderId);
+        String[] rawShaderLines = ShaderPackLoader.loadShader( shaderId, ShaderPackLoader.shaderPackOn);
         StringBuilder sb = new StringBuilder();
         String version = "";
         String define = shaderId.getName().replaceAll("[-/. ()]", "_");

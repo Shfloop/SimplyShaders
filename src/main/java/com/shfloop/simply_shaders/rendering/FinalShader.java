@@ -25,7 +25,7 @@ public class FinalShader extends GameShader {
         this.isComposite = isComposite;
     }
     public static void initFinalShader() {
-        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(( Identifier.of("simply_shaders", "shaders/final.vert.glsl")), (Identifier.of("simply_shaders","shaders/final.frag.glsl")) ,  false);
+        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(( Identifier.of("shaders/final.vert.glsl")), (Identifier.of("shaders/final.frag.glsl")) ,  false);
 
     }
     public void bind(Camera worldCamera) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.shfloop.simply_shaders.BlockPropertiesIDLoader;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -107,30 +108,32 @@ public abstract class InGameMixin extends GameState {
 
 
             Shadows.updateCenteredCamera();
+            if (BlockPropertiesIDLoader.packEnableShadows) { //TODO TEMPORARY
+                Gdx.gl.glBindFramebuffer(36160, Shadows.shadow_map.getDepthMapFbo());
+                Gdx.gl.glViewport(0,0, Shadows.shadow_map.getDepthMapTexture().getWidth(), Shadows.shadow_map.getDepthMapTexture().getHeight());
 
-            Gdx.gl.glBindFramebuffer(36160, Shadows.shadow_map.getDepthMapFbo());
-            Gdx.gl.glViewport(0,0, Shadows.shadow_map.getDepthMapTexture().getWidth(), Shadows.shadow_map.getDepthMapTexture().getHeight());
+                Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+                Shadows.shadowPass = true;
+                // nned to improve framerate its getting cut by like 1/3 with default shaders
+                //using hte same render causes a few extra BlockModelJson calls but it isnt very much compared to what it did originally
+                GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
 
-            Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
-            Shadows.shadowPass = true;
-           // nned to improve framerate its getting cut by like 1/3 with default shaders
-            //using hte same render causes a few extra BlockModelJson calls but it isnt very much compared to what it did originally
-            GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
+                Gdx.gl.glDepthMask(true);
+                //Gdx.gl.glCullFace(GL20.GL_BACK);
+                Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
-            Gdx.gl.glDepthMask(true);
-            //Gdx.gl.glCullFace(GL20.GL_BACK);
-            Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+                for (Entity e : playerZone.allEntities) {
+                    e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
+                }
+                Shadows.shadowPass = false;
 
-            for (Entity e : playerZone.allEntities) {
-                e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
+
+
+                Gdx.gl.glBindFramebuffer(36160, 0); // might not have to call this if im setting a different framebuffer
+                Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                Gdx.gl.glClear(org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT | org.lwjgl.opengl.GL20.GL_COLOR_BUFFER_BIT); // might not need this
+
             }
-            Shadows.shadowPass = false;
-
-
-
-            Gdx.gl.glBindFramebuffer(36160, 0); // might not have to call this if im setting a different framebuffer
-            Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            Gdx.gl.glClear(org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT | org.lwjgl.opengl.GL20.GL_COLOR_BUFFER_BIT); // might not need this
 
 
 
