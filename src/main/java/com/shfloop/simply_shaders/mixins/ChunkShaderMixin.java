@@ -34,7 +34,7 @@ public abstract class ChunkShaderMixin extends GameShader {
 
 
 
-        if (Shadows.shaders_on && InGame.world != null) { //should find a better way to do this
+        if (Shadows.shaders_on && InGame.getWorld() != null) { //should find a better way to do this
 
             this.bindOptionalUniformMatrix("lightSpaceMatrix", Shadows.getCamera().combined);
             //FIXME This is redundant i only need to bind the shadowmap texture once when the shader is created because it doesnchange

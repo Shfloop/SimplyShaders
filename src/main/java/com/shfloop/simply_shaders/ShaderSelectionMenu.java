@@ -230,7 +230,7 @@ public class ShaderSelectionMenu extends GameState{
         ShaderPackLoader.selectedPack = allShaders.get(last_selected_idx - 1) ; // Last selected idx needs to be -1 cause i dont have the enable shader buitton in allshaders but its in the scroll ilst
         //Shadows.shaders_on = shadersOn; /
         //gonna ghange it first cvause it migth be a aproblem if cleanup is called but the render still happens with shaders on
-        if (InGame.world != null) {
+        if (InGame.getWorld() != null) {
             if (Shadows.shaders_on) {
                 try {
                     Shadows.turnShadowsOn();

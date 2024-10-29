@@ -65,7 +65,8 @@ public class Shadows {
 
             ShaderPackLoader.switchToDefaultPack();
             System.out.println("ERROR in Shader pack loading");
-            Chat.MAIN_CHAT.sendMessage(InGame.world, InGame.getLocalPlayer(), null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
+
+            Chat.MAIN_CHAT.addMessage(InGame.getWorld(), InGame.getLocalPlayer(), null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             GameShaderInterface.getShader().pop();
             Shadows.shaders_on = false;

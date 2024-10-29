@@ -122,7 +122,7 @@ public abstract class InGameMixin extends GameState {
                 //Gdx.gl.glCullFace(GL20.GL_BACK);
                 Gdx.gl.glEnable(GL20.GL_CULL_FACE);
 
-                for (Entity e : playerZone.allEntities) {
+                for (Entity e : playerZone.getAllEntities()) {
                     e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
                 }
                 Shadows.shadowPass = false;

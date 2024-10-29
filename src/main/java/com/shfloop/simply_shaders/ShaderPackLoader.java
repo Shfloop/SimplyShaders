@@ -18,7 +18,7 @@ import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
 import finalforeach.cosmicreach.rendering.items.ItemThingModel;
 import finalforeach.cosmicreach.rendering.shaders.*;
-import finalforeach.cosmicreach.util.AnsiColours;
+
 
 import finalforeach.cosmicreach.util.Identifier;
 
@@ -74,11 +74,11 @@ public class ShaderPackLoader {
         //remesh
     }
     public static void remeshAllRegions() {
-        if (InGame.world == null) {
+        if (InGame.getWorld() == null) {
             return;
         }
         //this needs to
-        for (Zone zone: InGame.world.getZones()) {
+        for (Zone zone: InGame.getWorld().getZones()) {
             for (Region reg: zone.getRegions()) {
                 for (Chunk chunk: reg.getChunks()) {
                     chunk.flagForRemeshing(false); //hm setting this to true does not help makes it much worse
@@ -110,8 +110,8 @@ public class ShaderPackLoader {
 
     }
     public static void updateEntityShader() {
-        if (InGame.world != null) {
-            for (Entity e: InGameInterface.getLocalPlayer().getZone(InGameInterface.getWorld()).allEntities) {
+        if (InGame.getWorld() != null) {
+            for (Entity e: InGame.getLocalPlayer().getZone().getAllEntities()) {
                 if (e.modelInstance instanceof EntityModelInstance) {
                     ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);
                 }

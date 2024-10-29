@@ -61,8 +61,8 @@ public class DynamicSkyRewrite extends Sky {
     }
 
     public void update() {
-        World world = InGame.world;
-        Zone playerZone = InGame.getLocalPlayer().getZone(world);
+        World world = InGame.getWorld();
+        Zone playerZone = InGame.getLocalPlayer().getZone();
 //        float currentTimeSeconds = (float)playerZone.currentTick * 0.05F;
 //       final float cycleLength = 60.0f;
 //       //this gives percentage cycle completeed

@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(InGame.class)
 public  interface InGameInterface {
-    @Accessor("localPlayer")
-    public static Player getLocalPlayer() {throw new AssertionError();}
-    @Accessor("world")
-    public static World getWorld() {throw new AssertionError();}
+//    @Accessor("localPlayer")
+//    public static Player getLocalPlayer() {throw new AssertionError();}
+//    @Accessor("world")
+//    public static World getWorld() {throw new AssertionError();}
 }
