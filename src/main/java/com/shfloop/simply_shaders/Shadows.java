@@ -7,6 +7,8 @@ import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -66,8 +68,9 @@ public class Shadows {
             ShaderPackLoader.switchToDefaultPack();
             System.out.println("ERROR in Shader pack loading");
 
-            Chat.MAIN_CHAT.addMessage(InGame.getWorld(), InGame.getLocalPlayer(), null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
+            Chat.MAIN_CLIENT_CHAT.addMessage( null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
+            System.out.println(e.getMessage());
             GameShaderInterface.getShader().pop();
             Shadows.shaders_on = false;
             initalized = false;

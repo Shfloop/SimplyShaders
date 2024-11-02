@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import java.io.PrintStream;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -162,13 +163,13 @@ public class ShaderPackLoader {
     }
     public static String[] loadFromZipOrUnzipShaderPack(Identifier location) throws InvalidPathException {
         if (isZipPack) {
-            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(), location.getNamespace()); // in case of shaderpacks namespace will be shaderpacks/PACKNAME
+            Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(),"mods" ,location.getNamespace()); // in case of shaderpacks namespace will be shaderpacks/PACKNAME
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 Path path = fs.getPath(location.getName());
-                System.out.println(path);
+                //System.out.println(path);
                 return Files.readString(path).split("\n");
             }  catch (IOException e) {
-                throw new RuntimeException("Could not read the file in zip");
+                throw new InvalidPathException(e.getMessage(), "Could not read the file in zip: " );
 
             }
         } else {
@@ -180,7 +181,29 @@ public class ShaderPackLoader {
         }
     }
 
+/*
 
+[19:17:51.784] [INFO] [com.shfloop.simply_shaders.Shadows]: Turning Shaders OFF
+[19:18:16.640] [SEVERE] [java.lang.Throwable]: java.lang.IndexOutOfBoundsException: index can't be >= size: 7 >= 7
+[19:18:16.640] [SEVERE] [java.lang.Throwable]: 	at com.badlogic.gdx.utils.Array.get(Array.java:155)
+[19:18:16.640] [SEVERE] [java.lang.Throwable]: 	at com.shfloop.simply_shaders.ShaderPackLoader.setDefaultShaders(ShaderPackLoader.java:197)
+[19:18:16.640] [SEVERE] [java.lang.Throwable]: 	at com.shfloop.simply_shaders.ShaderPackLoader.switchToDefaultPack(ShaderPackLoader.java:70)
+[19:18:16.640] [SEVERE] [java.lang.Throwable]: 	at com.shfloop.simply_shaders.Shadows.cleanup(Shadows.java:145)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at com.shfloop.simply_shaders.ShaderSelectionMenu.applyShaderPackSelection(ShaderSelectionMenu.java:243)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at com.shfloop.simply_shaders.ShaderSelectionMenu.render(ShaderSelectionMenu.java:262)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at finalforeach.cosmicreach.BlockGame.render(BlockGame.java:126)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window.update(Lwjgl3Window.java:387)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:193)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:167)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at finalforeach.cosmicreach.lwjgl3.Lwjgl3Launcher.createApplication(Lwjgl3Launcher.java:103)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at finalforeach.cosmicreach.lwjgl3.Lwjgl3Launcher.main(Lwjgl3Launcher.java:91)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+[19:18:16.641] [SEVERE] [java.lang.Throwable]: 	at dev.crmodders.cosmicquilt.loader.CosmicGameProvider.launch(CosmicGameProvider.java:442)
+[19:18:16.642] [SEVERE] [java.lang.Throwable]: 	at dev.crmodders.cosmicquilt.loader.knot.Knot.launch(Knot.java:23)
+[19:18:16.642] [SEVERE] [java.lang.Throwable]: 	at dev.crmodders.cosmicquilt.loader.knot.KnotClient.main(KnotClient.java:7)
+
+ */
 
 
 
