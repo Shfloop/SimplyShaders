@@ -70,6 +70,7 @@ public class ShaderPackLoader {
         isZipPack = false;
         setDefaultShaders();
         remeshAllRegions();
+        remeashAllSkies();
         changeItemShader();
         updateEntityShader();
         //remesh
@@ -93,10 +94,14 @@ public class ShaderPackLoader {
             sky.starMesh = null;
         }
 
-        Sky.skyChoices.set(0, new DynamicSky("base:dynamic_sky", "Dynamic_Sky"));
-        DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
-        Sky.currentSky = temp;
-        SkyInterface.getSkies().put("base:dynamic_sky", temp);
+        //Sky.skyChoices.set(0, new DynamicSky("base:dynamic_sky", "Dynamic_Sky"));
+        //DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
+        //Sky.currentSky = temp;
+        //SkyInterface.getSkies().put("base:dynamic_sky", temp);
+        if (Sky.currentSky instanceof DynamicSky) {
+            ((DynamicSkyInterface)Sky.currentSky).setCurrentShader();
+        }
+        ((DynamicSkyInterface)Sky.skyChoices.first()).setCurrentShader();
     }
     public static void changeItemShader() {
     for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) {

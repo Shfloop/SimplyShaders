@@ -22,6 +22,10 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
     public void setLastUpdateTime() {
         forceUpdate = true;
     }
+    @Override
+    public void setCurrentShader() {
+        skyShader = SkyShader.SKY_SHADER;
+    }
 
     public boolean forceUpdate = true;
 
