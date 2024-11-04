@@ -33,7 +33,7 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
     @Shadow
     protected Vector3 sunDirection;
     @Shadow protected float i;
-    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;rotate", shift = At.Shift.AFTER))
+    @Inject(method = "update", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;dot", shift = At.Shift.AFTER))
     private void rotateSunAngle(CallbackInfo ci) {
 
         if (Shadows.shaders_on) {

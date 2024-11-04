@@ -19,6 +19,7 @@ import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -175,6 +176,7 @@ public abstract class InGameMixin extends GameState {
 
 
 
+    //TODO i can just call clearBUffers after recalling GLDrawBUffers() and use glColorMask
 
        for (int i =2; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
            GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
