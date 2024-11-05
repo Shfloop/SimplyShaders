@@ -2,11 +2,13 @@ package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +73,11 @@ public class Shadows {
             Chat.MAIN_CLIENT_CHAT.addMessage( null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             System.out.println(e.getMessage());
-            GameShaderInterface.getShader().pop();
+            Array<GameShader> defaultShaders = GameShaderInterface.getShader();
+            if(defaultShaders.size > 7) { //default shaders should only be size 7 // if shaderpack loading fails it can add a shader too it without removing it
+                //This shouldnt be necessary but is an easy solution to shader loading without redoing the entire thing
+                defaultShaders.pop();
+            }
             Shadows.shaders_on = false;
             initalized = false;
             return;
