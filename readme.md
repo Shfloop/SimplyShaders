@@ -12,12 +12,11 @@
   * Renders to Texture labeled shadowMap
   * Runs shadowpass shaders
 > Rendering pipeline similar to Optifine with less features [Shader Labs Pipeline](https://shaderlabs.org/wiki/Rendering_Pipeline_(OptiFine,_ShadersMod)) gives a basic overview
-* for now every shader is required in shaderpack ill add defaulting shaders eventually
 * Most likely wont play well with other mods affecting rendering
 * Only uses base game shaders from jar  when shaderpack disabled for now
 ## How to use
 * Run like anyother quilt mod 
-* add shaderpacks into /mods/assets/shaders/ 
+* add shaderpacks into /mods/shaderpacks 
 * find the shader button (bottom left of options menu) 
 * select shader pack and enable it 
 
