@@ -208,7 +208,7 @@ public abstract class InGameMixin extends GameState {
 //
 //        composite0.unbind();
         if (ShaderPackLoader.shaderPackOn) {
-            if (ShaderPackLoader.shader1.size >=ShaderPackLoader.compositeStartIdx + 1) { //added new shader so have to increase
+            if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
                 for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
                     FinalShader composite = (FinalShader)  ShaderPackLoader.shader1.get(i);
                     composite.bind(rawWorldCamera);

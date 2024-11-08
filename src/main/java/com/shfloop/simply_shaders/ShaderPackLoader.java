@@ -275,7 +275,7 @@ public class ShaderPackLoader {
 
         //load composite and settings here maybe
         //composite shaders start at 9
-        compositeStartIdx = packShaders.size - 1;
+        compositeStartIdx = packShaders.size ;
         System.out.println("Composite start IDX " + compositeStartIdx);
 
         if (isZipPack) { //TODO redo this so the pack can specify which composite it wants to use so i can enable /disable them without removing them from pack
