@@ -144,6 +144,8 @@ public class ShaderPackLoader {
 
 
     // probably be better to use an inputstream of some kind
+    //TODO errors in included files only come out as errors of the parent
+    //add the child files names with the error
     public static String[] loadShader(Identifier location, boolean lookInShaderPack) {
         if (lookInShaderPack) {
             Identifier temp = Identifier.of("shaderpacks/" + selectedPack, location.getName());

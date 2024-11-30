@@ -69,6 +69,11 @@ public abstract class GameShaderMixin   {
     @Shadow
     protected Identifier vertexShaderId;
     @Shadow Identifier fragShaderId;
+
+    @Overwrite
+    public void verifyShaderHasNoBannedKeywords(Identifier shaderId, String shaderText) {
+
+    }
     @Overwrite
     public void reload() {
         GameShader tempThis = ((GameShader) (Object)this); //maybe this works
