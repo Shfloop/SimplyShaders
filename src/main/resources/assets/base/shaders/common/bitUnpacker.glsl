@@ -1,12 +1,20 @@
-#define GET_TEX_COORDS getTexCoordsFromUVIdx(int(a_uvIdx))
-#define GET_VERT_NORMAL getVertNormalFromIdx(int(a_uvIdx))
-#define GET_FACE_NORMAL getFaceNormalFromIdx(int(a_uvIdx))
-#define GET_BLOCK_VERT_POSITION getBlockVertexPosition(int(a_uvIdx), int(a_positionPacked))
+#ifdef NUM32_IS_FLOAT
+#define NUM32 float
+#define NUM32_AS_INT(x) int(x)
+#else
+#define NUM32 int
+#define NUM32_AS_INT(x) x
+#endif
+
+#define GET_TEX_COORDS getTexCoordsFromUVIdx(NUM32_AS_INT(a_uvIdx))
+#define GET_VERT_NORMAL getVertNormalFromIdx(NUM32_AS_INT(a_uvIdx))
+#define GET_FACE_NORMAL getFaceNormalFromIdx(NUM32_AS_INT(a_uvIdx))
+#define GET_BLOCK_VERT_POSITION getBlockVertexPosition(NUM32_AS_INT(a_uvIdx), NUM32_AS_INT(a_positionPacked))
 
 #define NUM_FLOATS_PER_FACE_UVTEXBUFF (2 + 3 + 3 + 3 + 1)
 
-in float a_positionPacked;
-in float a_uvIdx;
+in NUM32 a_positionPacked;
+in NUM32 a_uvIdx;
 uniform samplerBuffer texBuffer;
 
 vec2 getTexCoordsFromUVIdx(int modelId)
@@ -57,5 +65,10 @@ int getPackedColorBits(int uvAoPackedColor)
 
 vec4 getBlockLight(int packedColorBits)
 {
-    return vec4(((packedColorBits) & 15), (packedColorBits >> 4) & 15, (packedColorBits >> 8) & 15, (packedColorBits >> 12)) / 16.0;
+    return vec4(
+    (packedColorBits) & 15,
+    (packedColorBits >> 4) & 15,
+    (packedColorBits >> 8) & 15,
+    (packedColorBits >> 12)
+    ) / 16.0;
 }

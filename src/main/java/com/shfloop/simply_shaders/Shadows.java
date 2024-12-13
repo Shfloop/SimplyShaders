@@ -1,6 +1,7 @@
 package com.shfloop.simply_shaders;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderInterface;
@@ -25,6 +26,10 @@ public class Shadows {
     public static int cycleLength = 38400;
     public static boolean doDaylightCycle = true;
 
+    public static Vector3 previousCameraPosition = new Vector3();
+    public static Matrix4 previousProjection = new Matrix4();
+
+    public static Matrix4 previousView= new Matrix4();
 
     public static HashMap<String, Integer > blockPropertiesIDMap = new HashMap<String, Integer>();
 

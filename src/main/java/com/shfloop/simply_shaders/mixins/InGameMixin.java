@@ -264,6 +264,9 @@ public abstract class InGameMixin extends GameState {
             Gdx.gl.glActiveTexture(33984);
             Gdx.gl.glBindTexture(3553, 0); // this is called after uirender so it might be important
         }
+        Shadows.previousCameraPosition.set(rawWorldCamera.position);
+        Shadows.previousProjection.set(rawWorldCamera.projection);
+        Shadows.previousView.set(rawWorldCamera.view);
         //need to bind vertexarray
         //need to bind the textuere maybe
         //need to call glDrawArrays(GL_TRIANGLE,0,6)

@@ -56,7 +56,12 @@ public class FinalShader extends GameShader {
         //this.bindOptionalInt("renderNear", GraphicsSettings.renderDistanceInChunks.getValue() * 32);
         this.bindOptionalMatrix4("u_proj", worldCamera.projection);
         this.bindOptionalMatrix4("u_view", worldCamera.view);
-       // this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+        this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+        this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
+        this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+        this.bindOptionalUniform3f("previousCameraPosition", Shadows.previousCameraPosition);
+        this.bindOptionalMatrix4("u_projPrev", Shadows.previousProjection);
+        this.bindOptionalMatrix4("u_viewPrev", Shadows.previousView);
 
 
 

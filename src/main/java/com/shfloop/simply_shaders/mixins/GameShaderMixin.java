@@ -1,5 +1,6 @@
 package com.shfloop.simply_shaders.mixins;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
@@ -26,7 +27,7 @@ public abstract class GameShaderMixin   {
 
 
 
-    @Inject(method = "initShaders()V", at = @At("Tail")) //
+    @Inject(method = "initShaders()V", at = @At("TAIL")) //
     static private void addShadowPassShaders(CallbackInfo ci) {
 
         FinalShader.initFinalShader();
@@ -55,6 +56,9 @@ public abstract class GameShaderMixin   {
     @Inject(method = "bind", at = @At("TAIL"))
     private void bindDrawBuffers(CallbackInfo ci) {
         //bind the appropriate outbuffers based on what the shader loaded from file
+        ((GameShader)(Object)this).bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+        ((GameShader)(Object)this).bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
+        ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
         if (SimplyShaders.inRender &&!Arrays.equals(RenderFBO.lastDrawBuffers, shaderDrawBuffers)) {
             GL32.glDrawBuffers(shaderDrawBuffers);
             RenderFBO.lastDrawBuffers = shaderDrawBuffers;

@@ -44,9 +44,9 @@ public abstract class ChunkShaderMixin extends GameShader {
             //this.bindOptionalUniform3f("lightPos", Shadows.getCamera().position); // no longer used
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);// to compare with normal
             this.bindOptionalUniformMatrix("u_projViewTransPrev", prevCombinedMatrix);
-            this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
-            this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
-            this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+//            this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+//            this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
+//            this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
             prevCombinedMatrix.set(worldCamera.combined);
         }
     }
