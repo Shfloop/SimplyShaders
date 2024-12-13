@@ -178,7 +178,7 @@ public abstract class InGameMixin extends GameState {
 
     //TODO i can just call clearBUffers after recalling GLDrawBUffers() and use glColorMask
         //using attachment 2 as the previous frame so im not clearing it
-       for (int i =3; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
+       for (int i =2; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
            GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
        }
 
