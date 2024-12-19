@@ -2,6 +2,7 @@ package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
@@ -11,11 +12,11 @@ import finalforeach.cosmicreach.RuntimeInfo;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.util.Identifier;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Arrays;
 
 @Mixin(GameShader.class)
-public abstract class GameShaderMixin   {
+public abstract class GameShaderMixin implements GameShaderInterface {
 
 
 
@@ -46,28 +47,124 @@ public abstract class GameShaderMixin   {
     }
         System.out.println("Reloading all Shaders");
 
-        for (GameShader shader: GameShaderInterface.getShader()) {
+        for (GameShader shader: GameShaderAccessor.getShader()) {
             shader.reload();
         }
 
         System.out.println("Reloaded all Shaders");
     }
 
-    @Inject(method = "bind", at = @At("TAIL"))
+    @Inject(method = "bind", at = @At("HEAD"))
     private void bindDrawBuffers(CallbackInfo ci) {
         //bind the appropriate outbuffers based on what the shader loaded from file
-        ((GameShader)(Object)this).bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
-        ((GameShader)(Object)this).bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
-        ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+        //i can do this at the start no problem
+        if (this.shaderInputBuffers != null) {
+            for (int pingPongBufferNum: this.shaderInputBuffers) {
+
+                SimplyShaders.buffer.pingPongBuffer(pingPongBufferNum);
+            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
+        }
+
+
+
+
+
+
         if (SimplyShaders.inRender &&!Arrays.equals(RenderFBO.lastDrawBuffers, shaderDrawBuffers)) {
             GL32.glDrawBuffers(shaderDrawBuffers);
             RenderFBO.lastDrawBuffers = shaderDrawBuffers;
         }
+
     }
 
 ///mixin to start of gameshaderinit shaders so i can initialize shaderpackloader
+    //so this kinda acts the same way drawbuffers but the renderFBO needs to be able to see each shaders ping-pongable buffers so it can switch its buffers
+
+    @Inject(method = "bind", at = @At("TAIL"))
+    private void injectGameShaderBind(CallbackInfo ci) {
+
+        ((GameShader)(Object)this).bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
+        ((GameShader)(Object)this).bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
+        ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+
+    }
+
+    @Unique
+    public int[] shaderInputBuffers = null;
+
+    @Override
+    public int[] getShaderInputBuffers() {
+        return this.shaderInputBuffers;
+    }
+
+    @Override
+    public void setShaderInputBuffers(int[] arr) {
+        this.shaderInputBuffers = arr;
+    }
+
+    private void findFragShaderValues(String fragShaderText) {
+        String[] shaderLines = fragShaderText.split("[;\n]");
 
 
+        //uses the drawbuffers and then the uniforms colorTexnnumebrs to decide if it should ping pong the render texture/s
+
+        int[] renderTexturesUsed = new int[16];
+        int numUsedRenderTextures = 0;
+        String[] uniforms = ((GameShader)(Object)this).shader.getUniforms();
+
+
+
+        for (String uniform: uniforms) {
+
+            if (uniform.contains("colorTex")) {
+                if (numUsedRenderTextures >= 16) {
+                    throw new RuntimeException("more than 16 ");
+                }
+
+                renderTexturesUsed[numUsedRenderTextures] = Integer.parseInt(String.valueOf(uniform.charAt(8)),16); //ill use hex for the buffer numberng when i add them
+                System.out.println("FOUND PING PONG " + renderTexturesUsed[numUsedRenderTextures]);
+                numUsedRenderTextures++;
+
+            }
+        }
+        int pingPongCount = 0;
+        for (int i = 0; i < numUsedRenderTextures; i++) {
+            int testValue = renderTexturesUsed[i];
+            boolean sameTextureUsed = false;
+            for (int shaderDrawBuffer : this.shaderDrawBuffers) {
+                if (shaderDrawBuffer - GL32.GL_COLOR_ATTACHMENT0 == testValue) { //need to subtract by the gl constante value because im using drawbuffers like that
+                    //if both are equal that means that the shader is trying to read and write to the same texture
+                    //there cant be duplicate values in this so i can exit
+                    System.out.println(" PING PONG test" + shaderDrawBuffer);
+                    sameTextureUsed = true;
+                    pingPongCount++;
+                    break;
+                } else {
+                    System.out.println("COMPARED VALUES: " + shaderDrawBuffer + " != " + testValue);
+                }
+            }
+            //reuse the array by setting the values that dont match to negative one
+            if (!sameTextureUsed) {
+                renderTexturesUsed[i] = -1;
+            }
+        }
+        if (pingPongCount <= 0) {
+            return;
+        }
+        //go over one more time
+        this.shaderInputBuffers = new int[pingPongCount];
+        pingPongCount = 0;
+        //copy over the contents
+        for (int i = 0; i < numUsedRenderTextures; i++) {
+            if(renderTexturesUsed[i] != -1) {
+                this.shaderInputBuffers[pingPongCount] = renderTexturesUsed[i];
+                pingPongCount++;
+                System.out.println("FOUND PING PONG Buffer" + renderTexturesUsed[i]);
+            }
+        }
+
+
+    }
 
 
     @Shadow
@@ -116,12 +213,14 @@ public abstract class GameShaderMixin   {
                 ShaderProgram.prependFragmentCode = GameShader.macOSPrependFragVer;
             }
         }
+        findFragShaderValues(frag);
 
 
     }
     //make better error reporting
 
     //adding field to each GameShader
+    @Unique
     private int[] shaderDrawBuffers;
     private String loadShaderFile(Identifier shaderId, SimplyShaders.newShaderType shaderType) {
        // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //

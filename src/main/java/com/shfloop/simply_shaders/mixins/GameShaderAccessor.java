@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GameShader.class)
-public interface GameShaderInterface {
+public interface GameShaderAccessor {
 
 // Used to clean up the shader array in GameShader without it spamming shaders on and off will keep the GameShader object alive
     @Accessor("allShaders")

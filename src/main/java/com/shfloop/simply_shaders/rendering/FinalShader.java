@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
@@ -23,6 +24,9 @@ public class FinalShader extends GameShader {
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
 
         this.isComposite = isComposite;
+        if (!isComposite) {
+            ((GameShaderInterface)this).setShaderInputBuffers(null); // final shader cant have a ping pong so this should stop it during bind
+        }
     }
     public static void initFinalShader() {
         FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(( Identifier.of("shaders/final.vert.glsl")), (Identifier.of("shaders/final.frag.glsl")) ,  false);
@@ -34,7 +38,7 @@ public class FinalShader extends GameShader {
 
 
         //may want to go back with set strings, not sure whats better
-        for (BufferTexture tex: RenderFBO.renderTextures) {
+        for (BufferTexture tex: RenderFBO.uniformTextures) {
             texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
         }
 

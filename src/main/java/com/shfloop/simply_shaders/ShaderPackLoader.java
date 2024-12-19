@@ -215,7 +215,7 @@ public class ShaderPackLoader {
 
 
     private static void setDefaultShaders() {
-       Array<GameShader> allShaders = GameShaderInterface.getShader();
+       Array<GameShader> allShaders = GameShaderAccessor.getShader();
         ChunkShader.DEFAULT_BLOCK_SHADER = (ChunkShader) allShaders.get(0);
         ChunkShader.WATER_BLOCK_SHADER = (ChunkShader) allShaders.get(1);
         SkyStarShader.SKY_STAR_SHADER = (SkyStarShader) allShaders.get(2);
@@ -232,7 +232,7 @@ public class ShaderPackLoader {
     //
     private static void initShaderPack(Array<GameShader> packShaders) throws IOException {
 
-        Array<GameShader> allShaders = GameShaderInterface.getShader();
+        Array<GameShader> allShaders = GameShaderAccessor.getShader();
 
 
         ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk.vert.glsl"), Identifier.of("shaders/chunk.frag.glsl"));

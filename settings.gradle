@@ -8,8 +8,8 @@ buildscript() {
         mavenCentral()
     }
     dependencies {
-        classpath "org.codeberg.CRModders:cosmic-loom:PR7-SNAPSHOT"
-    } //todo change this
+        classpath "org.codeberg.CRModders:cosmic-loom:main-SNAPSHOT"
+    } //jitpack builds it for you if you do master-SNAPSHOT
 }
 
 

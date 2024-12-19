@@ -8,7 +8,7 @@
     "OptionsMenuMixin",
     "ChunkShaderMixin",
     "GameShaderMixin",
-    "GameShaderInterface",
+    "GameShaderAccessor",
     "InGameMixin",
     "ChunkBatchMixin",
     "BlockGameMixin",
