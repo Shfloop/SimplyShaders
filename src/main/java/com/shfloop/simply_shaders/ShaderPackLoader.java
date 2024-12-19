@@ -5,7 +5,9 @@ import com.badlogic.gdx.files.FileHandle;
 
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.*;
+import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
+import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 
@@ -63,6 +65,7 @@ public class ShaderPackLoader {
         remeashAllSkies();
         changeItemShader();
         updateEntityShader();
+        remakeFBO();
 
     }
     public static void switchToDefaultPack() {
@@ -74,6 +77,20 @@ public class ShaderPackLoader {
         changeItemShader();
         updateEntityShader();
         //remesh
+        remakeFBO();
+    }
+
+    private static void remakeFBO() { // i think when a pack was in the middle of switching buffers and you switch to a pack withotu switching like default it can get stuck using the wrong texture for reading
+        //need to remake fbo anyway when i do custom renderTexture scales/sizes
+        if (SimplyShaders.buffer != null) {
+            SimplyShaders.buffer.dispose();
+        }
+
+        try {
+            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public static void remeshAllRegions() {
         if (InGame.getWorld() == null) {
@@ -256,7 +273,7 @@ public class ShaderPackLoader {
         packShaders.add(allShaders.pop());
 
 
-        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"),  false);
+        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"));
         packShaders.add(allShaders.pop());
 
         Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
@@ -288,7 +305,7 @@ public class ShaderPackLoader {
                     Path path = fs.getPath( compositeName + ".frag.glsl");
                     //will cause invalid pathexception if it doesnt exits
                     if (Files.exists(path)) {
-                        new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
+                        new CompositeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"));
                         packShaders.add(allShaders.pop());
                     } else {
                         break;
@@ -309,7 +326,7 @@ public class ShaderPackLoader {
                 FileHandle compositeTest = Gdx.files.absolute(SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/" + ShaderPackLoader.selectedPack +  "/" + compositeName + ".frag.glsl");
 
                 if (compositeTest.exists()) {
-                    new FinalShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), true);
+                    new CompositeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"));
                     packShaders.add(allShaders.pop());
                 } else {
 

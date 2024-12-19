@@ -2,9 +2,9 @@ package com.shfloop.simply_shaders.rendering;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
@@ -15,23 +15,23 @@ import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Sky;
 
 
-public class FinalShader extends GameShader {
-    public static FinalShader DEFAULT_FINAL_SHADER;
 
 
-    public FinalShader(Identifier vertexShader, Identifier fragmentShader) {
+
+public class CompositeShader extends GameShader {
+
+
+    public CompositeShader(Identifier vertexShader, Identifier fragmentShader) {
         super(vertexShader,fragmentShader);
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
 
 
-        ((GameShaderInterface)this).setShaderInputBuffers(null); // final shader cant have a ping pong so this should stop it during bind
-
     }
-    public static void initFinalShader() {
-        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(( Identifier.of("shaders/final.vert.glsl")), (Identifier.of("shaders/final.frag.glsl")));
 
-    }
     public void bind(Camera worldCamera) {
+
+
+        this.bindDrawBuffers();
         super.bind(worldCamera);
         int texNum= 0;
 
@@ -51,7 +51,7 @@ public class FinalShader extends GameShader {
 
         Sky sky = Sky.currentSky;
         this.bindOptionalUniform3f("skyAmbientColor", sky.currentAmbientColor);
-        this.bindOptionalInt("renderFar",GraphicsSettings.renderDistanceInChunks.getValue() * 16); //chunks are 16 blocks wide
+        this.bindOptionalInt("renderFar", GraphicsSettings.renderDistanceInChunks.getValue() * 16); //chunks are 16 blocks wide
         this.bindOptionalUniform3f("cameraDirection", worldCamera.direction); //i might be able to find this in final shader
         this.bindOptionalMatrix4("invProjView", worldCamera.invProjectionView);
 
@@ -84,5 +84,34 @@ public class FinalShader extends GameShader {
             return texNum;
         }
     }
+    private void resetUniformBuffers() {
+        int[] shaderInputBuffers = ((GameShaderInterface)this).getShaderInputBuffers();
+        if (shaderInputBuffers != null) {
+            for (int pingPongBufferNum: shaderInputBuffers) {
+
+                SimplyShaders.buffer.undoUniformPingPong(pingPongBufferNum);
+            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
+        }
+    }
+    private void bindDrawBuffers() {
+        //bind the appropriate outbuffers based on what the shader loaded from file
+        //i can do this at the start no problem
+        int[] shaderInputBuffers = ((GameShaderInterface)this).getShaderInputBuffers();
+        if (shaderInputBuffers != null) {
+            for (int pingPongBufferNum: shaderInputBuffers) {
+
+                SimplyShaders.buffer.pingPongBuffer(pingPongBufferNum);
+            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
+        }
+
+
+
+
+
+
+
+
+    }
+
 
 }

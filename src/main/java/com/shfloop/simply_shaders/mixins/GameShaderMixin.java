@@ -58,12 +58,12 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     private void bindDrawBuffers(CallbackInfo ci) {
         //bind the appropriate outbuffers based on what the shader loaded from file
         //i can do this at the start no problem
-        if (this.shaderInputBuffers != null) {
-            for (int pingPongBufferNum: this.shaderInputBuffers) {
-
-                SimplyShaders.buffer.pingPongBuffer(pingPongBufferNum);
-            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
-        }
+//        if (this.shaderInputBuffers != null) {
+//            for (int pingPongBufferNum: this.shaderInputBuffers) {
+//
+//                SimplyShaders.buffer.pingPongBuffer(pingPongBufferNum);
+//            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
+//        }
 
 
 
@@ -77,15 +77,15 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
     }
 
-    @Inject(method = "unbind", at = @At("HEAD"))
-    private void resetUniformBuffers(CallbackInfo ci) {
-        if (this.shaderInputBuffers != null) {
-            for (int pingPongBufferNum: this.shaderInputBuffers) {
-
-                SimplyShaders.buffer.undoUniformPingPong(pingPongBufferNum);
-            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
-        }
-    }
+//    @Inject(method = "unbind", at = @At("HEAD"))
+//    private void resetUniformBuffers(CallbackInfo ci) {
+//        if (this.shaderInputBuffers != null) {
+//            for (int pingPongBufferNum: this.shaderInputBuffers) {
+//
+//                SimplyShaders.buffer.undoUniformPingPong(pingPongBufferNum);
+//            }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
+//        }
+//    }
 
 ///mixin to start of gameshaderinit shaders so i can initialize shaderpackloader
     //so this kinda acts the same way drawbuffers but the renderFBO needs to be able to see each shaders ping-pongable buffers so it can switch its buffers

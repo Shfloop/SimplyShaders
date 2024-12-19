@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class SimplyShaders implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("SimplyShaders Mod");
-	public static RenderFBO buffer ; //this might be a good way to go about this but im not really sure
+	public static RenderFBO buffer = null; //this might be a good way to go about this but im not really sure
     public static Mesh screenQuad;
     public static boolean inRender = false;
 
@@ -27,7 +27,9 @@ public class SimplyShaders implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Simply Shaders Initialized!");
-
+        if (buffer != null) {
+            buffer.dispose();
+        }
         try {
             buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } catch (Exception e) {

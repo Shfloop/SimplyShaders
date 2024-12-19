@@ -9,6 +9,7 @@ import com.shfloop.simply_shaders.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.GameSingletons;
@@ -226,7 +227,7 @@ public abstract class InGameMixin extends GameState {
         if (ShaderPackLoader.shaderPackOn) {
             if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
                 for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
-                    FinalShader composite = (FinalShader)  ShaderPackLoader.shader1.get(i);
+                    CompositeShader composite = (CompositeShader)  ShaderPackLoader.shader1.get(i);
                     composite.bind(rawWorldCamera);
                     SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
                     composite.unbind();
