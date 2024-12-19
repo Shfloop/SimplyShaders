@@ -105,8 +105,10 @@ public class RenderFBO {
         if (bufferNum < 0 || bufferNum >= renderTextures.length) {
             throw new RuntimeException("GameShader gave bad number for ping pong buffer");
         }
-        uniformTextures[bufferNum] = renderTextures[bufferNum]; //set the uniform bufferNum to the current renderTexture
+        BufferTexture temp = renderTextures[bufferNum];
+        uniformTextures[bufferNum] = temp; //set the uniform bufferNum to the current renderTexture
         renderTextures[bufferNum] = swapBufferStorage[bufferNum]; //get the alternate buffer to render to
+        swapBufferStorage[bufferNum] = temp;
         //  not sure if optifine copies the buffre first but im gonna assume that the shader is going to write over the entire buffer when ping ponging so there shouldnt be a need to
         //Currently this should always be called when renderFbo is bound
 
@@ -128,8 +130,9 @@ public class RenderFBO {
         //finalShader could call this but it doesnt have any drawbuffers so if they add that to final they deserve to get a crash
     }
 
-
-
-
-
+    //need to reset the swapped buffer to the write buffer so the next program will work if it doesnt swap buffers as well
+    public void undoUniformPingPong(int pingPongBufferNum) {
+        uniformTextures[pingPongBufferNum] = renderTextures[pingPongBufferNum];
+        //uniform should only have copies of stuff in render textures or swap bufer storage
+    }
 }
