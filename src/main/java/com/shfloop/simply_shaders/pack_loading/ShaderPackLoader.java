@@ -1,9 +1,12 @@
-package com.shfloop.simply_shaders;
+package com.shfloop.simply_shaders.pack_loading;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import com.badlogic.gdx.utils.Array;
+import com.shfloop.simply_shaders.DynamicSkyInterface;
+import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
@@ -29,9 +32,7 @@ import finalforeach.cosmicreach.world.*;
 
 import java.io.IOException;
 
-import java.io.PrintStream;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

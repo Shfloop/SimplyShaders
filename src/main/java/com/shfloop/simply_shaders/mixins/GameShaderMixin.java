@@ -3,7 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.shfloop.simply_shaders.GameShaderInterface;
-import com.shfloop.simply_shaders.ShaderPackLoader;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.FinalShader;

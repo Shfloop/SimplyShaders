@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.mixins.GameShaderAccessor;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.EntityShader;

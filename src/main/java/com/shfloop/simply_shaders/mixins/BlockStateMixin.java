@@ -1,8 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.shfloop.simply_shaders.BlockPropertiesIDLoader;
-import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.pack_loading.BlockPropertiesIDLoader;
 import finalforeach.cosmicreach.blocks.Block;
 import finalforeach.cosmicreach.blocks.BlockState;
 import org.spongepowered.asm.mixin.Mixin;

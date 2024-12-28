@@ -1,6 +1,8 @@
-package com.shfloop.simply_shaders;
+package com.shfloop.simply_shaders.pack_loading;
 
 import com.badlogic.gdx.utils.StringBuilder;
+import com.shfloop.simply_shaders.TexBufferContainer;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 
 import java.nio.file.InvalidPathException;

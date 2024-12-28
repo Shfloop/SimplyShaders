@@ -3,7 +3,7 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.ObjectIntMap;
-import com.shfloop.simply_shaders.BlockPropertiesIDLoader;
+import com.shfloop.simply_shaders.pack_loading.BlockPropertiesIDLoader;
 import com.shfloop.simply_shaders.TexBufferContainer;
 import finalforeach.cosmicreach.rendering.blockmodels.BlockModelJsonCuboid;
 

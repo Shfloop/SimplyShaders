@@ -1,7 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 
-import com.shfloop.simply_shaders.ShaderSelectionMenu;
+import com.shfloop.simply_shaders.menus.ShaderSelectionMenu;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
