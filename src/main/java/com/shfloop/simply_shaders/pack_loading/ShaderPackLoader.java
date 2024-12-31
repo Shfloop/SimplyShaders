@@ -7,6 +7,9 @@ import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.DynamicSkyInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.menus.PackSettingsMenu;
+import com.shfloop.simply_shaders.menus.ShaderPackSetting;
+import com.shfloop.simply_shaders.menus.ShaderSelectionMenu;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
@@ -53,6 +56,12 @@ public class ShaderPackLoader {
         //should init shaderpack for new array
 
         shaderPackOn = true;
+        PackSettingsMenu.loadSettings(); //loading settings needs to happen once and then each time menu is opened
+        //settings wont apply if load settings is called each time the pack is reloaded unless i write to the settings file each time and re read it
+
+        PackSettingsMenu.createSettingsString(); //
+
+
         BlockPropertiesIDLoader.updateChunkTexBuf(); // need to load properties before initializing shaders
        shader1 = new Array<>();
         try {
@@ -166,6 +175,10 @@ public class ShaderPackLoader {
     //add the child files names with the error
     public static String[] loadShader(Identifier location, boolean lookInShaderPack) {
         if (lookInShaderPack) {
+            if (location.getName().contains("settings.glsl")) {
+                return PackSettingsMenu.settingsFile; //load the edited/saved version of the pack file from the settings
+                //when loading/saving the settings i need to add the pack name to the filename so TestShadersv7settings.glsl or maybe .settings
+            }
             Identifier temp = Identifier.of("shaderpacks/" + selectedPack, location.getName());
             //in case of shaders from pack for now i dont have defaulting so ill just crash
             try {
@@ -233,6 +246,7 @@ public class ShaderPackLoader {
 
 
     private static void setDefaultShaders() {
+        //idk why this is crashing its not getting 8 shaders somehow in allShaders so 7 is out of bounds
        Array<GameShader> allShaders = GameShaderAccessor.getShader();
         ChunkShader.DEFAULT_BLOCK_SHADER = (ChunkShader) allShaders.get(0);
         ChunkShader.WATER_BLOCK_SHADER = (ChunkShader) allShaders.get(1);

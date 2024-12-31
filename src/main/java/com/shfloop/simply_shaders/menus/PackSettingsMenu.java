@@ -3,12 +3,14 @@ package com.shfloop.simply_shaders.menus;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
 import finalforeach.cosmicreach.ui.VerticalAnchor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
 
@@ -30,15 +33,37 @@ public class PackSettingsMenu extends GameState {
     // i also need the shader.properties to load stuff for the render like scale of a composite pass or other settings
 
     GameState previousState;
-
+    public static String[] settingsFile;
     public static Properties currentShaderPropeties;
     public static HashSet<String> packSettingVariables;
 
     public Array<String> mainScreenButtons;
-
-
+    public static HashMap<String, ShaderPackSetting> definedSettingsMap = new HashMap<>();
+    //each sub menu is given the object to modify
+    //or have a static function use this to reconstruct the settings.glsl file
+    //need to replace the include settings.glsl with a the file fetch and replace it with reconstructed one
+    //
+    public static void loadSettings() { //need to initialize the settings even if they dont go into packmenu
+        loadShaderProperties();
+        loadGlslSettings();
+    }
     public PackSettingsMenu(final GameState previousState) {
        loadSettings();
+       mainScreenButtons = new Array<>();
+        for (String prop: currentShaderPropeties.stringPropertyNames()) {
+            //find all the keys with the screen. name
+            if (prop.contains("screen.")) {
+                String buttonName = prop.substring(prop.indexOf('.'));
+
+                assert false;
+                mainScreenButtons.add(buttonName);
+
+                //split on whitespace for the values
+                //packSettingVariables.addAll(Arrays.asList(currentShaderPropeties.getProperty(prop).split(" ")));
+
+            }
+        }
+
        int x = 0;
        int y = 0;
         this.previousState = previousState;
@@ -53,18 +78,27 @@ public class PackSettingsMenu extends GameState {
         for (String settingPage : mainScreenButtons) {
 
             //create the Setting[] for the main screeen subMenu
+            String[] pageVariables;
+            pageVariables = currentShaderPropeties.getProperty("screen." + settingPage).split(" "); // have the page variables be an array and the variables in the settings .glsl be a hashset
 
-            addAll(Arrays.asList(currentShaderPropeties.getProperty(prop).split(" ")));
+            //for each page variable look up the the hashed name from the loaded settings.glsl
+            //then let teh uiElement hold onto the shaderpack setting obj
+            ShaderPackSetting[] settings = new ShaderPackSetting[pageVariables.length];
+            int settingIdx = 0;
+            for (String var: pageVariables) {
 
-            UIElement shader_button = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
+                settings[settingIdx++] = definedSettingsMap.get(var); //i may want to remove from the map
+            }
+
+            UIElement menu_button = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
 
                 //needs all the settings for the button in the screen
-                ShaderPackSetting[] settings;
+
                 public void onClick() {
 
 
                     this.buttonTex = uiPanelPressedTex;
-                    GameState.switchToGameState(new SettingsSubMenu(PackSettingsMenu.this,));
+                    GameState.switchToGameState(new SettingsSubMenu(PackSettingsMenu.this, settings));
 
 
 
@@ -80,11 +114,12 @@ public class PackSettingsMenu extends GameState {
 
 
             y+= (int) 75.0f;
-            shader_button.vAnchor = VerticalAnchor.TOP_ALIGNED;
-            shader_button.hAnchor = HorizontalAnchor.CENTERED;
-            shader_button.setText(shader);
-            shader_button.show();
-            this.uiObjects.add(shader_button);
+            menu_button.vAnchor = VerticalAnchor.TOP_ALIGNED;
+            menu_button.hAnchor = HorizontalAnchor.CENTERED;
+            //todo change settingPage to lang
+            menu_button.setText(settingPage);
+            menu_button.show();
+            this.uiObjects.add(menu_button);
 
         }
 
@@ -107,7 +142,7 @@ public class PackSettingsMenu extends GameState {
         this.drawUIElements();
     }
 
-    private void loadSettings() {
+    private static void loadShaderProperties() {
         packSettingVariables = new HashSet<>();
         currentShaderPropeties = new Properties();
         try {
@@ -124,21 +159,116 @@ public class PackSettingsMenu extends GameState {
             throw new RuntimeException(e);
         }
 
-        for (String prop: currentShaderPropeties.stringPropertyNames()) {
-            //find all the keys with the screen. name
-            if (prop.contains("screen.")) {
-                String buttonName = prop.substring(prop.indexOf('.'));
 
-                assert false;
-                mainScreenButtons.add(buttonName);
 
-                //split on whitespace for the values
-                //packSettingVariables.addAll(Arrays.asList(currentShaderPropeties.getProperty(prop).split(" ")));
+    }
 
-            }
+    private static void loadGlslSettings() {
+        //i should really make a locate function in shaderpackloader so the file structure doesnt have to be exact
+        try {
+            String[] settingsFile = ShaderPackLoader.loadFromZipOrUnzipShaderPack("settings.glsl");
+            for (String line: settingsFile) {
+                //create the settingsObj frmo each line
+                //add it to a hashmap with the key being the string name
+                //need to parse the line
+                //lines structered const "type" "name" = "defaultValue" //[0,1,2,3,4,5,6]
+                //or it could be #define "Name" <optionally>"defaultValue //"comment" [0,15,25,35]
+                // for ifDef uses #define might be commented out but i still want that to be enabled
+                //define has to be lowercase
+                //each line might not have a setting
+                int defineLineIdx = line.indexOf("#define");
+                int firstCommentIdx = line.indexOf("//");
+                    if (defineLineIdx > 0) {
+                        if (firstCommentIdx < defineLineIdx) { //means the define is commented out and means its just an ifdef define no values
+                            //create toggle setting default off
+                            throw new RuntimeException("NOT IMPLEMENTED");
+                        } else {
+                            //continue checking
+                            //only think left to check is if its its toggle
+                            //both slider and cycle have the same data
+
+                            int defineEndIdx = defineLineIdx + 6;
+                            String settingName = line.substring(defineEndIdx, line.indexOf(" ", defineEndIdx)).trim();
+                            //test if the default value is there
+                            if (firstCommentIdx <= defineEndIdx + settingName.length()) {
+                                throw new RuntimeException("ERM what");
+                            }
+                            String defaultValue = line.substring(defineEndIdx + settingName.length(), firstCommentIdx).trim();
+                            if (defaultValue.isEmpty()) {
+                                //means its a toggle setting
+                            } else {
+                                float defaultParseValue ;
+                                try {
+                                    defaultParseValue = Float.parseFloat(defaultValue);
+                                } catch (NumberFormatException e) {
+                                    throw new RuntimeException(" Default cant parse");
+                                }
+                                int valuesStartIdx = line.indexOf("[", firstCommentIdx);
+                                if (valuesStartIdx <0) {
+                                    throw new RuntimeException("NO VALUES");
+                                }
+
+                                String[] stringValues = line.substring(valuesStartIdx).split(" ");
+                                ShaderPackSetting data = getShaderPackSetting(stringValues, defaultParseValue, settingName);
+                                //todo change this to use the lang key so the glsl and pack can use different names
+                                definedSettingsMap.put(data.name, data);
+                            }
+                        }
+                    }
+                }
+
+        }
+        catch (InvalidPathException e) { //it should be fine to continue but the settings page wont load
+            throw new RuntimeException("NOT SETUP");
         }
 
-        ShaderPackLoader.loadFromZipOrUnzipShaderPack("settings.glsl");
+
+    }
+
+    private static @NotNull ShaderPackSetting getShaderPackSetting(String[] stringValues, float defaultParseValue, String settingName) {
+        FloatArray settingValues = new FloatArray(stringValues.length);// should be enough
+        boolean endOfValues = false;
+        for (String val: stringValues) {
+            String stringFloat;
+            if (val.contains("]")) {
+                endOfValues = true;
+                stringFloat = val.replace("]", "");
+                if (stringFloat.isEmpty()) {
+                    //means there is a space at the end of last Value and the size is incorrect
+                    break;
+                }
+
+            } else {
+                stringFloat = val;
+            }
+
+            //add the parsed value to a float Array
+            float parsedVal;
+            try {
+                parsedVal = Float.parseFloat(stringFloat);
+
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("YO NUMBER CANT PARSE");
+            }
+
+            settingValues.add(parsedVal);
+            if (endOfValues) {
+                break;
+            }
+        }
+        //create the setting
+        return new ShaderPackSetting(defaultParseValue, settingName,settingValues, ShaderPackSetting.SettingType.Slider);
+    }
+
+    public static void createSettingsString() {
+        //take all the current settings objects and write them out into a basically txt file so it can be used as includes to shaderfiles
+        String[] settingLines = new String[definedSettingsMap.size()];
+        int idx = 0;
+        for (ShaderPackSetting sval : definedSettingsMap.values()) {
+            settingLines[idx++] = sval.toString();// the game shader will append the newline for us
+            
+        }
+        settingsFile = settingLines;
     }
 
 

@@ -23,8 +23,8 @@ public class SettingsSubMenu extends GameState {
         for (ShaderPackSetting setting : settings) {
             UIElement settingButton ;
             if (setting.type == ShaderPackSetting.SettingType.Slider) {
-
-               settingButton = new UISelectionSlider( setting.values.items, setting.defaultIndex, x, y + 16.0F, 250.0F, 50.0F ) {
+                //need to copy make a new array here because the values.items isnt garenteed to have values in all spots of the array
+               settingButton = new UISelectionSlider( setting.values.toArray(), setting.defaultIndex, x, y + 16.0F, 250.0F, 50.0F ) {
                    public void updateText() {
                        this.setText("" + this.currentValue);
                        //need this to change the actual setting somehow
@@ -39,7 +39,7 @@ public class SettingsSubMenu extends GameState {
                };
             } else {
                 settingButton = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
-                    final float[] values = setting.values.items;
+                    final float[] values = setting.values.toArray();
                     int currentIdx = setting.defaultIndex;
                     public void onClick() {
                         super.onClick();
@@ -86,4 +86,5 @@ public class SettingsSubMenu extends GameState {
         Gdx.gl.glBlendFunc(770, 771);
         this.drawUIElements();
     }
+
 }
