@@ -38,7 +38,7 @@ public class PackSettingsMenu extends GameState {
     public static HashSet<String> packSettingVariables;
 
     public Array<String> mainScreenButtons;
-    public static HashMap<String, ShaderPackSetting> definedSettingsMap = new HashMap<>();
+    public static HashMap<String, ShaderPackSetting> definedSettingsMap;
     //each sub menu is given the object to modify
     //or have a static function use this to reconstruct the settings.glsl file
     //need to replace the include settings.glsl with a the file fetch and replace it with reconstructed one
@@ -53,7 +53,7 @@ public class PackSettingsMenu extends GameState {
         for (String prop: currentShaderPropeties.stringPropertyNames()) {
             //find all the keys with the screen. name
             if (prop.contains("screen.")) {
-                String buttonName = prop.substring(prop.indexOf('.'));
+                String buttonName = prop.substring(prop.indexOf('.') + 1);
 
                 assert false;
                 mainScreenButtons.add(buttonName);
@@ -74,19 +74,22 @@ public class PackSettingsMenu extends GameState {
 
 
 
-
+        System.out.println(mainScreenButtons);
+        System.out.println(definedSettingsMap);
         for (String settingPage : mainScreenButtons) {
 
             //create the Setting[] for the main screeen subMenu
             String[] pageVariables;
-            pageVariables = currentShaderPropeties.getProperty("screen." + settingPage).split(" "); // have the page variables be an array and the variables in the settings .glsl be a hashset
+            //use regex
+            pageVariables = currentShaderPropeties.getProperty("screen." + settingPage).split("\\s+"); // have the page variables be an array and the variables in the settings .glsl be a hashset
 
             //for each page variable look up the the hashed name from the loaded settings.glsl
             //then let teh uiElement hold onto the shaderpack setting obj
             ShaderPackSetting[] settings = new ShaderPackSetting[pageVariables.length];
             int settingIdx = 0;
             for (String var: pageVariables) {
-
+                ShaderPackSetting temp = definedSettingsMap.get(var);
+                System.out.println(var + " : " + temp);
                 settings[settingIdx++] = definedSettingsMap.get(var); //i may want to remove from the map
             }
 
@@ -129,6 +132,7 @@ public class PackSettingsMenu extends GameState {
     public void render() {
         super.render();
         if (Gdx.input.isKeyJustPressed(111)) {
+            saveChanges();
             switchToGameState(this.previousState);
         }
 
@@ -141,8 +145,16 @@ public class PackSettingsMenu extends GameState {
         Gdx.gl.glBlendFunc(770, 771);
         this.drawUIElements();
     }
+    public void saveChanges() {
+        //in charge of updating the settingsArray
+        ShaderPackSetting.saveUserPackSettings();
+    }
 
     private static void loadShaderProperties() {
+//        if (packSettingVariables != null && currentShaderPropeties != null) {
+//            System.out.println("SKIPPING FILE LOAD FOR SHADER PROPERTIES");
+//            return;
+//        }
         packSettingVariables = new HashSet<>();
         currentShaderPropeties = new Properties();
         try {
@@ -165,6 +177,12 @@ public class PackSettingsMenu extends GameState {
 
     private static void loadGlslSettings() {
         //i should really make a locate function in shaderpackloader so the file structure doesnt have to be exact
+
+//        if (definedSettingsMap != null) {
+//            System.out.println("SKIPPING LOAD GLSL");
+//            return;
+//        }
+        definedSettingsMap = new HashMap<>();
         try {
             String[] settingsFile = ShaderPackLoader.loadFromZipOrUnzipShaderPack("settings.glsl");
             for (String line: settingsFile) {
@@ -176,9 +194,10 @@ public class PackSettingsMenu extends GameState {
                 // for ifDef uses #define might be commented out but i still want that to be enabled
                 //define has to be lowercase
                 //each line might not have a setting
+                System.out.println(line);
                 int defineLineIdx = line.indexOf("#define");
                 int firstCommentIdx = line.indexOf("//");
-                    if (defineLineIdx > 0) {
+                    if (defineLineIdx >= 0) {
                         if (firstCommentIdx < defineLineIdx) { //means the define is commented out and means its just an ifdef define no values
                             //create toggle setting default off
                             throw new RuntimeException("NOT IMPLEMENTED");
@@ -187,21 +206,29 @@ public class PackSettingsMenu extends GameState {
                             //only think left to check is if its its toggle
                             //both slider and cycle have the same data
 
-                            int defineEndIdx = defineLineIdx + 6;
-                            String settingName = line.substring(defineEndIdx, line.indexOf(" ", defineEndIdx)).trim();
+                            int defineEndIdx = defineLineIdx + 7;
+                            for (int i = defineEndIdx;  i < line.length(); i++) {
+                                if(line.charAt(i) >= 20) {
+                                   defineEndIdx = i;
+                                    break;
+                                }
+                            }
+                            String settingName = line.substring(defineEndIdx , line.indexOf(" ", defineEndIdx + 1 )).trim(); // this is dumb need to loop to find end of whitespace
+                            System.out.println("name: " + settingName);
                             //test if the default value is there
                             if (firstCommentIdx <= defineEndIdx + settingName.length()) {
                                 throw new RuntimeException("ERM what");
                             }
-                            String defaultValue = line.substring(defineEndIdx + settingName.length(), firstCommentIdx).trim();
+                            String defaultValue = line.substring(defineEndIdx + settingName.length() + 1, firstCommentIdx).trim();
                             if (defaultValue.isEmpty()) {
                                 //means its a toggle setting
+                                System.out.println("VALUE EMPTY");
                             } else {
                                 float defaultParseValue ;
                                 try {
                                     defaultParseValue = Float.parseFloat(defaultValue);
                                 } catch (NumberFormatException e) {
-                                    throw new RuntimeException(" Default cant parse");
+                                    throw new RuntimeException(" Default cant parse" + e);
                                 }
                                 int valuesStartIdx = line.indexOf("[", firstCommentIdx);
                                 if (valuesStartIdx <0) {
@@ -209,6 +236,8 @@ public class PackSettingsMenu extends GameState {
                                 }
 
                                 String[] stringValues = line.substring(valuesStartIdx).split(" ");
+                                System.out.println(Arrays.toString(stringValues));
+
                                 ShaderPackSetting data = getShaderPackSetting(stringValues, defaultParseValue, settingName);
                                 //todo change this to use the lang key so the glsl and pack can use different names
                                 definedSettingsMap.put(data.name, data);
@@ -230,7 +259,13 @@ public class PackSettingsMenu extends GameState {
         boolean endOfValues = false;
         for (String val: stringValues) {
             String stringFloat;
-            if (val.contains("]")) {
+            if (val.contains("[")) {
+                stringFloat = val.replace("[", "");
+                if (stringFloat.isEmpty()) {
+                    //means there is a space at the end of last Value and the size is incorrect
+                    break;
+                }
+            } else if (val.contains("]")) {
                 endOfValues = true;
                 stringFloat = val.replace("]", "");
                 if (stringFloat.isEmpty()) {
@@ -248,7 +283,7 @@ public class PackSettingsMenu extends GameState {
                 parsedVal = Float.parseFloat(stringFloat);
 
             } catch (NumberFormatException e) {
-                throw new RuntimeException("YO NUMBER CANT PARSE");
+                throw new RuntimeException("YO NUMBER CANT PARSE" + e);
             }
 
             settingValues.add(parsedVal);

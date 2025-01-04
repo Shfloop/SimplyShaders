@@ -3,12 +3,14 @@ package com.shfloop.simply_shaders.menus;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.shfloop.simply_shaders.SimplyShaders;
 import finalforeach.cosmicreach.ui.UIElement;
 
 public class UISelectionSlider  extends UIElement {
     protected float currentValue;
     float[] values;
-    private int currentIndex;
+    public int currentIndex;
+    private String name;
 
     public UISelectionSlider(float[] values, int defaultValIdx, float x, float y, float w, float h) {
         super(x, y, w, h, false);
@@ -19,7 +21,7 @@ public class UISelectionSlider  extends UIElement {
             this.currentIndex = defaultValIdx;
         }
         this.currentValue = this.values[this.currentIndex];
-        this.updateText();
+        //this.updateText();
         this.onCreate();
     }
 
@@ -35,6 +37,9 @@ public class UISelectionSlider  extends UIElement {
         super.onMouseUp();
         //this.validate();
     }
+    public void setName(String name) {
+        this.name = name;
+    }
 
 //    public void validate() {
 //        this.currentValue = MathUtils.clamp(this.currentValue, this.min, this.max);
@@ -47,6 +52,12 @@ public class UISelectionSlider  extends UIElement {
             float ratio = (mouseX - x) / this.w;
 
             int index = (int) (ratio * (values.length - 1) ); // i think casting int just takes the floor
+            if (index >= values.length) {
+                index = values.length -1;
+            } else if (index < 0) {
+                index= 0;
+            }
+
             this.currentIndex = index;
             this.currentValue = values[index];
             //this.validate();

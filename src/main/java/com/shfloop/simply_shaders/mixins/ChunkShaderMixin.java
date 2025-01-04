@@ -11,6 +11,7 @@ import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import finalforeach.cosmicreach.util.Identifier;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +26,10 @@ import java.util.Arrays;
 public abstract class ChunkShaderMixin extends GameShader {
     private String shaderType;
     private Matrix4 prevCombinedMatrix = new Matrix4();
+
+    public ChunkShaderMixin(Identifier vertexShader, Identifier fragmentShader) {
+        super(vertexShader, fragmentShader);
+    }
 
     //TODO i should add an entity shader mixin to add normals to entities
 

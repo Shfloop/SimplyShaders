@@ -79,7 +79,7 @@ public class ShaderSelectionMenu extends GameState{
             String[] allShaderFolders = shaderDir.list();
              allShaders = new Array<>();
             for (int i = 0; i < Objects.requireNonNull(allShaderFolders).length; i++) {
-                if (allShaderFolders[i].equals("InternalShader")) {
+                if (allShaderFolders[i].equals("InternalShader") || allShaderFolders[i].contains(".txt")) {
                     continue; //dont want to add it to the array
                 }
                 allShaders.add(allShaderFolders[i]);

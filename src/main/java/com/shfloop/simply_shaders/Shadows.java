@@ -78,7 +78,7 @@ public class Shadows {
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             System.out.println(e.getMessage());
             Array<GameShader> defaultShaders = GameShaderAccessor.getShader();
-            if(defaultShaders.size > 7) { //default shaders should only be size 7 // if shaderpack loading fails it can add a shader too it without removing it
+            if(defaultShaders.size > 9) { //default shaders should only be size 7 // if shaderpack loading fails it can add a shader too it without removing it
                 //This shouldnt be necessary but is an easy solution to shader loading without redoing the entire thing
                 defaultShaders.pop();
             }

@@ -8,12 +8,11 @@ import com.shfloop.simply_shaders.DynamicSkyInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.menus.PackSettingsMenu;
-import com.shfloop.simply_shaders.menus.ShaderPackSetting;
-import com.shfloop.simply_shaders.menus.ShaderSelectionMenu;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
+import com.shfloop.simply_shaders.menus.ShaderPackSetting;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 
@@ -56,10 +55,13 @@ public class ShaderPackLoader {
         //should init shaderpack for new array
 
         shaderPackOn = true;
+
+        ShaderPackSetting.loadUserPackSettings();
         PackSettingsMenu.loadSettings(); //loading settings needs to happen once and then each time menu is opened
         //settings wont apply if load settings is called each time the pack is reloaded unless i write to the settings file each time and re read it
 
         PackSettingsMenu.createSettingsString(); //
+
 
 
         BlockPropertiesIDLoader.updateChunkTexBuf(); // need to load properties before initializing shaders
@@ -81,6 +83,7 @@ public class ShaderPackLoader {
     public static void switchToDefaultPack() {
         shaderPackOn = false;
         isZipPack = false;
+        ShaderPackSetting.saveUserPackSettings(); //
         setDefaultShaders();
         remeshAllRegions();
         remeashAllSkies();
@@ -254,9 +257,10 @@ public class ShaderPackLoader {
         SkyShader.SKY_SHADER = (SkyShader) allShaders.get(3);
 
         EntityShader.ENTITY_SHADER = (EntityShader) allShaders.get(4);
-        //for now dont f with death screen (5)
+        //for now dont f with death screen (5) switched to spritebatchShader
         ItemShader.DEFAULT_ITEM_SHADER = (ItemShader) allShaders.get(6);
-        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(7);
+        VisualTextShader.TEXT_SHADER = (VisualTextShader) allShaders.get(7);
+        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(8);
         Shadows.BLOCK_ENTITY_SHADER = (ChunkShader) ChunkShader.DEFAULT_BLOCK_SHADER;
     }
 

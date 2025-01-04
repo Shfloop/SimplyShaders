@@ -132,7 +132,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                 }
 
                 renderTexturesUsed[numUsedRenderTextures] = Integer.parseInt(String.valueOf(uniform.charAt(8)),16); //ill use hex for the buffer numberng when i add them
-                System.out.println("FOUND PING PONG " + renderTexturesUsed[numUsedRenderTextures]);
+
                 numUsedRenderTextures++;
 
             }
@@ -145,12 +145,10 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                 if (shaderDrawBuffer - GL32.GL_COLOR_ATTACHMENT0 == testValue) { //need to subtract by the gl constante value because im using drawbuffers like that
                     //if both are equal that means that the shader is trying to read and write to the same texture
                     //there cant be duplicate values in this so i can exit
-                    System.out.println(" PING PONG test" + shaderDrawBuffer);
+
                     sameTextureUsed = true;
                     pingPongCount++;
                     break;
-                } else {
-                    System.out.println("COMPARED VALUES: " + shaderDrawBuffer + " != " + testValue);
                 }
             }
             //reuse the array by setting the values that dont match to negative one
@@ -169,7 +167,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
             if(renderTexturesUsed[i] != -1) {
                 this.shaderInputBuffers[pingPongCount] = renderTexturesUsed[i];
                 pingPongCount++;
-                System.out.println("FOUND PING PONG Buffer" + renderTexturesUsed[i]);
+
             }
         }
 
