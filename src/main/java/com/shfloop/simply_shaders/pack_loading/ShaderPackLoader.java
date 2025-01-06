@@ -12,7 +12,7 @@ import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
-import com.shfloop.simply_shaders.menus.ShaderPackSetting;
+import com.shfloop.simply_shaders.settings.PackSettings;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 
@@ -47,6 +47,8 @@ public class ShaderPackLoader {
     public static final Map<String, String> shaderDefaultsMap = new HashMap<>();
     public static int compositeStartIdx =0;
 
+    public static PackSettings packSettings;
+
 
     public static void switchToShaderPack() {
         //check if folder is zip pack
@@ -56,11 +58,9 @@ public class ShaderPackLoader {
 
         shaderPackOn = true;
 
-        ShaderPackSetting.loadUserPackSettings();
-        PackSettingsMenu.loadSettings(); //loading settings needs to happen once and then each time menu is opened
-        //settings wont apply if load settings is called each time the pack is reloaded unless i write to the settings file each time and re read it
 
-        PackSettingsMenu.createSettingsString(); //
+
+        packSettings = new PackSettings(selectedPack);
 
 
 
@@ -83,7 +83,8 @@ public class ShaderPackLoader {
     public static void switchToDefaultPack() {
         shaderPackOn = false;
         isZipPack = false;
-        ShaderPackSetting.saveUserPackSettings(); //
+        //packSettings.saveUserPackSettings(); // dont think this is needed as long as packSettingsMenu always savees settings for the pack on exit
+        packSettings = null;
         setDefaultShaders();
         remeshAllRegions();
         remeashAllSkies();
@@ -179,7 +180,7 @@ public class ShaderPackLoader {
     public static String[] loadShader(Identifier location, boolean lookInShaderPack) {
         if (lookInShaderPack) {
             if (location.getName().contains("settings.glsl")) {
-                return PackSettingsMenu.settingsFile; //load the edited/saved version of the pack file from the settings
+                return packSettings.getSettingsString(); //load the edited/saved version of the pack file from the settings
                 //when loading/saving the settings i need to add the pack name to the filename so TestShadersv7settings.glsl or maybe .settings
             }
             Identifier temp = Identifier.of("shaderpacks/" + selectedPack, location.getName());
@@ -197,6 +198,10 @@ public class ShaderPackLoader {
         }
 
 
+    }
+    public static String[] loadFromZipOrUnzipShaderPack(String fileName, String packName) throws  InvalidPathException {
+        Identifier location = Identifier.of("shaderpacks/" + packName, fileName);
+        return loadFromZipOrUnzipShaderPack(location);
     }
     public static String[] loadFromZipOrUnzipShaderPack(String fileName) throws  InvalidPathException {
         Identifier location = Identifier.of("shaderpacks/" + selectedPack, fileName);

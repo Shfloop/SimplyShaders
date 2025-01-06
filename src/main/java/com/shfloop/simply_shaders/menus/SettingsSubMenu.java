@@ -2,6 +2,7 @@ package com.shfloop.simply_shaders.menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.shfloop.simply_shaders.settings.ShaderPackSetting;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
