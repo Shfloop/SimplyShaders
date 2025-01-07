@@ -208,7 +208,7 @@ public class ShaderSelectionMenu extends GameState{
                 @Override
                 public void onClick() {
                     super.onClick();
-                    if (last_selected_idx >0) {
+                    if (last_selected_idx >0 && allShaders.size > 0) {
                         GameState.switchToGameState(new PackSettingsMenu(ShaderSelectionMenu.this, allShaders.get(last_selected_idx - 1)));
                     }
 
