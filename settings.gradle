@@ -12,6 +12,7 @@ buildscript() {
     } //jitpack builds it for you if you do master-SNAPSHOT
 }
 
-
+include("common")
+include("quilt")
 
 rootProject.name = "SimplyShaders"

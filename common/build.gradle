@@ -1,0 +1,37 @@
+plugins {
+    //Cosmic Quilt
+    id "cosmicloom"
+
+    //Puzzle
+//    id "jigsaw"
+//    id "com.github.johnrengelman.shadow"
+}
+
+loom {
+////    accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener") only uncomment if you need access wideners
+    //also need to change the build.gradle for puzzle/quilt to change the access widener
+
+}
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    //Puzzle
+    //cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}") // quilt can run off of jigsaw but doesnt build correnctly
+
+    // Cosmic Quilt
+    cosmicReach(loom.cosmicReachClient("pre-alpha", cosmic_reach_version))
+    cosmicReachServer(loom.cosmicReachServer("pre-alpha", cosmic_reach_version))
+    modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
+}
+
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

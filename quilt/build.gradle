@@ -1,0 +1,50 @@
+plugins {
+    id "cosmicloom"
+}
+
+
+loom {
+    accessWidenerPath = file("src/main/resources/${id}.accesswidener")
+}
+
+
+repositories {
+    // Add repositories to retrieve artifacts from in here.
+    // You should only use this when depending on other mods because
+    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+    // for more information about repositories.
+}
+
+
+dependencies {
+    // Cosmic Reach
+    cosmicReach(loom.cosmicReachClient("pre-alpha", cosmic_reach_version))
+    cosmicReachServer(loom.cosmicReachServer("pre-alpha", cosmic_reach_version))
+    // Cosmic Quilt
+    modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
+
+
+
+    implementation project(":common")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    source(project(":common").sourceSets.main.allSource)
+}
+tasks.withType(Javadoc).configureEach {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+
+processResources {
+    from project(":common").sourceSets.main.resources
+}
+java {
+	withSourcesJar()
+	// withJavadocJar() // If docs are included with the project, this line can be un-commented
+
+    // Sets the Java version
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

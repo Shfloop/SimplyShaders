@@ -25,7 +25,7 @@
     },
 
     "entrypoints": {
-      "init": "com.shfloop.simply_shaders.SimplyShaders"
+      "init": "com.shfloop.simply_shaders.SimplyShadersQuilt"
     },
 
     "depends": [
@@ -40,6 +40,9 @@
     ]
   },
 
-  "mixin": "simply_shaders.mixins.json",
-  "access_widener": "simply_shaders.accesswidener"
+  "access_widener": "${mod_id}.accesswidener",
+  "mixin": [
+    "${mod_id}.quilt.mixins.json",
+    "${mod_id}.mixins.json"
+  ]
 }
