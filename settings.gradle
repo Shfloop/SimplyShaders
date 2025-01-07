@@ -4,15 +4,25 @@ buildscript() {
             name "JitPack"
             url "https://jitpack.io"
         }
-
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
         mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
     }
     dependencies {
         classpath "org.codeberg.CRModders:cosmic-loom:1.1.1"
+
+
+        classpath "com.github.johnrengelman:shadow:8.1.1"
+        classpath "com.github.PuzzleLoader:jigsaw:$jigsaw_gradle_version"
     } //jitpack builds it for you if you do master-SNAPSHOT
 }
 
 include("common")
 include("quilt")
+include("puzzle")
 
 rootProject.name = "SimplyShaders"

@@ -1,6 +1,8 @@
 plugins {
     id "java"
     id "cosmicloom" apply(false)
+    id "jigsaw" apply(false)
+    id "com.github.johnrengelman.shadow" apply(false)
     id "maven-publish"
 }
 
@@ -24,7 +26,7 @@ subprojects {
 
     processResources {
         def resourceTargets = [ // Locations of where to inject the properties
-                "quilt.mod.json"
+                "quilt.mod.json", "puzzle.mod.json"
         ]
 
         // Left item is the name in the target, right is the varuable name

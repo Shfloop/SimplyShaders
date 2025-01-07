@@ -1,0 +1,39 @@
+plugins {
+    id "jigsaw"
+    id "com.github.johnrengelman.shadow"
+}
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        "SimplyShaders" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+    accessWidenerPath = file("src/main/resources/${id}.manipulator")
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}")
+    implementation project(":common")
+}
+tasks.named("compileClientJava") {
+    source(project(":common").sourceSets.main.allSource)
+}
+tasks.named("compileClientJava") {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+
+processResources {
+    from project(":common").sourceSets.main.resources
+}
+
