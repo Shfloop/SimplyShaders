@@ -2,7 +2,7 @@
   "id": "${mod_id}",
   "version": "${mod_version}",
   "name": "${mod_name}",
-  "description": "${mod_desc}",
+  "description": "Adds more complex shader support",
   "authors": [
     "Shfloop"
   ],
@@ -11,11 +11,12 @@
   },
   "entrypoints": {
     "client_init": [
-      "org.shfloop.SimplyShadersPuzzle.SimplyShaders"
+      "com.shfloop.simply_shaders.SimplyShadersPuzzle"
     ]
   },
   "mixins": [
-    "simply_shaders.mixins.json"
+    "simply_shaders.mixins.json",
+    "simply_shaders.puzzle.mixins.json"
   ],
   "dependencies": {
     "cosmic-reach": ">=0.3.6",

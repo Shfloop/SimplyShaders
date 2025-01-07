@@ -11,6 +11,7 @@ public class SimplyShadersQuilt implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		LOGGER.info("Block Switcher QUILT Initialized!");
+		SimplyShaders.initializeBuffer();
 	}
 }
 
