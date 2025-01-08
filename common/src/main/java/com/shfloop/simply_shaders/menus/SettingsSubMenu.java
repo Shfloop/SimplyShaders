@@ -44,7 +44,7 @@ public class SettingsSubMenu extends GameState {
                    }
 
                };
-            } else {
+            } else if (setting.type == ShaderPackSetting.SettingType.Cycle){
                 settingButton = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
                     final String settingName = setting.name;
                     final float[] values = setting.values.toArray();
@@ -61,6 +61,28 @@ public class SettingsSubMenu extends GameState {
                         this.setText(this.settingName + ": " + values[currentIdx]);
                         currentIdx++;
                         if (currentIdx == values.length) {
+                            currentIdx = 0;
+                        }
+
+
+                    }
+                };
+            } else {
+                settingButton = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
+                    int currentIdx = setting.getCurrentIdx();
+                    final int idx = finalValIdx;
+                    final String settingName = setting.name;
+                    public void onClick() {
+                        super.onClick();
+                        //update the correct settings
+                        this.updateText();
+                    }
+
+                    public void updateText() {
+                        selectedValueIndex[idx] = currentIdx;
+                        this.setText(this.settingName + ": " + (currentIdx == 1 ? "On" : "Off"));
+                        currentIdx++;
+                        if (currentIdx > 1) {
                             currentIdx = 0;
                         }
 

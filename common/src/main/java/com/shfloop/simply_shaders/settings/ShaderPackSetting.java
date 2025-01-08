@@ -34,8 +34,13 @@ public class ShaderPackSetting { //holds the value for the settings
     private int defaultIndex;
 
     //private static HashMap<String, Float> CurPackSavedSettings = new HashMap<>();
-
-
+    //TODO change this and seperate out the boolean setting its a liittle to much for a single class
+    public ShaderPackSetting(int defaultValue, String name, int changedValue ) {
+        this.name = name;
+        this.type = SettingType.Toggle;
+        this.defaultIndex = defaultValue;
+        this.changedIndex = changedValue;
+    }
 
     public ShaderPackSetting(float defaultValue,String name, FloatArray values, SettingType type, int changedIndex ) {
         this.name = name;
@@ -87,11 +92,17 @@ public class ShaderPackSetting { //holds the value for the settings
     @Override
     public String toString() {
         //return the object as a formatted string used for the settings.glsl
-        int outSize = this.name.length() + this.values.size * 2;// rough estimate of the size
+        int valuesSize = this.values == null ? 4 : this.values.size * 2;
+        int outSize = this.name.length() + valuesSize;// rough estimate of the size
         StringBuilder builder = new StringBuilder(outSize);
         builder.append("#define ");
         builder.append(this.name);
         builder.append(' ');
+        if (this.type == SettingType.Toggle) {
+            builder.append(this.getCurrentIdx());
+            builder.append( '\n');
+            return builder.toString();
+        }
 
         builder.append(this.values.get(this.getCurrentIdx()));
         builder.append(" //[");// probably not the fastest way to build the string but its fine

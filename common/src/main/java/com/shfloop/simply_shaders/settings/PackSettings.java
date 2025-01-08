@@ -88,22 +88,44 @@ public class PackSettings {
                 int defineLineIdx = line.indexOf("#define");
                 int firstCommentIdx = line.indexOf("//");
                 if (defineLineIdx >= 0) {
+                    int defineEndIdx = defineLineIdx + 7;
+                    int spaceIdx = line.indexOf(" ", defineEndIdx + 1 );
+                    //make sure if theres no spaces after the settingName it should just do the lineLength
+                    String settingName = line.substring(defineEndIdx , (spaceIdx == -1 ? line.length(): spaceIdx)).trim(); // this is dumb need to loop to find end of whitespace
+
+                    if (firstCommentIdx == -1) {
+                        //NO comment is found
+                        //treat it as an active toggle define setting
+
+
+                        //the line is a toggle that is toggled on by default
+                        //TOGGLE DEFAULT ON
+                        addToggleSetting(settingName, true);
+                        System.out.println("TOGGLE ON SETTING");
+
+
+                    } else
                     if (firstCommentIdx < defineLineIdx) { //means the define is commented out and means its just an ifdef define no values
                         //create toggle setting default off
-                        throw new RuntimeException("NOT IMPLEMENTED");
+                        if(line.indexOf('[') != -1) {
+                            continue; //means its a commented out slider/values
+                            //shouldnt be used but if someone wants to remove a setting by commenting it should be allowed
+                        }
+                        //TOGGLE DEFAULT OFF
+                        addToggleSetting(settingName, false);
+                        System.out.println("TOGGLE OFF SETTING");
                     } else {
                         //continue checking
                         //only think left to check is if its its toggle
                         //both slider and cycle have the same data
 
-                        int defineEndIdx = defineLineIdx + 7;
+
                         for (int i = defineEndIdx;  i < line.length(); i++) {
                             if(line.charAt(i) >= 20) {
                                 defineEndIdx = i;
                                 break;
                             }
                         }
-                        String settingName = line.substring(defineEndIdx , line.indexOf(" ", defineEndIdx + 1 )).trim(); // this is dumb need to loop to find end of whitespace
                         System.out.println("name: " + settingName);
                         //test if the default value is there
                         if (firstCommentIdx <= defineEndIdx + settingName.length()) {
@@ -112,7 +134,9 @@ public class PackSettings {
                         String defaultValue = line.substring(defineEndIdx + settingName.length() + 1, firstCommentIdx).trim();
                         if (defaultValue.isEmpty()) {
                             //means its a toggle setting
-                            System.out.println("VALUE EMPTY");
+                            //TOGGLE ON WITH A COMMENT
+                            addToggleSetting(settingName, true);
+                            System.out.println("TOGGLE ON SETTING 2");
                         } else {
                             float defaultParseValue ;
                             try {
@@ -142,6 +166,22 @@ public class PackSettings {
         }
 
 
+    }
+    private void addToggleSetting(String settingName, boolean isActive) {
+        int defaultValue = isActive ? 1 : 0;
+
+        ShaderPackSetting data = new ShaderPackSetting(defaultValue, settingName,  getBooleanSetting(settingName));
+        //TODO USE LANG KEY
+        this.definedSettingsMap.put(data.name, data);
+    }
+    //TODO move this to ShaderPackSetting it doesnt need to be in PackSettings
+    //ALSO
+    private int getBooleanSetting(String settingName) {
+        Float val = this.packSavedSettingsMap.get(settingName);
+        if (val != null) {
+            return  val.intValue();
+        }
+        return -1;
     }
     private @NotNull ShaderPackSetting getShaderPackSetting(String[] stringValues, float defaultParseValue, String settingName) {
         FloatArray settingValues = new FloatArray(stringValues.length);// should be enough
@@ -226,6 +266,7 @@ public class PackSettings {
     }
 
     public  void saveUserPackSettings() {
+
         if (this.definedSettingsMap == null) {
             return;
         }
@@ -245,12 +286,20 @@ public class PackSettings {
         SimplyShaders.LOGGER.info("Saving Pack Setting");
         StringBuilder sb = new StringBuilder();
         for (ShaderPackSetting set: definedSettingsMap.values()) {
+
             if (set.getChangedIndex() == -1) {
                 continue;
             }
+
             sb.append(set.name);
             sb.append("=");
-            sb.append(set.values.get(set.getChangedIndex()));
+            //really dumb but i only have boolean and slider settings
+            if (set.type == ShaderPackSetting.SettingType.Toggle) {
+                sb.append(set.getChangedIndex());
+            } else {
+                sb.append(set.values.get(set.getChangedIndex()));
+            }
+
             sb.append(" \n");
         }
         //Identifier loc = Identifier.of("shaderpacks",ShaderPackLoader.selectedPack + ".txt");
