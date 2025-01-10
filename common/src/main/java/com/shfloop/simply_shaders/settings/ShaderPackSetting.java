@@ -34,7 +34,7 @@ public class ShaderPackSetting { //holds the value for the settings
     private int defaultIndex;
 
     //private static HashMap<String, Float> CurPackSavedSettings = new HashMap<>();
-    //TODO change this and seperate out the boolean setting its a liittle to much for a single class
+    //TODO change this and seperate out the boolean setting its a liittle to much for a single class and take some of the things out of packSettings
     public ShaderPackSetting(int defaultValue, String name, int changedValue ) {
         this.name = name;
         this.type = SettingType.Toggle;
@@ -92,6 +92,10 @@ public class ShaderPackSetting { //holds the value for the settings
     @Override
     public String toString() {
         //return the object as a formatted string used for the settings.glsl
+        //TODO temporary fix
+        if (this.type == SettingType.Toggle && this.getCurrentIdx() == 0) {
+            return "\n";
+        }
         int valuesSize = this.values == null ? 4 : this.values.size * 2;
         int outSize = this.name.length() + valuesSize;// rough estimate of the size
         StringBuilder builder = new StringBuilder(outSize);

@@ -11,6 +11,7 @@ public class BufferTexture {
     private int width;
     private int height;
     private String uniformName;
+    public boolean clearTexture = true;
     public BufferTexture(String uniformName,int width, int height, int pixel_format) throws Exception {
         this.id =  GL20.glGenTextures();
         if (this.id == -1) {

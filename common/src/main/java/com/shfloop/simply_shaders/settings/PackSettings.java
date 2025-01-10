@@ -1,6 +1,8 @@
 package com.shfloop.simply_shaders.settings;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.io.SaveLocation;
@@ -19,6 +21,8 @@ public class PackSettings {
 
     private  HashMap<String, Float> packSavedSettingsMap;
     private String[] settingsFile;
+
+    public final IntArray disableBufferClearing = new IntArray();
 
     public PackSettings(String packName) {
         if (packName == null) {

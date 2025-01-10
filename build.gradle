@@ -47,7 +47,7 @@ subprojects {
 }
 //thanks sinful.soul
 tasks.register("runRenderDoc", Exec) {
-    def javaExecTask = tasks.named("runClient", JavaExec).get()
+    def javaExecTask = rootProject.project(":quilt").tasks.named("runClient", JavaExec).get()
     def javaHome = javaExecTask.javaLauncher.get().metadata.installationPath.asFile.absolutePath
 
     commandLine = [

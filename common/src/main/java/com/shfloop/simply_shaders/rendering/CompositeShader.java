@@ -27,6 +27,12 @@ public class CompositeShader extends GameShader {
 
 
     }
+    //when bindDrawBuffers() is called to flip any buffers that are reading and writing in the same shader
+    //this needs to be called after to setup up the uniform texture for the next shader pass
+    //a future optimization is this only needs to happen after a swap its not needed between two swaps but it doesnt hurt just duplicates the opperation
+    public void unbind() {
+        this.resetUniformBuffers();
+    }
 
     public void bind(Camera worldCamera) {
 
@@ -65,6 +71,8 @@ public class CompositeShader extends GameShader {
         this.bindOptionalUniform3f("previousCameraPosition", Shadows.previousCameraPosition);
         this.bindOptionalMatrix4("u_projPrev", Shadows.previousProjection);
         this.bindOptionalMatrix4("u_viewPrev", Shadows.previousView);
+        this.bindOptionalMatrix4("u_projInverse", worldCamera.projection.cpy().inv());
+        this.bindOptionalMatrix4("u_viewInverse", worldCamera.view.cpy().inv());
 
 
 

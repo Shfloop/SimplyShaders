@@ -77,7 +77,15 @@ public class ShaderPackLoader {
         remeashAllSkies();
         changeItemShader();
         updateEntityShader();
-        remakeFBO();
+        if (SimplyShaders.buffer != null) {
+            SimplyShaders.buffer.dispose();
+        }
+
+        try {
+            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), packSettings.disableBufferClearing);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
     public static void switchToDefaultPack() {

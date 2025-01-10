@@ -114,6 +114,22 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
     private void findFragShaderValues(String fragShaderText) {
         String[] shaderLines = fragShaderText.split("[;\n]");
+        for (String line: shaderLines) {
+
+            int colorTexIdx =line.indexOf("colorTex");
+            if(colorTexIdx > 0) {
+                if(colorTexIdx+ 9+5 > line.length()) {
+                    continue;
+                }
+                //SimplyShaders.LOGGER.info("FoundColorTexLine " + line.charAt(colorTexIdx + 8));
+                if(line.substring(colorTexIdx + 9, colorTexIdx + 9 + 5).equals("Clear")) {//colorTex1Clear
+                    if (line.contains("false")) {
+                        ShaderPackLoader.packSettings.disableBufferClearing.add(line.charAt(colorTexIdx + 8) - 48);//convert the char to int value
+                        SimplyShaders.LOGGER.info("DISABLE CLEARING FOR COLORTEX: " + line.charAt(colorTexIdx + 8));
+                    }
+                }
+            }
+        }
 
 
         //uses the drawbuffers and then the uniforms colorTexnnumebrs to decide if it should ping pong the render texture/s

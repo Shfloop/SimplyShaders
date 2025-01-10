@@ -2,7 +2,9 @@ package com.shfloop.simply_shaders.rendering;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.ShadowTexture;
+import com.shfloop.simply_shaders.SimplyShaders;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
@@ -14,6 +16,7 @@ public class RenderFBO {
     private final int fboHandle;
     private int WIDTH;
     private int HEIGHT;
+    public boolean[] isBufferSwapped;
 
     //TODO still need to get renderTextures to bind in all shaders
     private static BufferTexture[] renderTextures;//for now ill only add 8 textures to render too
@@ -32,6 +35,20 @@ public class RenderFBO {
     // this relies on renderFBO to be created on shaderpack load which im not sure if it is
 
     public ShadowTexture depthTex0;
+    public RenderFBO(int width, int height, IntArray disabledBufferClearing) throws Exception {
+        this(width,height);
+        for( int i =0; i < disabledBufferClearing.size;i++) {
+
+            int bufferNum =disabledBufferClearing.get(i);
+            SimplyShaders.LOGGER.info("NO CLEAR FOR BUFFER: {}",bufferNum);
+            if(bufferNum>= 0 && bufferNum <8) {
+
+                renderTextures[bufferNum].clearTexture = false;
+                swapBufferStorage[bufferNum].clearTexture = false;
+                this.addSwappedBufferTag(bufferNum);
+            }
+        }
+    }
     public RenderFBO(int width, int height) throws Exception {
 
         this.WIDTH = width;
@@ -42,6 +59,7 @@ public class RenderFBO {
         uniformTextures = new BufferTexture[numRenderTextures];
         swapBufferStorage = new BufferTexture[numRenderTextures];
         fboHandle = Gdx.gl.glGenFramebuffer();
+        this.isBufferSwapped = new boolean[8]; //defaults to false
 
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
 
@@ -134,5 +152,18 @@ public class RenderFBO {
     public void undoUniformPingPong(int pingPongBufferNum) {
         uniformTextures[pingPongBufferNum] = renderTextures[pingPongBufferNum];
         //uniform should only have copies of stuff in render textures or swap bufer storage
+    }
+    public BufferTexture getTexture(int num) {
+        return renderTextures[num];
+    }
+    public BufferTexture getSwapTexture(int num) {
+        return swapBufferStorage[num];
+    }
+    //used for knowing which buffers to clear during begininng of render passes so i dont clear the entire swap buffer storage if its not necessary
+    public void addSwappedBufferTag(int bufferNum) {
+        if (bufferNum < 0 || bufferNum >= renderTextures.length) {
+            throw new RuntimeException("GameShader gave bad number for ping pong buffer");
+        }
+        this.isBufferSwapped[bufferNum] = true;
     }
 }
