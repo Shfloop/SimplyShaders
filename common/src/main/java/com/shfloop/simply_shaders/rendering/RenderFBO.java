@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.ShadowTexture;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
@@ -17,6 +18,7 @@ public class RenderFBO {
     private int WIDTH;
     private int HEIGHT;
     public boolean[] isBufferSwapped;
+    private static float previousViewportScale = 1.0f;
 
     //TODO still need to get renderTextures to bind in all shaders
     private static BufferTexture[] renderTextures;//for now ill only add 8 textures to render too
@@ -63,15 +65,26 @@ public class RenderFBO {
 
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
 
+        float[] textureScale = new float[8];
+        for(int i =0; i< textureScale.length; i++) {
+            String name = "colorTex" + i;
+            if (ShaderPackLoader.packSettings != null) {
+                textureScale[i] = ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault(name, 1.0f);
+            } else {
+                textureScale[i] = 1.0f;
+            }
+
+        }
+
 
         for(int i =0; i< renderTextures.length; i++) {
-            renderTextures[i] = new BufferTexture("colorTex" + Integer.toString(i), WIDTH, HEIGHT, GL32.GL_RGBA); //each texture is only 13 MB for 8 bit
+            renderTextures[i] = new BufferTexture("colorTex" + Integer.toString(i), WIDTH, HEIGHT, GL32.GL_RGBA, textureScale[i]); //each texture is only 13 MB for 8 bit
             uniformTextures[i] = renderTextures[i];
             Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0 + i, GL20.GL_TEXTURE_2D, renderTextures[i].getID(), 0);
         }
 
         for(int i =0; i< swapBufferStorage.length; i++) {
-            swapBufferStorage[i] = new BufferTexture("colorTex" + Integer.toString(i), WIDTH, HEIGHT, GL32.GL_RGBA); //each texture is only 13 MB for 8 bit
+            swapBufferStorage[i] = new BufferTexture("colorTex" + Integer.toString(i), WIDTH, HEIGHT, GL32.GL_RGBA, textureScale[i]); //each texture is only 13 MB for 8 bit
 
         }
 
@@ -165,5 +178,14 @@ public class RenderFBO {
             throw new RuntimeException("GameShader gave bad number for ping pong buffer");
         }
         this.isBufferSwapped[bufferNum] = true;
+    }
+    public void setCompositeViewPort(float viewportScale) {
+        //needs to change viewPort based on the previous viewport resolution
+        if (previousViewportScale == viewportScale) {
+            return;
+        }
+        previousViewportScale = viewportScale;
+        Gdx.gl.glViewport(0,0,(int)  (viewportScale * Gdx.graphics.getWidth()),(int) (viewportScale * Gdx.graphics.getHeight()));
+
     }
 }

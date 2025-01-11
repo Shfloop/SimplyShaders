@@ -12,15 +12,17 @@ public class BufferTexture {
     private int height;
     private String uniformName;
     public boolean clearTexture = true;
-    public BufferTexture(String uniformName,int width, int height, int pixel_format) throws Exception {
+    public float renderScale;
+    public BufferTexture(String uniformName,int width, int height, int pixel_format, float renderScale) throws Exception {
         this.id =  GL20.glGenTextures();
         if (this.id == -1) {
-            throw new Exception("Shadow map doesnt exits cant get id");
+            throw new Exception("texture doesnt exits cant get id");
         }
         this.uniformName = uniformName;
         this.width = width;
         this.height = height;
 
+        this.renderScale = renderScale; // could do the stuff in renderFbo here
 
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.id);
         GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL32.GL_RGBA16F,this.width,this.height,0,pixel_format,GL20.GL_FLOAT, (ByteBuffer) null);

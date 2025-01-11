@@ -25,6 +25,9 @@ public class CompositeShader extends GameShader {
         super(vertexShader,fragmentShader);
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
 
+        //drawbuffers should be created becuse super calls reload()
+
+
 
     }
     //when bindDrawBuffers() is called to flip any buffers that are reading and writing in the same shader
@@ -36,7 +39,7 @@ public class CompositeShader extends GameShader {
 
     public void bind(Camera worldCamera) {
 
-
+        SimplyShaders.buffer.setCompositeViewPort(((GameShaderInterface)(this)).getShaderScale());
         this.bindDrawBuffers();
         super.bind(worldCamera);
         int texNum= 0;

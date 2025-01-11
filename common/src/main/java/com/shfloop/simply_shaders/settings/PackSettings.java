@@ -23,6 +23,7 @@ public class PackSettings {
     private String[] settingsFile;
 
     public final IntArray disableBufferClearing = new IntArray();
+    public final HashMap<String,Float> bufferTexturesScale = new HashMap<>();
 
     public PackSettings(String packName) {
         if (packName == null) {
@@ -68,6 +69,21 @@ public class PackSettings {
         }
         catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+        //temporary to load some properties
+        //so each buffer texture can have a setting where it has the resolution
+        //need a pack setting that runs
+        //todo might want to add custom value for each widht and height
+        for (int i = 0; i < 8; i++) {
+            String bufferName = "colorTex" + i;
+            float value = Float.parseFloat(packProperties.getProperty("size.buffer." + bufferName,"-1"));
+            if(value > 0 ) {// i guess the values can be bigger than one not sure why you would want to though
+                //use the default 1.0
+                this.bufferTexturesScale.put(bufferName, value);
+            }
+
+
         }
 
 

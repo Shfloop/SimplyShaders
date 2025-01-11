@@ -112,6 +112,12 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         this.shaderInputBuffers = arr;
     }
 
+    @Unique
+    private float shaderScale = 1.0f;
+    @Override
+    public float getShaderScale() {
+        return this.shaderScale;
+    }
     private void findFragShaderValues(String fragShaderText) {
         String[] shaderLines = fragShaderText.split("[;\n]");
         for (String line: shaderLines) {
@@ -330,8 +336,20 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                 System.out.print(tempdrawBuffers[i] - 48 + ", ");
                 //copy over the data with a new sized array and the appropriate colorattachment value
             }
-            System.out.println("}");
+            System.out.println("}");//this should always have atleast one element
+            if (ShaderPackLoader.packSettings == null) {
+                return true;
+            }
+            float testingScale =  ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault("colorTex"+ (shaderDrawBuffers[0] - GL32.GL_COLOR_ATTACHMENT0), 1.0f);
+            for (int i = 1; i< drawBufferLength; i++) {
+                float newScale =  ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault("colorTex"+ (shaderDrawBuffers[i] - GL32.GL_COLOR_ATTACHMENT0), 1.0f);
+                if (testingScale != newScale) {
+                    throw new RuntimeException("SHADER DRAW BUFFERS SCALE DONT MATCH");
+                }
 
+            }
+            this.shaderScale = testingScale;
+            SimplyShaders.LOGGER.info("SHADER STAGE SCALE SET TO {}", testingScale);
             return true;
         }
         return false;
