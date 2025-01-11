@@ -96,6 +96,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         ((GameShader)(Object)this).bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
         ((GameShader)(Object)this).bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
         ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
+        ((GameShader)(Object)this).bindOptionalFloat("sunAngle", Shadows.sunAngle);
 
     }
 

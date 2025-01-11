@@ -41,6 +41,7 @@ public class Shadows {
     public static boolean initalized = false;
     private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl", "composite0.vert.glsl", "composite0.frag.glsl"};
 
+    public static float sunAngle = 0.0f; //value from 0-1.0f im guessing 1,0f means noon;
     static {
 
         sunCamera =  new OrthographicCamera(256, 256); // should change this to be initialized on the player instead
