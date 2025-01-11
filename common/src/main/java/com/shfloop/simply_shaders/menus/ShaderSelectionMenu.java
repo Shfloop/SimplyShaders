@@ -202,7 +202,7 @@ public class ShaderSelectionMenu extends GameState{
             returnButton.setText("Return");
             returnButton.show();
             this.uiObjects.add(returnButton);
-            UIElement IsometricButton = new UIElement(-5.0F, -5.0F, 250.0F, 50.0F) {//-137.0F, 25.0F, 250.0F, 50.0F
+            UIElement IsometricButton = new UIElement(-275.0F, -82.0F, 250.0F, 50.0F) {//-137.0F, 25.0F, 250.0F, 50.0F
 
 
                 @Override
@@ -217,7 +217,7 @@ public class ShaderSelectionMenu extends GameState{
             };
             IsometricButton.setText("PackSettings");
             IsometricButton.vAnchor = VerticalAnchor.BOTTOM_ALIGNED;
-            IsometricButton.hAnchor = HorizontalAnchor.LEFT_ALIGNED;
+//            IsometricButton.hAnchor = HorizontalAnchor.LEFT_ALIGNED;
             IsometricButton.show();
             this.uiObjects.add(IsometricButton);
             UIElement loadButton = new UIElement(275.0F, -16.0F, 250.0F, 50.0F) {
