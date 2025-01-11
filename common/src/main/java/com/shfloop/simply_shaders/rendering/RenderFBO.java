@@ -17,7 +17,6 @@ public class RenderFBO {
     private final int fboHandle;
     private int WIDTH;
     private int HEIGHT;
-    public boolean[] isBufferSwapped;
     private static float previousViewportScale = 1.0f;
 
     //TODO still need to get renderTextures to bind in all shaders
@@ -39,17 +38,7 @@ public class RenderFBO {
     public ShadowTexture depthTex0;
     public RenderFBO(int width, int height, IntArray disabledBufferClearing) throws Exception {
         this(width,height);
-        for( int i =0; i < disabledBufferClearing.size;i++) {
 
-            int bufferNum =disabledBufferClearing.get(i);
-            SimplyShaders.LOGGER.info("NO CLEAR FOR BUFFER: {}",bufferNum);
-            if(bufferNum>= 0 && bufferNum <8) {
-
-                renderTextures[bufferNum].clearTexture = false;
-                swapBufferStorage[bufferNum].clearTexture = false;
-                this.addSwappedBufferTag(bufferNum);
-            }
-        }
     }
     public RenderFBO(int width, int height) throws Exception {
 
@@ -61,7 +50,7 @@ public class RenderFBO {
         uniformTextures = new BufferTexture[numRenderTextures];
         swapBufferStorage = new BufferTexture[numRenderTextures];
         fboHandle = Gdx.gl.glGenFramebuffer();
-        this.isBufferSwapped = new boolean[8]; //defaults to false
+
 
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fboHandle);
 
@@ -106,6 +95,21 @@ public class RenderFBO {
 
 //        fboTexture = new TextureRegion(fbo.getColorBufferTexture());
         Gdx.gl.glBindFramebuffer(36160, 0);
+        if (ShaderPackLoader.shaderPackOn) {
+            for( int i =0; i < ShaderPackLoader.packSettings.disableBufferClearing.size;i++) {
+
+                int bufferNum =ShaderPackLoader.packSettings.disableBufferClearing.get(i);
+                SimplyShaders.LOGGER.info("NO CLEAR FOR BUFFER: {}",bufferNum);
+                if(bufferNum>= 0 && bufferNum <8) {
+
+                    renderTextures[bufferNum].clearTexture = false;
+                    swapBufferStorage[bufferNum].clearTexture = false;
+
+                }
+            }
+        }
+
+
         System.out.println("RenderBufferDone");
     }
     public int getFboHandle() {
@@ -173,12 +177,7 @@ public class RenderFBO {
         return swapBufferStorage[num];
     }
     //used for knowing which buffers to clear during begininng of render passes so i dont clear the entire swap buffer storage if its not necessary
-    public void addSwappedBufferTag(int bufferNum) {
-        if (bufferNum < 0 || bufferNum >= renderTextures.length) {
-            throw new RuntimeException("GameShader gave bad number for ping pong buffer");
-        }
-        this.isBufferSwapped[bufferNum] = true;
-    }
+
     public void setCompositeViewPort(float viewportScale) {
         //needs to change viewPort based on the previous viewport resolution
         if (previousViewportScale == viewportScale) {

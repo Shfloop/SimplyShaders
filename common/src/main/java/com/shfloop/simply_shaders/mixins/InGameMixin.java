@@ -185,11 +185,7 @@ public abstract class InGameMixin extends GameState {
           if( SimplyShaders.buffer.getTexture(i).clearTexture) {
               GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
 
-              if (SimplyShaders.buffer.isBufferSwapped[i] ) { // i think it would be better to fix this
 
-                  GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
-
-              }
           }
 
 

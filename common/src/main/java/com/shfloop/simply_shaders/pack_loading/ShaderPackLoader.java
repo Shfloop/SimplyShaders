@@ -82,7 +82,7 @@ public class ShaderPackLoader {
         }
 
         try {
-            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), packSettings.disableBufferClearing);
+            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
