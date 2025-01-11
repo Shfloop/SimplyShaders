@@ -215,8 +215,9 @@ public class ShaderPackLoader {
         Identifier location = Identifier.of("shaderpacks/" + selectedPack, fileName);
        return loadFromZipOrUnzipShaderPack(location);
     }
+    //this cant have isZipPack because it needs to be pack independent
     public static String[] loadFromZipOrUnzipShaderPack(Identifier location) throws InvalidPathException {
-        if (isZipPack) {
+        if (location.getNamespace().endsWith(".zip")) {
             Path zipFilePath = Paths.get(SaveLocation.getSaveFolderLocation(),"mods" ,location.getNamespace()); // in case of shaderpacks namespace will be shaderpacks/PACKNAME
             try (FileSystem fs = FileSystems.newFileSystem(zipFilePath, (ClassLoader) null)) {
                 Path path = fs.getPath(location.getName());

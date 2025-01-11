@@ -182,7 +182,7 @@ public class PackSettings {
 
         }
         catch (InvalidPathException e) { //it should be fine to continue but the settings page wont load
-            throw new RuntimeException("NOT SETUP");
+            throw new RuntimeException("NOT SETUP " + e);
         }
 
 
