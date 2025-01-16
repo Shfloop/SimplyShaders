@@ -25,6 +25,8 @@ public class PackSettings {
     public final IntArray disableBufferClearing = new IntArray();
     public final HashMap<String,Float> bufferTexturesScale = new HashMap<>();
 
+    public final HashSet<String> sliderButtonsSet = new HashSet<>();
+
     public PackSettings(String packName) {
         if (packName == null) {
             SimplyShaders.LOGGER.info("PACK SETTINGS NAME IS NULL");
@@ -84,6 +86,9 @@ public class PackSettings {
             }
 
 
+        }
+        if (packProperties.containsKey("screen.sliders")) {
+            this.sliderButtonsSet.addAll(Arrays.asList(packProperties.getProperty("screen.sliders").split(" ")));
         }
 
 
@@ -240,9 +245,10 @@ public class PackSettings {
                 break;
             }
         }
+        ShaderPackSetting.SettingType settingType = this.sliderButtonsSet.contains(settingName) ? ShaderPackSetting.SettingType.Slider :  ShaderPackSetting.SettingType.Cycle;
 
         //create the setting
-        return new ShaderPackSetting(defaultParseValue, settingName,settingValues, ShaderPackSetting.SettingType.Slider, getSavedSettingIdx(settingName, settingValues));
+        return new ShaderPackSetting(defaultParseValue, settingName,settingValues, settingType, getSavedSettingIdx(settingName, settingValues));
     }
     private int getSavedSettingIdx(String settingName, FloatArray values) {
         //if the saved setting exists get the value if not return -1
