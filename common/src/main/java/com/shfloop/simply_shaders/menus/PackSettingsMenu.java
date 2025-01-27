@@ -65,9 +65,9 @@ public class PackSettingsMenu extends GameState {
 
             }
         }
-
-       int x = 0;
-       int y = 0;
+        final int CENTER_X_SPACING = 160;
+       int x = -CENTER_X_SPACING;
+       int y = 75;
         this.previousState = previousState;
         //each page has a list of settings that it can have
         //each setting has a list of values that the setting can have
@@ -116,9 +116,14 @@ public class PackSettingsMenu extends GameState {
 
             };
 
+            if (x == CENTER_X_SPACING) {
+                x = -CENTER_X_SPACING;
+                y += 75;
+            } else {
+                x = CENTER_X_SPACING;
+            }
 
-
-            y+= (int) 75.0f;
+            //y+= (int) 75.0f;
             menu_button.vAnchor = VerticalAnchor.TOP_ALIGNED;
             menu_button.hAnchor = HorizontalAnchor.CENTERED;
             //todo change settingPage to lang

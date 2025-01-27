@@ -16,8 +16,9 @@ public class SettingsSubMenu extends GameState {
         this.previousState = previousState;
         this.selectedValueIndex = new int[settings.length];
         this.settings = settings;
-        int y = 0;
-        int x = 0;
+        int y = 75;
+        final int CENTER_X_SPACING = 160;
+        int x = -CENTER_X_SPACING;
         int valIdx = 0;
         for (ShaderPackSetting setting : settings) {
             selectedValueIndex[valIdx] = setting.getCurrentIdx(); // initialize the array to defuault of the setting
@@ -90,7 +91,14 @@ public class SettingsSubMenu extends GameState {
                     }
                 };
             }
-            y+= (int) 75.0f;
+            //x = x == 0 ? -275: 0;
+            if (x == CENTER_X_SPACING) {
+                x = -CENTER_X_SPACING;
+                y += 75;
+            } else {
+                x = CENTER_X_SPACING;
+            }
+            //y+= (int) 75.0f;
             settingButton.vAnchor = VerticalAnchor.TOP_ALIGNED;
             settingButton.hAnchor = HorizontalAnchor.CENTERED;
             settingButton.updateText();
