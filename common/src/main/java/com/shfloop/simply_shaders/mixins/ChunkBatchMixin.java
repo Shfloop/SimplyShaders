@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import finalforeach.cosmicreach.rendering.ChunkBatch;
-import finalforeach.cosmicreach.rendering.MeshData;
+import finalforeach.cosmicreach.rendering.meshes.MeshData;
 import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Zone;
