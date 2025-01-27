@@ -13,7 +13,6 @@
     "ChunkBatchMixin",
     "BlockGameMixin",
     "EntityModelInstanceMixin",
-    "EntityModelInterface",
     "DynamicSkyMixin",
     "SkyInterface",
     "CommandTimeMixin",

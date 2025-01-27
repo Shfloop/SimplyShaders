@@ -27,7 +27,7 @@ public abstract class  EntityModelInstanceMixin {
             GameShader temp = Shadows.SHADOW_ENTITY;
             temp.bind(worldCamera);
             //Todo for now just bind the textures even though they arent really needed
-            temp.bindOptionalTexture("texDiffuse",((EntityModelInterface)entityModel).getDiffuseTexture(), 0);
+            temp.bindOptionalTexture("texDiffuse",((EntityModelInstance)(Object) (this)).getDiffuse(), 0);
             temp.bindOptionalUniform4f("tintColor", tintColor);
         }
     }

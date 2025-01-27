@@ -42,7 +42,7 @@ public abstract class ChunkShaderMixin extends GameShader {
 
 
         if (Shadows.shaders_on && InGame.getWorld() != null) { //should find a better way to do this
-            int newTexNum = texNum;
+            int newTexNum = texNum  + 1;
             this.bindOptionalUniformMatrix("lightSpaceMatrix", Shadows.getCamera().combined);
             //FIXME This is redundant i only need to bind the shadowmap texture once when the shader is created because it doesnchange
            newTexNum = this.bindOptionalTextureI("shadowMap", Shadows.shadow_map.getDepthMapTexture().id, newTexNum); // i think i should try and change this so it matches how texture numbers are handled in chunk shader but idk

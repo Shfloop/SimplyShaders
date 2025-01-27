@@ -1,6 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
@@ -8,6 +9,7 @@ import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.FinalShader;
 import com.shfloop.simply_shaders.rendering.RenderFBO;
+import finalforeach.cosmicreach.ClientSingletons;
 import finalforeach.cosmicreach.RuntimeInfo;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -223,7 +225,31 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         String frag = loadShaderFile(this.fragShaderId, SimplyShaders.newShaderType.FRAG);
         tempThis.validateShader(this.vertexShaderId, vert, this.fragShaderId, frag);
         ShaderProgram.pedantic = true;
-        tempThis.shader = new ShaderProgram(vert, frag);
+        tempThis.shader = new ShaderProgram(vert, frag) {
+            public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, int offset) {
+                int location = this.getAttributeLocation(name);
+                if (location != -1) {
+                    this.setVertexAttribute(location, size, type, normalize, stride, offset);
+                }
+            }
+
+            public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, int offset) {
+                GL20 gl = Gdx.gl20;
+                if (type == 5124 && Gdx.gl30 == null) {
+                    type = 5126;
+                }
+
+                if (type == 5124 && Gdx.gl30 != null) {
+                    Gdx.gl30.glVertexAttribIPointer(location, size, type, stride, offset);
+                } else {
+                    gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
+                }
+
+            }
+        };
+
+
+
         System.out.println("Compiling shader(" + this.vertexShaderId + ", " + this.fragShaderId + ")...");
         if (!tempThis.shader.isCompiled()) {
             String log = tempThis.shader.getLog();
@@ -261,6 +287,11 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         String define = shaderId.getName().replaceAll("[-/. ()]", "_");
         sb.append("#ifndef " + define + "\n");
         sb.append("#define " + define + "\n");
+        if (ClientSingletons.shaderNUM32_IS_FLOAT) {
+            sb.append("#ifndef NUM32_IS_FLOAT\n");
+            sb.append("#define NUM32_IS_FLOAT\n");
+            sb.append("#endif\n");
+        }
 
         boolean foundDrawBuffer = false;
         for(String shaderLine : rawShaderLines) {

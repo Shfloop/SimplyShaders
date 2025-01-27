@@ -3,7 +3,7 @@
 #define NUM32_AS_INT(x) int(x)
 #else
 #define NUM32 int
-#define NUM32_AS_INT(x) x
+#define NUM32_AS_INT(x) (x)
 #endif
 
 #define GET_TEX_COORDS getTexCoordsFromUVIdx(NUM32_AS_INT(a_uvIdx))
