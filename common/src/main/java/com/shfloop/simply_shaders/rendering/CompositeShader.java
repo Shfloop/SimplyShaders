@@ -8,18 +8,19 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Sky;
-
-
-
+import org.lwjgl.opengl.GL32;
 
 
 public class CompositeShader extends GameShader {
 
+    private RenderFBO scalingBuffer;
+    private float shaderStageScale ;
 
     public CompositeShader(Identifier vertexShader, Identifier fragmentShader) {
         super(vertexShader,fragmentShader);
@@ -39,7 +40,7 @@ public class CompositeShader extends GameShader {
 
     public void bind(Camera worldCamera) {
 
-        SimplyShaders.buffer.setCompositeViewPort(((GameShaderInterface)(this)).getShaderScale());
+        SimplyShaders.buffer.setCompositeViewPort(this.shaderStageScale);
         this.bindDrawBuffers();
         super.bind(worldCamera);
         int texNum= 0;
@@ -103,6 +104,25 @@ public class CompositeShader extends GameShader {
                 SimplyShaders.buffer.undoUniformPingPong(pingPongBufferNum);
             }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
         }
+    }
+    @Override
+    public void reload() {
+        super.reload();
+        if (ShaderPackLoader.packSettings == null) {
+            this.shaderStageScale = 1.0f;
+            return ;
+        }
+        int [] shaderDrawBuffers = ((GameShaderInterface)(this)).getShaderDrawBuffers();
+        float testingScale =  ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault("colorTex"+ (shaderDrawBuffers[0] - GL32.GL_COLOR_ATTACHMENT0), 1.0f);
+        for (int i = 1; i< shaderDrawBuffers.length; i++) {
+            float newScale =  ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault("colorTex"+ (shaderDrawBuffers[i] - GL32.GL_COLOR_ATTACHMENT0), 1.0f);
+            if (testingScale != newScale) {
+                throw new RuntimeException("SHADER DRAW BUFFERS SCALE DONT MATCH");
+            }
+
+        }
+        this.shaderStageScale = testingScale;
+        SimplyShaders.LOGGER.info("SHADER STAGE SCALE SET TO {}", testingScale);
     }
     private void bindDrawBuffers() {
         //bind the appropriate outbuffers based on what the shader loaded from file

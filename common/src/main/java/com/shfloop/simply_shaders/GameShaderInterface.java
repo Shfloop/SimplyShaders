@@ -4,5 +4,6 @@ public interface GameShaderInterface {
 
      int[] getShaderInputBuffers();
      void setShaderInputBuffers(int[] arr);
-     float getShaderScale();
+     int[] getShaderDrawBuffers();
+
 }
