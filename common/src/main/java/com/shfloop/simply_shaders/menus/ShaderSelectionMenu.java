@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import finalforeach.cosmicreach.gamestates.*;
@@ -16,6 +17,10 @@ import finalforeach.cosmicreach.ui.VerticalAnchor;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 
@@ -30,6 +35,7 @@ public class ShaderSelectionMenu extends GameState{
         UIElement downButton;
         int topWorldIdx;
         static int last_selected_idx =1 ; //TODO change this to load from settings file
+        private float deltaTime = 0f;
         //static boolean shadersOn = false;
     Array<String> allShaders;
 
@@ -68,26 +74,79 @@ public class ShaderSelectionMenu extends GameState{
             }
 
         }
+    public void copyDefaultShaderPack() {
+        InputStream src= (this.getClass().getResourceAsStream("/shaderpacks/TestShaderV9.zip"));
+        if (src == null) {
+            SimplyShaders.LOGGER.info("Unable to find shaderpack resource");
+            return;
+        }
+        final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/TestShadersV9.zip";
+
+        Path to = Path.of(shaderRoot);
+        try {
+            Files.copy(src,to, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
         public ShaderSelectionMenu(final GameState previousState) {
 
             this.previousState = previousState;
 
 
+            findAllShaders();
+
+
+        }
+
+        private void findAllShaders() {
             final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks";
             final File shaderDir = new File(shaderRoot);
             shaderDir.mkdirs();
             String[] allShaderFolders = shaderDir.list();
-             allShaders = new Array<>();
+            Array<String> tmpAllShaders = new Array<>();
             for (int i = 0; i < Objects.requireNonNull(allShaderFolders).length; i++) {
-                if (allShaderFolders[i].equals("InternalShader") || allShaderFolders[i].contains(".txt")) {
+                if ( allShaderFolders[i].contains(".txt")) {
                     continue; //dont want to add it to the array
                 }
-                allShaders.add(allShaderFolders[i]);
+                tmpAllShaders.add(allShaderFolders[i]);
 
             }
+            if (tmpAllShaders.equals(allShaders)) {
+                return;
+            }
+            allShaders = tmpAllShaders;
+            generateShaderpackButtons();
+
+        }
+        private void generateShaderpackButtons() {
+            this.shaderButtons = new Array<>();
+            this.uiObjects = new Array<>();
+
             float x = 0.0f;
             float y = 0.0f;
             int idx = 1;
+
+
+            UIElement copy_basic_pack = new UIElement(275.0F, -82.0F, 250.0F, 50.0F) {
+                public void onClick() {
+
+                    //for now i could just change the color to indicate what is selected
+                    copyDefaultShaderPack();
+                    this.updateText();
+
+                }
+
+                public void updateText() { //this will just act as reset i suppose
+                    this.setText("Add Default Pack");
+
+                }
+            };
+
+            copy_basic_pack.vAnchor = VerticalAnchor.BOTTOM_ALIGNED;
+            copy_basic_pack.updateText();
+            copy_basic_pack.show();
+            this.uiObjects.add(copy_basic_pack);
             UIElement enable_shader_button = new UIElement(x, y + 16.0F, 250.0F, 50.0F) {
                 public void onClick() {
 
@@ -221,7 +280,7 @@ public class ShaderSelectionMenu extends GameState{
             IsometricButton.show();
             this.uiObjects.add(IsometricButton);
             UIElement loadButton = new UIElement(275.0F, -16.0F, 250.0F, 50.0F) {
-               public void onClick() {
+                public void onClick() {
                     super.onClick();
 
                     try {
@@ -280,6 +339,11 @@ public class ShaderSelectionMenu extends GameState{
             if (Gdx.input.isKeyJustPressed(111)) {
                 applyShaderPackSelection();
                 switchToGameState(this.previousState);
+            }
+            deltaTime +=Gdx.graphics.getDeltaTime();
+            if ( deltaTime > 2.0f) {
+                findAllShaders();
+                deltaTime = 0f;
             }
 
             ScreenUtils.clear(0.145F, 0.078F, 0.153F, 1.0F, true);
