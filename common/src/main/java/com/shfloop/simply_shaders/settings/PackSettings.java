@@ -104,7 +104,7 @@ public class PackSettings {
                 // for ifDef uses #define might be commented out but i still want that to be enabled
                 //define has to be lowercase
                 //each line might not have a setting
-                System.out.println(line);
+
                 int defineLineIdx = line.indexOf("#define");
                 int firstCommentIdx = line.indexOf("//");
                 if (defineLineIdx >= 0) {
@@ -121,7 +121,7 @@ public class PackSettings {
                         //the line is a toggle that is toggled on by default
                         //TOGGLE DEFAULT ON
                         addToggleSetting(settingName, true);
-                        System.out.println("TOGGLE ON SETTING");
+
 
 
                     } else
@@ -133,7 +133,7 @@ public class PackSettings {
                         }
                         //TOGGLE DEFAULT OFF
                         addToggleSetting(settingName, false);
-                        System.out.println("TOGGLE OFF SETTING");
+
                     } else {
                         //continue checking
                         //only think left to check is if its its toggle
@@ -146,7 +146,7 @@ public class PackSettings {
                                 break;
                             }
                         }
-                        System.out.println("name: " + settingName);
+
                         //test if the default value is there
                         if (firstCommentIdx <= defineEndIdx + settingName.length()) {
                             throw new RuntimeException("ERM what");
@@ -156,7 +156,7 @@ public class PackSettings {
                             //means its a toggle setting
                             //TOGGLE ON WITH A COMMENT
                             addToggleSetting(settingName, true);
-                            System.out.println("TOGGLE ON SETTING 2");
+
                         } else {
                             float defaultParseValue ;
                             try {
@@ -170,7 +170,7 @@ public class PackSettings {
                             }
 
                             String[] stringValues = line.substring(valuesStartIdx).split(" ");
-                            System.out.println(Arrays.toString(stringValues));
+
 
                             ShaderPackSetting data = getShaderPackSetting(stringValues, defaultParseValue, settingName);
                             //todo change this to use the lang key so the glsl and pack can use different names
@@ -248,7 +248,7 @@ public class PackSettings {
         //if the saved setting exists get the value if not return -1
         Float val = this.packSavedSettingsMap.get(settingName);
         if (val != null) {
-            SimplyShaders.LOGGER.info("FOUND SAVE {}: , {}", settingName, val);
+
             for(int i = 0; i < values.size; i++) {
                 if (val == values.get(i)) {
                     return i;// return the index of the value in the setting
@@ -262,7 +262,7 @@ public class PackSettings {
         this.packSavedSettingsMap = new HashMap<>();
         File f = new File(SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/" + this.packName + ".txt");
         if (!f.exists()) {
-            SimplyShaders.LOGGER.info("SavedPackSettings dont exist");
+
             return;
         }
         try {
