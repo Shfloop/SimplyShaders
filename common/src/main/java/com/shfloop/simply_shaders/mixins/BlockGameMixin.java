@@ -3,7 +3,6 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.BlockGame;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

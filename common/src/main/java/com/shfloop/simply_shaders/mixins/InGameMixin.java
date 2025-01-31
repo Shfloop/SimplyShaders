@@ -9,9 +9,7 @@ import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.rendering.CompositeShader;
-import com.shfloop.simply_shaders.rendering.FinalShader;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
+import com.shfloop.simply_shaders.rendering.*;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
@@ -62,15 +60,7 @@ public abstract class InGameMixin extends GameState {
 
 
 
-        if (SimplyShaders.buffer!= null) { //move this shit to loadWorld
-            SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
-        }
-        try {
-            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            //RenderFBO.bindRenderTextures();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ShaderPackLoader.remakeFBO();
     }
 
     @Inject(method = "dispose()V", at = @At("TAIL"))
@@ -78,8 +68,8 @@ public abstract class InGameMixin extends GameState {
 
             Shadows.cleanup();
             //ChunkShader.reloadAllShaders(); base game shaders dont need to be reloaed as they will never change just need to swap out the defaulty static shaders and remesh
-            SimplyShaders.buffer.dispose();
-            SimplyShaders.buffer = null;
+            SimplyShaders.holder.dispose();
+            SimplyShaders.holder = null;
 
     }
     private final float[] temporarySkyColor = {0,0,0,0};
@@ -129,8 +119,8 @@ public abstract class InGameMixin extends GameState {
                 Shadows.shadowPass = false;
 
 
-
-                Gdx.gl.glBindFramebuffer(36160, 0); // might not have to call this if im setting a different framebuffer
+                //clear  framebuffer 0
+                SimplyShaders.holder.unBindFrameBuffer(); // might not have to call this if im setting a different framebuffer
                 Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
                 Gdx.gl.glClear(org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT | org.lwjgl.opengl.GL20.GL_COLOR_BUFFER_BIT); // might not need this
 
@@ -142,7 +132,7 @@ public abstract class InGameMixin extends GameState {
 
         }
         //i want to bind the new framebuffer to always be used
-        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, SimplyShaders.buffer.getFboHandle());
+
 //        //cant forget to clear the framebuffer
 //        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 //        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
@@ -153,44 +143,23 @@ public abstract class InGameMixin extends GameState {
         //SimplyShaders.fbo.begin();
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
-        Sky sky = Sky.currentSky;
 
+        SimplyShaders.holder.clearTextures();
 
+        //need to bind the framebuffer that has the depth attachment
+        //should have a better solution
+        boolean foundBuf = false;
+        for (FrameBuffer buf: SimplyShaders.holder.getFramebuffers()) {
+            if (buf.hasDepth) {
+                foundBuf = true;
+                SimplyShaders.holder.bindFrameBuffer(buf);
+                break;
+            }
+        }
+        if (!foundBuf) {
+            throw new RuntimeException("NO DEPTH FRAMEBUFFER FOUND"); //can remove this
+        }
 
-       // ScreenUtils.clear(sky.currentSkyColor, true); // this clears all color buffers
-        //dont want to use ScreenUtils cause glClear clears all FBA to the same color;
-        GL32.glDrawBuffers(RenderFBO.allDrawBuffers);
-        RenderFBO.lastDrawBuffers = RenderFBO.allDrawBuffers;
-        //i need to set lastdrawbuffers or else performance tanks
-
-        //Sky Should not be drawn to other color attachments only number 0
-        temporarySkyColor[0] = sky.currentSkyColor.r;
-        temporarySkyColor[1] = sky.currentSkyColor.g;
-        temporarySkyColor[2] = sky.currentSkyColor.b;
-        temporarySkyColor[3] = sky.currentSkyColor.a;
-
-        GL32.glClearBufferfv(GL32.GL_COLOR, 0, temporarySkyColor);
-
-        GL32.glClearBufferfv(GL32.GL_DEPTH, 0, WHITE);
-        GL32.glClearBufferfv(GL32.GL_COLOR,  1, WHITE);
-
-
-        //problem buffer storage objects arenty cleared
-
-
-    //TODO i can just call clearBUffers after recalling GLDrawBUffers() and use glColorMask
-        //using attachment 2 as the previous frame so im not clearing it
-
-       for (int i =2; i < 8; i++) {//should make this index into an arrya which only gets the used attachments so im not clearing all 8 when im only using 4 but i dont think its that much of an improvment
-          if( SimplyShaders.buffer.getTexture(i).clearTexture) {
-              GL32.glClearBufferfv(GL32.GL_COLOR,  i, TRANSPARENT);
-
-
-          }
-
-
-
-       }
 
         //System.out.println("RENDERSTART");
         SimplyShaders.inRender = true;
@@ -211,27 +180,6 @@ public abstract class InGameMixin extends GameState {
         //i think i walso want to disable gl blend
         Gdx.gl.glDisable(GL20.GL_BLEND); //gl blend is enabled in batched zone renderer
 
-//        GameShader composite0 = GameShaderInterface.getShader().get(10);// FIXME need a better way to keep track of shaders
-//        composite0.bind(rawWorldCamera);
-//
-//        SimplyShaders.screenQuad.render(composite0.shader, GL20.GL_TRIANGLE_FAN);
-//
-//        composite0.unbind();
-
-
-
-        //TODO im so silly
-        //also how it does previous frame textures
-        //have two final pass textures render to them and then switch them each frame
-        // with glColorAttachment
-        //Iris does the buffer ping ponging just with a duplicate number of render textures
-        //you can swap the framebuffers color attachments whenever its bound!!
-        //thats probobly also how it does the two depth textures byt rendering the depth information anyway but just to a different texture and combine them after
-        //ALSO HOW it probably WORKS FOR IN Between OBJECT PASSES
-        //if the texture is used in the next shader swap (pre setup a duplicate texture) and swap it only when needed
-        //only used if the shader inputs and outputs to the same texture / MRT
-        //if a shader in object passes needs ot read a texture i just have to bind the texture as longs as its not writing
-        //if its also writing bind the pong texture which will get overwritten with new data which should contain teh previous data if the shader wants to use it
 
         if (ShaderPackLoader.shaderPackOn) {
             if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
@@ -251,6 +199,7 @@ public abstract class InGameMixin extends GameState {
        // System.out.println("Composite done");
 
         //bind framebuffer 0
+        //this is okay because clearBuffers will bind appropriate buffers and finalShader doesnt bind any framebuffers
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
         //screen should alreayd be cleared and i dont think it woudl matter much
 //        //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen

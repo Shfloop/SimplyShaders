@@ -4,14 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.DynamicSkyInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.menus.PackSettingsMenu;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
 import com.shfloop.simply_shaders.settings.PackSettings;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
@@ -30,6 +29,7 @@ import finalforeach.cosmicreach.rendering.shaders.*;
 import finalforeach.cosmicreach.util.Identifier;
 
 import finalforeach.cosmicreach.world.*;
+import org.lwjgl.opengl.GL32;
 
 
 import java.io.IOException;
@@ -48,9 +48,13 @@ public class ShaderPackLoader {
     public static int compositeStartIdx =0;
 
     public static PackSettings packSettings;
+    public static  IntArray drawBuffersUsed;
+
 
 
     public static void switchToShaderPack() {
+        drawBuffersUsed = new IntArray(8);
+
         //check if folder is zip pack
         isZipPack = selectedPack.endsWith(".zip");
 
@@ -77,18 +81,11 @@ public class ShaderPackLoader {
         remeashAllSkies();
         changeItemShader();
         updateEntityShader();
-        if (SimplyShaders.buffer != null) {
-            SimplyShaders.buffer.dispose();
-        }
-
-        try {
-            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        remakeFBO();
 
     }
     public static void switchToDefaultPack() {
+        drawBuffersUsed = null;
         shaderPackOn = false;
         isZipPack = false;
         //packSettings.saveUserPackSettings(); // dont think this is needed as long as packSettingsMenu always savees settings for the pack on exit
@@ -102,17 +99,18 @@ public class ShaderPackLoader {
         remakeFBO();
     }
 
-    private static void remakeFBO() { // i think when a pack was in the middle of switching buffers and you switch to a pack withotu switching like default it can get stuck using the wrong texture for reading
+    public static void remakeFBO() { // i think when a pack was in the middle of switching buffers and you switch to a pack withotu switching like default it can get stuck using the wrong texture for reading
         //need to remake fbo anyway when i do custom renderTexture scales/sizes
-        if (SimplyShaders.buffer != null) {
-            SimplyShaders.buffer.dispose();
-        }
-
-        try {
-            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        if (SimplyShaders.buffer != null) {
+//            SimplyShaders.buffer.dispose();
+//        }
+//
+//        try {
+//            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+        SimplyShaders.initTextureHolder();
     }
     public static void remeshAllRegions() {
         if (InGame.getWorld() == null) {
@@ -374,5 +372,13 @@ public class ShaderPackLoader {
     static {
         shaderDefaultsMap.put("shaders/blockEntity.frag.glsl","shaders/chunk.frag.glsl");
         shaderDefaultsMap.put("shaders/blockEntity.vert.glsl","shaders/chunk.vert.glsl");
+    }
+    public static void addDrawBuffer(int attachmentNum) {
+        if (attachmentNum - GL32.GL_COLOR_ATTACHMENT0 < 0 || attachmentNum - GL32.GL_COLOR_ATTACHMENT0 >= 8) {
+            throw new RuntimeException("Attacment number incorrect " + attachmentNum);
+        }
+        if (!drawBuffersUsed.contains(attachmentNum)) {
+            drawBuffersUsed.add(attachmentNum);
+        }
     }
 }

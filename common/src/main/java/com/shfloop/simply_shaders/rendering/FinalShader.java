@@ -37,13 +37,13 @@ public class FinalShader extends GameShader {
 
 
         //may want to go back with set strings, not sure whats better
-        for (BufferTexture tex: RenderFBO.uniformTextures) {
+        for (BufferTexture tex: SimplyShaders.holder.uniformTextures) {
             texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
         }
 
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
-        texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
+        texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.holder.depthTexture.id,texNum);
         if (Shadows.initalized) {
             texNum= this.bindOptionalTextureI("shadowMap", Shadows.shadow_map.getDepthMapTexture().id, texNum);
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);

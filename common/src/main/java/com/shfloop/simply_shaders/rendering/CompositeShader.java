@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL32;
 
 public class CompositeShader extends GameShader {
 
-    private RenderFBO scalingBuffer;
+
     private float shaderStageScale ;
 
     public CompositeShader(Identifier vertexShader, Identifier fragmentShader) {
@@ -40,20 +40,20 @@ public class CompositeShader extends GameShader {
 
     public void bind(Camera worldCamera) {
 
-        SimplyShaders.buffer.setCompositeViewPort(this.shaderStageScale);
-        this.bindDrawBuffers();
+        SimplyShaders.holder.setCompositeViewPort(this.shaderStageScale);
+        this.bindFrameBuffers(); //call before super because this will bindthe right framebuffer for the shaderstage
         super.bind(worldCamera);
         int texNum= 0;
 
 
         //may want to go back with set strings, not sure whats better
-        for (BufferTexture tex: RenderFBO.uniformTextures) {
+        for (BufferTexture tex: SimplyShaders.holder.uniformTextures) {
             texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
         }
 
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
-        texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.buffer.depthTex0.id, texNum);
+        texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.holder.depthTexture.id, texNum);
         if (Shadows.initalized) {
             texNum= this.bindOptionalTextureI("shadowMap", Shadows.shadow_map.getDepthMapTexture().id, texNum);
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);
@@ -101,7 +101,7 @@ public class CompositeShader extends GameShader {
         if (shaderInputBuffers != null) {
             for (int pingPongBufferNum: shaderInputBuffers) {
 
-                SimplyShaders.buffer.undoUniformPingPong(pingPongBufferNum);
+                SimplyShaders.holder.undoUniformPingPong(pingPongBufferNum);
             }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
         }
     }
@@ -124,14 +124,15 @@ public class CompositeShader extends GameShader {
         this.shaderStageScale = testingScale;
         SimplyShaders.LOGGER.info("SHADER STAGE SCALE SET TO {}", testingScale);
     }
-    private void bindDrawBuffers() {
+    //Needs to happen before super.bind because super.bind will call GLDrawbuffers and the right Framebuffer needs to be set
+    private void bindFrameBuffers() {
         //bind the appropriate outbuffers based on what the shader loaded from file
         //i can do this at the start no problem
         int[] shaderInputBuffers = ((GameShaderInterface)this).getShaderInputBuffers();
         if (shaderInputBuffers != null) {
             for (int pingPongBufferNum: shaderInputBuffers) {
 
-                SimplyShaders.buffer.pingPongBuffer(pingPongBufferNum);
+                SimplyShaders.holder.pingPongBuffer(pingPongBufferNum);
             }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
         }
 

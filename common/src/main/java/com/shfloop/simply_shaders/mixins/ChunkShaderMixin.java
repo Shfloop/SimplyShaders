@@ -6,20 +6,14 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.Shadows;
-import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.util.Identifier;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL32;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Arrays;
 
 
 @Mixin(ChunkShader.class)

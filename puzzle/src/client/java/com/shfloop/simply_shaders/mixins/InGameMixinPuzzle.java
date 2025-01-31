@@ -1,8 +1,6 @@
 package com.shfloop.simply_shaders.mixins;
 
-import com.badlogic.gdx.Gdx;
 import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
 import finalforeach.cosmicreach.gamestates.InGame;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,14 +16,15 @@ public class InGameMixinPuzzle {
             SimplyShaders.genMesh();
         }
 
-        if (SimplyShaders.buffer!= null) { //move this shit to loadWorld
-            SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
-        }
-        try {
-            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            //RenderFBO.bindRenderTextures();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        if (SimplyShaders.buffer!= null) { //move this shit to loadWorld
+//            SimplyShaders.buffer.dispose(); // it should already be disposed but just to be sure
+//        }
+//        try {
+//            SimplyShaders.buffer = new RenderFBO(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//            //RenderFBO.bindRenderTextures();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+        SimplyShaders.initTextureHolder();
     }
 }

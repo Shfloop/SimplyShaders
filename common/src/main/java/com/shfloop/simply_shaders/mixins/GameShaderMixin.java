@@ -8,7 +8,7 @@ import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.FinalShader;
-import com.shfloop.simply_shaders.rendering.RenderFBO;
+import com.shfloop.simply_shaders.rendering.RenderTextureHolder;
 import finalforeach.cosmicreach.ClientSingletons;
 import finalforeach.cosmicreach.RuntimeInfo;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
@@ -72,9 +72,10 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
 
 
-        if (SimplyShaders.inRender &&!Arrays.equals(RenderFBO.lastDrawBuffers, shaderDrawBuffers)) {
+        if (SimplyShaders.inRender &&!Arrays.equals(RenderTextureHolder.boundFrameBuffer.lastDrawBuffers, shaderDrawBuffers)) {
+
             GL32.glDrawBuffers(shaderDrawBuffers);
-            RenderFBO.lastDrawBuffers = shaderDrawBuffers;
+            RenderTextureHolder.boundFrameBuffer.lastDrawBuffers = shaderDrawBuffers;
         }
 
     }
@@ -360,6 +361,8 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                 throw new RuntimeException("NO drawbuffers elements defined"); // could probably just make the default array
             }
             shaderDrawBuffers = new int[drawBufferLength];//drawbufer points to next open spot so should be fine
+
+
             System.out.print("Defined DrawBuffers: {");
             for (int i = 0; i < drawBufferLength; i++) {
                 shaderDrawBuffers[i] = tempdrawBuffers[i] + GL32.GL_COLOR_ATTACHMENT0 -48; //48 to convert the ascii back to 0-7
@@ -367,7 +370,9 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                 //copy over the data with a new sized array and the appropriate colorattachment value
             }
             System.out.println("}");//this should always have atleast one element
-
+            for (int x: shaderDrawBuffers) {
+                ShaderPackLoader.addDrawBuffer(x);
+            }
             return true;
         }
         return false;

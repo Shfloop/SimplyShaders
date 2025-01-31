@@ -74,7 +74,7 @@ public class Shadows {
 
             ShaderPackLoader.switchToDefaultPack();
             System.out.println("ERROR in Shader pack loading");
-
+            e.printStackTrace();
             Chat.MAIN_CLIENT_CHAT.addMessage( null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             System.out.println(e.getMessage());
@@ -108,13 +108,7 @@ public class Shadows {
 
         System.out.println("Finished Loading Shaders");
         //after shaders are loaded bind the render textures
-        if (SimplyShaders.buffer != null) {
-            //RenderFBO.bindRenderTextures();
 
-        } else {
-            System.out.println("Render Textures NOT BOUND");
-
-        }
 
        // ChunkShader.reloadAllShaders();
     }
