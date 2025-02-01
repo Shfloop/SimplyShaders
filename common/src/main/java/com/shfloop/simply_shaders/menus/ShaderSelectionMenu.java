@@ -88,6 +88,7 @@ public class ShaderSelectionMenu extends GameState{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        deltaTime = 4.0f;//make it update
     }
         public ShaderSelectionMenu(final GameState previousState) {
 
@@ -341,7 +342,7 @@ public class ShaderSelectionMenu extends GameState{
                 switchToGameState(this.previousState);
             }
             deltaTime +=Gdx.graphics.getDeltaTime();
-            if ( deltaTime > 2.0f) {
+            if ( deltaTime > 4.0f) {
                 findAllShaders();
                 deltaTime = 0f;
             }
