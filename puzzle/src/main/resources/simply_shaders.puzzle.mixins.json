@@ -7,7 +7,6 @@
     "CustomTextureLoaderMixin",
     "ExperimentalItemModelMixin",
     "ItemModelWrapperInterface",
-    "PuzzleBlockModelCuboidMixin",
     "InGameMixinPuzzle"
 
   ],
