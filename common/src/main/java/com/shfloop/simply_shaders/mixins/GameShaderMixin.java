@@ -1,8 +1,11 @@
 package com.shfloop.simply_shaders.mixins;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
@@ -94,12 +97,13 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     //so this kinda acts the same way drawbuffers but the renderFBO needs to be able to see each shaders ping-pongable buffers so it can switch its buffers
 
     @Inject(method = "bind", at = @At("TAIL"))
-    private void injectGameShaderBind(CallbackInfo ci) {
+    private void injectGameShaderBind(CallbackInfo ci, @Local Camera worldCamera) {
 
         ((GameShader)(Object)this).bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
         ((GameShader)(Object)this).bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
         ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
         ((GameShader)(Object)this).bindOptionalFloat("sunAngle", Shadows.sunAngle);
+        ((GameShader)(Object)this).bindOptionalUniform3f("cameraViewDirection", worldCamera.direction);
 
     }
 
