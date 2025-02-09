@@ -65,7 +65,7 @@ tasks.register("runRenderDoc", Exec) {
             "-classpath",
             "gradle/wrapper/gradle-wrapper.jar",
             "org.gradle.wrapper.GradleWrapperMain",
-            "runClient"
+            ":quilt:runClient"
     ]
 }
 

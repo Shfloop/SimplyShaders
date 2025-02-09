@@ -76,7 +76,7 @@ public class PackSettingsMenu extends GameState {
 
 
 
-        System.out.println(mainScreenButtons);
+        //System.out.println(mainScreenButtons);
 
         for (String settingPage : mainScreenButtons) {
 
@@ -91,7 +91,7 @@ public class PackSettingsMenu extends GameState {
             int settingIdx = 0;
             for (String var: pageVariables) {
                 ShaderPackSetting temp = packSettings.definedSettingsMap.get(var);
-                System.out.println(var + " : " + temp);
+                //System.out.println(var + " : " + temp);
                 settings[settingIdx++] = packSettings.definedSettingsMap.get(var); //i may want to remove from the map
             }
 
