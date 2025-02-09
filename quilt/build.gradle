@@ -39,6 +39,22 @@ tasks.withType(Javadoc).configureEach {
 
 processResources {
     from project(":common").sourceSets.main.resources
+//
+//
+//
+//        // Left item is the name in the target, right is the varuable name
+//        def replaceProperties = [
+//                "mod_version"     : project.version,
+//                "mod_group"       : project.group,
+//                "mod_name"        : rootProject.name,
+//                "mod_id"          : id,
+//        ]
+//
+//
+//        inputs.properties replaceProperties
+//        replaceProperties.put "project", project
+
+
 }
 java {
 	withSourcesJar()

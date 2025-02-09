@@ -33,7 +33,7 @@ subprojects {
         def replaceProperties = [
                 "mod_version"     : project.version,
                 "mod_group"       : project.group,
-                "mod_name"        : project.name,
+                "mod_name"        : rootProject.name,
                 "mod_id"          : id,
         ]
 

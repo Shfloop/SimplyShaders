@@ -7,11 +7,18 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.rendering.BufferTexture;
 import com.shfloop.simply_shaders.rendering.RenderTextureHolder;
+import com.shfloop.simply_shaders.rendering.TimerQuery;
+import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
+import finalforeach.cosmicreach.ui.debug.DebugInfo;
+import finalforeach.cosmicreach.ui.debug.DebugIntItem;
+import finalforeach.cosmicreach.ui.debug.DebugLongItem;
+import finalforeach.cosmicreach.ui.debug.DebugVec3Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.DecimalFormat;
 
 
 public class SimplyShaders {
@@ -28,7 +36,9 @@ public class SimplyShaders {
     public static boolean inRender = false;
 
     public static RenderTextureHolder holder = null;
-
+    public static TimerQuery timerQuery;
+    private static final Vector3 timerVec = new Vector3(0,0,0);
+   static  DecimalFormat debugPositionFormat = new DecimalFormat("0.00");
     public static void initTextureHolder() {
         if (holder != null) {
             holder.dispose();
@@ -101,6 +111,13 @@ public class SimplyShaders {
 
     public static void initializeBuffer() {
         LOGGER.info("Simply Shaders Initialized!");
+        if (timerQuery == null) {
+            //DebugInfo.addDebugItem(new DebugLongItem("Frame Time: ", SimplyShaders::getTimerQuery));
+            DebugInfo.addDebugItem(new DebugVec3Item(SimplyShaders::getTimeQueryVec, (pos) -> {
+                String var10000 = debugPositionFormat.format((double)pos.x);
+                return "Shadow, Main, Composite: (" + var10000 + ", " + debugPositionFormat.format((double)pos.y) + ", " + debugPositionFormat.format((double)pos.z) + ")";
+            }));
+        }
 //        if (buffer != null) {
 //            buffer.dispose();
 //        }
@@ -143,6 +160,20 @@ public class SimplyShaders {
         screenQuad.setVertices(verts);
 
 
+    }
+
+    private static long getTimerQuery() {
+        if (timerQuery != null) {
+          return timerQuery.getQuery(0);
+        }
+        return 0;
+    }
+    private static Vector3 getTimeQueryVec() {
+        if (timerQuery != null) {
+
+            timerVec.set((float)timerQuery.getQuery(0) / 1000000f, (float)timerQuery.getQuery(1) / 1000000f, (float)timerQuery.getQuery(2) / 1000000f);
+        }
+        return timerVec;
     }
 
     //call this onInitialize and whenever the window resizes

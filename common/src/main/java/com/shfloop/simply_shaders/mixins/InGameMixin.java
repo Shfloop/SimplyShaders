@@ -19,8 +19,10 @@ import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL33C;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -58,14 +60,18 @@ public abstract class InGameMixin extends GameState {
     @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at =@At("TAIL"))
     private void injectloadWorld(CallbackInfo ci) {
 
-
-
+        if (SimplyShaders.timerQuery != null) {
+            SimplyShaders.timerQuery.dispose();
+        }
+        SimplyShaders.timerQuery = new TimerQuery(3);
         ShaderPackLoader.remakeFBO();
     }
 
     @Inject(method = "dispose()V", at = @At("TAIL"))
     private void injectDispose(CallbackInfo ci) {
-
+        if (SimplyShaders.timerQuery != null) {
+            SimplyShaders.timerQuery.dispose();
+        }
             Shadows.cleanup();
             //ChunkShader.reloadAllShaders(); base game shaders dont need to be reloaed as they will never change just need to swap out the defaulty static shaders and remesh
             SimplyShaders.holder.dispose();
@@ -78,6 +84,7 @@ public abstract class InGameMixin extends GameState {
 
     @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
     private void injectInGameRender(CallbackInfo ci, @Local Zone playerZone) {
+        SimplyShaders.timerQuery.startQuery(0);
         //this is causing fps to drop by 1/3
         if(Shadows.shaders_on) {
             if (!Shadows.initalized) {
@@ -131,6 +138,8 @@ public abstract class InGameMixin extends GameState {
             //Shadows.redraw_stars = true;
 
         }
+        SimplyShaders.timerQuery.endQuery();
+        SimplyShaders.timerQuery.startQuery(1);
         //i want to bind the new framebuffer to always be used
 
 //        //cant forget to clear the framebuffer
@@ -180,7 +189,8 @@ public abstract class InGameMixin extends GameState {
         //i think i walso want to disable gl blend
         Gdx.gl.glDisable(GL20.GL_BLEND); //gl blend is enabled in batched zone renderer
 
-
+        SimplyShaders.timerQuery.endQuery();
+        SimplyShaders.timerQuery.startQuery(2);
         if (ShaderPackLoader.shaderPackOn) {
             if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
                 for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
@@ -219,6 +229,8 @@ public abstract class InGameMixin extends GameState {
         SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
         finalShader.unbind();
         //System.out.println("DONE QUAD");
+        SimplyShaders.timerQuery.endQuery();
+        SimplyShaders.timerQuery.swapQueryBuffers();
         if (!UI.renderUI) {
             //i think i just need to clear the screen
             Gdx.gl.glActiveTexture(33984);
