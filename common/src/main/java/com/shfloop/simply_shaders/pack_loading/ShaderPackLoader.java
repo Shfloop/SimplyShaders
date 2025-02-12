@@ -270,9 +270,10 @@ public class ShaderPackLoader {
 
         EntityShader.ENTITY_SHADER = (EntityShader) allShaders.get(4);
         //for now dont f with death screen (5) switched to spritebatchShader
-        ItemShader.DEFAULT_ITEM_SHADER = (ItemShader) allShaders.get(6);
+        ItemShader.DEFAULT_ITEM_SHADER = (ItemShader) allShaders.get(6);    
         VisualTextShader.TEXT_SHADER = (VisualTextShader) allShaders.get(7);
-        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(8);
+        ParticleShader.PARTICLE_SHADER = (ParticleShader) allShaders.get(8);
+        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(9);
         Shadows.BLOCK_ENTITY_SHADER = (ChunkShader) ChunkShader.DEFAULT_BLOCK_SHADER;
     }
 

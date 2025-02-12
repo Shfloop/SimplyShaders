@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
@@ -39,6 +40,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         FinalShader.initFinalShader();
 
         Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
+        Shadows.defaultAllShadersSize = allShaders.size;
 
     }
     //TODO get rid of this overwrite
@@ -203,6 +205,8 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     @Shadow
     protected Identifier vertexShaderId;
     @Shadow Identifier fragShaderId;
+
+    @Shadow private static Array<GameShader> allShaders;
 
     @Overwrite
     public void verifyShaderHasNoBannedKeywords(Identifier shaderId, String shaderText) {

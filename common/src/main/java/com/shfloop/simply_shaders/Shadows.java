@@ -39,6 +39,7 @@ public class Shadows {
     private static Vector3 lastCameraPos = new Vector3(0,0,0);
     public static boolean shadowPass = false;
     public static boolean initalized = false;
+    public static int defaultAllShadersSize = -1;
     private static final String[] SHADERS_TO_COPY = {"chunk.frag.glsl","chunk.vert.glsl", "shadowpass.frag.glsl","shadowpass.vert.glsl", "shadowEntity.frag.glsl", "shadowEntity.vert.glsl", "final.vert.glsl", "final.frag.glsl", "composite0.vert.glsl", "composite0.frag.glsl"};
 
     public static float sunAngle = 0.0f; //value from 0-1.0f im guessing 1,0f means noon;
@@ -79,7 +80,10 @@ public class Shadows {
             //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             System.out.println(e.getMessage());
             Array<GameShader> defaultShaders = GameShaderAccessor.getShader();
-            if(defaultShaders.size > 9) { //default shaders should only be size 7 // if shaderpack loading fails it can add a shader too it without removing it
+            if (defaultAllShadersSize == -1) {
+                throw new RuntimeException("YOU MESSED SOMETHING UP");
+            }
+            if(defaultShaders.size > defaultAllShadersSize) { //default shaders should only be size 7 // if shaderpack loading fails it can add a shader too it without removing it
                 //This shouldnt be necessary but is an easy solution to shader loading without redoing the entire thing
                 defaultShaders.pop();
             }
