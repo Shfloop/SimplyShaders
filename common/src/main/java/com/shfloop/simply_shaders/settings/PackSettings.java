@@ -87,8 +87,8 @@ public class PackSettings {
 
 
         }
-        if (packProperties.containsKey("screen.sliders")) {
-            this.sliderButtonsSet.addAll(Arrays.asList(packProperties.getProperty("screen.sliders").split(" ")));
+        if (packProperties.containsKey("button.sliders")) {
+            this.sliderButtonsSet.addAll(Arrays.asList(packProperties.getProperty("button.sliders").split(" ")));
         }
 
 
