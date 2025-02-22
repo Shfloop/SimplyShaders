@@ -7,6 +7,7 @@ import com.shfloop.simply_shaders.ShadowTexture;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.world.Sky;
+import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
@@ -170,7 +171,7 @@ public class RenderTextureHolder {
 
     }
     private void setTextureClearColor(Color color , int texNum) {
-        if (texNum > 0 && texNum < NUM_RENDER_TEXTUERS) {
+        if (texNum >= 0 && texNum < NUM_RENDER_TEXTUERS) {
             renderTextures[texNum].clearColor = color;
             uniformTextures[texNum].clearColor = color;
         }
@@ -216,14 +217,14 @@ public class RenderTextureHolder {
         }
         return lastBufIdx;
     }
-    public void clearTextures() {//FIXME naive approach but just to get things working
+    public void clearTextures(Zone playerZone) {//FIXME naive approach but just to get things working
 
         int lastBufIdx = -1;
 //        FrameBuffer buf = this.framebuffers[this.renderTextures[0].getFrameBufferIdx()];
 //        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, buf.getFboHandle());
        lastBufIdx= this.bindClearFramebuffer(lastBufIdx,0); // texNum 0 might not be the colorTex-0 if a pack decides to change all the shaders for normal game passes
 
-        Sky sky = Sky.currentSky;
+        Sky sky = Sky.getCurrentSky(playerZone);
 
         skyColor.set(sky.currentSkyColor);
 

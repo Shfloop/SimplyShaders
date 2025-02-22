@@ -17,7 +17,7 @@ public class BufferTexture {
     public boolean clearTexture = true;
     private int frameBufferIdx;
     private int attachmentNum;
-    public Color clearColor = Color.CLEAR;
+    public Color clearColor = Color.CLEAR.cpy();
 
     public BufferTexture(String uniformName,int width, int height, int pixelFormat, int internalFormat, int attachmentNum)  {
         this.id = -1;
