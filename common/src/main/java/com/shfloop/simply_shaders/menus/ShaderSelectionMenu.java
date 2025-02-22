@@ -80,7 +80,7 @@ public class ShaderSelectionMenu extends GameState{
             SimplyShaders.LOGGER.info("Unable to find shaderpack resource");
             return;
         }
-        final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/TestShadersV9.zip";
+        final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/TestShaderV10.zip";
 
         Path to = Path.of(shaderRoot);
         try {
