@@ -75,7 +75,7 @@ public class ShaderSelectionMenu extends GameState{
 
         }
     public void copyDefaultShaderPack() {
-        InputStream src= (this.getClass().getResourceAsStream("/shaderpacks/TestShaderV9.zip"));
+        InputStream src= (this.getClass().getResourceAsStream("/shaderpacks/TestShaderV10.zip"));
         if (src == null) {
             SimplyShaders.LOGGER.info("Unable to find shaderpack resource");
             return;
