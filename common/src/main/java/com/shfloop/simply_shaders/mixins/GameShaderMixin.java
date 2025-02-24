@@ -213,6 +213,10 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
     }
     @Overwrite
+    public String removeCommentsFromShaderText(String shaderText) { //todo fix this instead of removing it
+       return shaderText;
+    }
+    @Overwrite
     public void reload() {
         GameShader tempThis = ((GameShader) (Object)this); //maybe this works
 
