@@ -21,7 +21,6 @@
     "GameShaderMixin",
     "InGameInterface",
     "InGameMixin",
-    "ItemModel2DMixin",
     "ItemModelBlockInterface",
     "ItemModelBlockMixin",
     "ItemRendererInterfaceMixin",

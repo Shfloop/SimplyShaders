@@ -82,7 +82,7 @@ public abstract class InGameMixin extends GameState {
     private final float[] TRANSPARENT = {0,0,0,0};
     private final float[] WHITE = {1.0f,1.0f,1.0f,1.0f};
 
-    @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V"))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
+    @Inject(method = "render()V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Sky;drawSky(Lcom/badlogic/gdx/graphics/Camera;)V", shift = At.Shift.BEFORE))// Lfinalforeach/cosmicreach/world/Sky;drawStars(Lcom/badlogic/gdx/graphics/Camera)V
     private void injectInGameRender(CallbackInfo ci, @Local Zone playerZone) {
         SimplyShaders.timerQuery.startQuery(0);
         //this is causing fps to drop by 1/3
