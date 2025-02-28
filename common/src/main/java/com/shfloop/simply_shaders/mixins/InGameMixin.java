@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.IntArray;
+import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.pack_loading.BlockPropertiesIDLoader;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
@@ -19,6 +21,7 @@ import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL32C;
 import org.lwjgl.opengl.GL33C;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -195,6 +198,19 @@ public abstract class InGameMixin extends GameState {
             if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
                 for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
                     CompositeShader composite = (CompositeShader)  ShaderPackLoader.shader1.get(i);
+                    IntArray mipMapTexes = ((GameShaderInterface)(composite)).getShaderMipMapEnabled();
+                    if (mipMapTexes.size > 0) {
+                        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+                        for (int x= 0; x < mipMapTexes.size; x++) {
+                           BufferTexture tex = SimplyShaders.holder.getRenderTexture(mipMapTexes.get(x));
+                           Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
+                           GL32C.glGenerateMipmap(GL20.GL_TEXTURE_2D);
+                           GL32C.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR_MIPMAP_LINEAR);// this only needs to be done before the texture is read from
+                            //each texture when the mip is generated will be a ssigned teh min filter to mipmapLinear
+                            //that way anythime this is used in sample it shoul dbe fine and rendering to it shouldnt matter
+                            //AT the end of composite / final rendering each texture that has mip maps enabled for both Swap and render should have min filter set to linear so there is no mixup between frames if a and b switch places
+                        }
+                    }
 
                     composite.bind(rawWorldCamera);
                     SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
@@ -229,6 +245,29 @@ public abstract class InGameMixin extends GameState {
         SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
         finalShader.unbind();
         //System.out.println("DONE QUAD");
+
+
+        //need to reset each textures min filter because if the texture had mip maps generated it needed to be set to gl_linear_mipmap_linear to read properly
+        //but needs to be set to GL_LINAER if not
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        for (BufferTexture tex: SimplyShaders.holder.getRenderTextures()) {
+
+            if (tex.isMipMapEnabled) {
+                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
+                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
+            }
+        }
+        for (BufferTexture tex: SimplyShaders.holder.getSwapTextures()) {
+
+            if (tex.isMipMapEnabled) {
+                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
+                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
+            }
+        }
+
+
+
+
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.swapQueryBuffers();
         if (!UI.renderUI) {

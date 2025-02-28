@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
@@ -122,7 +123,11 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         this.shaderInputBuffers = arr;
     }
 
-
+    @Unique
+    private final IntArray shaderStageTexMixMaps = new IntArray(8);
+    @Override
+    public IntArray getShaderMipMapEnabled() {return shaderStageTexMixMaps;}
+    @Unique
     private void findFragShaderValues(String fragShaderText) {
         String[] shaderLines = fragShaderText.split("[;\n]");
         for (String line: shaderLines) {
@@ -133,10 +138,24 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                     continue;
                 }
                 //SimplyShaders.LOGGER.info("FoundColorTexLine " + line.charAt(colorTexIdx + 8));
-                if(line.substring(colorTexIdx + 9, colorTexIdx + 9 + 5).equals("Clear")) {//colorTex1Clear
+                String substring = line.substring(colorTexIdx + 9, colorTexIdx + 9 + 5);
+                if(substring.equals("Clear")) {//colorTex1Clear
                     if (line.contains("false")) {
                         ShaderPackLoader.packSettings.disableBufferClearing.add(line.charAt(colorTexIdx + 8) - 48);//convert the char to int value
                         SimplyShaders.LOGGER.info("DISABLE CLEARING FOR COLORTEX: " + line.charAt(colorTexIdx + 8));
+                        continue;
+                    }
+                }
+                if (colorTexIdx + 9 +  13 > line.length()) {
+                    continue;
+                }
+                substring = line.substring(colorTexIdx + 9, colorTexIdx + 9 + 13);
+                if (substring.equals("MipmapEnabled")) { //mipmaps are only for deferred composite and final (it happens before the shaderProgram)
+                    if (line.contains("true")) {
+                        int texNum = line.charAt(colorTexIdx + 8) - 48;
+                        shaderStageTexMixMaps.add(texNum); // add the color tex value to the array 0 -7
+                        ShaderPackLoader.packSettings.texesWithMipEnabled[texNum] = true;
+                        SimplyShaders.LOGGER.info("EnablingMipMaps generating for colorTex {}", texNum); //genMipMaps happens before the shader executes where it was defined
                     }
                 }
             }

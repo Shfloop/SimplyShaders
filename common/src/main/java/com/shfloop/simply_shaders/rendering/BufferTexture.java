@@ -18,8 +18,9 @@ public class BufferTexture {
     private int frameBufferIdx;
     private int attachmentNum;
     public Color clearColor = Color.CLEAR.cpy();
+    public boolean isMipMapEnabled;
 
-    public BufferTexture(String uniformName,int width, int height, int pixelFormat, int internalFormat, int attachmentNum)  {
+    public BufferTexture(String uniformName,int width, int height, int pixelFormat, int internalFormat, int attachmentNum, boolean isMipMapEnabled)  {
         this.id = -1;
         this.uniformName = uniformName;
         this.width = width;
@@ -28,6 +29,7 @@ public class BufferTexture {
         this.internalFormat = internalFormat;
         this.frameBufferIdx = -1;
         this.attachmentNum = attachmentNum;
+        this.isMipMapEnabled = isMipMapEnabled;
          // could do the stuff in renderFbo here
 
 //        GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.id);

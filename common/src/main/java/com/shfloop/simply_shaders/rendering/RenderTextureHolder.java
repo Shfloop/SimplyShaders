@@ -59,7 +59,9 @@ public class RenderTextureHolder {
         //create the swap textures as a deep copy of the
         BufferTexture[] unsortedSwapTexs = new BufferTexture[NUM_RENDER_TEXTUERS];
         for (int i = 0; i < NUM_RENDER_TEXTUERS; i++) {
-            unsortedSwapTexs[i] = new BufferTexture(unSortedTextures[i].getName(), unSortedTextures[i].getWidth(), unSortedTextures[i].getHeight(), unSortedTextures[i].getPixelFormat(), unSortedTextures[i].getInternalFormat(), unSortedTextures[i].getAttachmentNum());
+            //the swap texture cant be set to mipMap linear if i never generate mip maps for it
+            //I belive the textures can be swapped around though so that
+            unsortedSwapTexs[i] = new BufferTexture(unSortedTextures[i].getName(), unSortedTextures[i].getWidth(), unSortedTextures[i].getHeight(), unSortedTextures[i].getPixelFormat(), unSortedTextures[i].getInternalFormat(), unSortedTextures[i].getAttachmentNum(),unSortedTextures[i].isMipMapEnabled);
         }
 
 
@@ -304,5 +306,16 @@ public class RenderTextureHolder {
         Gdx.gl.glViewport(0,0,(int)  (viewportScale * Gdx.graphics.getWidth()),(int) (viewportScale * Gdx.graphics.getHeight()));
 
 
+    }
+
+    public BufferTexture getRenderTexture(int i) {
+        return this.renderTextures[i];
+    }
+
+    public BufferTexture[] getRenderTextures() {
+        return renderTextures;
+    }
+    public BufferTexture[] getSwapTextures() {
+        return swapBufferStorage;
     }
 }

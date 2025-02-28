@@ -19,6 +19,7 @@ import finalforeach.cosmicreach.ui.debug.DebugInfo;
 import finalforeach.cosmicreach.ui.debug.DebugIntItem;
 import finalforeach.cosmicreach.ui.debug.DebugLongItem;
 import finalforeach.cosmicreach.ui.debug.DebugVec3Item;
+import org.lwjgl.opengl.GL20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,16 +53,22 @@ public class SimplyShaders {
             drawBuffersUsed = ShaderPackLoader.drawBuffersUsed;
         }
         BufferTexture[] textures = new BufferTexture[drawBuffersUsed.size];
+
         for (int i = 0; i < textures.length; i++) {
             String name = "colorTex" + (drawBuffersUsed.get(i) - GL32.GL_COLOR_ATTACHMENT0); //get the integer value 0-8
             float textureScale = 1.0f;
+            boolean isMipMapEnabled = false;
             if (ShaderPackLoader.packSettings != null) {
                 textureScale = ShaderPackLoader.packSettings.bufferTexturesScale.getOrDefault(name, 1.0f);
                 if (textureScale != 1.0f) {
                     SimplyShaders.LOGGER.info("CHANGED SCALE {} to {}",name,textureScale);
                 }
+                if (ShaderPackLoader.packSettings.texesWithMipEnabled[drawBuffersUsed.get(i) - GL32.GL_COLOR_ATTACHMENT0]) {
+                    isMipMapEnabled = true;
+                    SimplyShaders.LOGGER.info("INIT SHADER {} to MipMap Linear", name);
+                }
             }
-            textures[i] = new BufferTexture(name, (int) (textureScale * Gdx.graphics.getWidth()), (int) (textureScale * Gdx.graphics.getHeight()), GL32.GL_RGBA, GL32.GL_RGBA16F, drawBuffersUsed.get(i));
+            textures[i] = new BufferTexture(name, (int) (textureScale * Gdx.graphics.getWidth()), (int) (textureScale * Gdx.graphics.getHeight()), GL32.GL_RGBA, GL32.GL_RGBA16F, drawBuffersUsed.get(i), isMipMapEnabled);
         }
 
 

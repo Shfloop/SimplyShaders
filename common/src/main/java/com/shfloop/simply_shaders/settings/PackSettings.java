@@ -26,7 +26,7 @@ public class PackSettings {
     public final HashMap<String,Float> bufferTexturesScale = new HashMap<>();
 
     public final HashSet<String> sliderButtonsSet = new HashSet<>();
-
+    public final boolean[] texesWithMipEnabled= new boolean[8];
     public PackSettings(String packName) {
         if (packName == null) {
             SimplyShaders.LOGGER.info("PACK SETTINGS NAME IS NULL");
