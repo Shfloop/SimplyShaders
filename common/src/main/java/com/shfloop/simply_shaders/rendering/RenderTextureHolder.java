@@ -33,6 +33,39 @@ public class RenderTextureHolder {
     public static FrameBuffer boundFrameBuffer = null;
     public ShadowTexture depthTexture; //if the new framebuffer to be created has a width and height = to the window than it will add a depth buffer
     private final int[] attachmentMapping = {-1,-1,-1,-1,-1,-1,-1,-1}; //maximum number of attachments
+    public final boolean[] flippedBuffers = new boolean[8]; //this keeps track of each texture in the main renderFbo used during terrain passes
+    //only set the buffer to true if it the buffer does do clearing
+    //For now ill have to rely on the shaderpack not reding/writing to teporal texes in non fullscreen passes, because the tex could end up in alternate tex and not be able to be rendered to
+
+
+
+    //at the end of render a buffer currently in framebuffer alternate, would end up in renderTextures this is not good because it would get cleared but uniforms would be set to this instead of the texture activly getting rendered to in main buffer during terrain stages
+    // i only want to set this if the buffer is part of the terrain shaders because if somebody wanted to temporaly use the textre
+    //if at the end the texture with the data is the one in swap buffer storage there is no way to render to that during terrain passes it would still work for composite renders if i didnt reset it
+    //i only need to reset flipped buffers if its a rendertarget during non fullscreen passes
+
+    //solution to this is to have a secondary a and b fbo along witht he main render texture fbo
+    //how would this solve theissue
+    //read from a write to b
+    //read from b write to a
+    //so instead of calling drawbuffers iris just has a fbo for each shader stage whitht the coresponding texture bound to it
+
+
+
+
+    //I THINK I GET IT
+    //EVERY singly shader stage has a seperate FBO with teh corresponding texture for that stage even base game stages
+    //but every one has the same depth texture attached so they can all be bound seperatly and render to the same depth texture
+    //but how if one texture is the alternate and oneis the main how could you render to both so if you ping pong once
+    //and its a temporal texture b has the correct data to keep but you start by rendering to a it just couldnt work in a terrain shader maybe
+    //
+    //
+    //texture can be an attachment to multiple FBOs'
+
+    //curent issue is if one buffer ping pongs than what happens to the other buffers that didnt ping pong
+    //iris seems to make an a and b framebuffer for each fullscreen pass the framebuffer has the respective a and b textures bound as attachments
+    //the uniforms are decided by whatever was rendered last
+    //
     public RenderTextureHolder(BufferTexture[] unSortedTextures) { //should probably change this to somethign that holds the data for the texture
         //i need to make one of the framebuffers the main framebuffer that has a depth attachmetn
         if (MAX_NUM_RENDER_TEXTURES < unSortedTextures.length) {
@@ -148,18 +181,25 @@ public class RenderTextureHolder {
         //add clear Color
 
         if (ShaderPackLoader.shaderPackOn) {
+            SimplyShaders.LOGGER.info("beginning clear Texture Write");
             for (int i =0; i < ShaderPackLoader.packSettings.disableBufferClearing.size; i++) {
+
                 int bufferNum = ShaderPackLoader.packSettings.disableBufferClearing.get(i);
+                SimplyShaders.LOGGER.info("Clear disabled for bufferNum {}", bufferNum );
+                bufferNum = this.findTextureIdxFromAttachmentNum(bufferNum);
                 if (bufferNum >= 0 && bufferNum < renderTextures.length) {
                     renderTextures[bufferNum].clearTexture = false;
                     swapBufferStorage[bufferNum].clearTexture = false;
+                    SimplyShaders.LOGGER.info("Tex Clear Actually disabled {} : {}", bufferNum, renderTextures[bufferNum].getAttachmentNum());
+                } else {
+                    SimplyShaders.LOGGER.info("buffer Num  {}, is out of range ", bufferNum);
                 }
             }
         }
 
         //ClearColor
         //tmp until i support pack specific colors
-        setTextureClearColor(skyColor, 0);
+        setTextureClearColor(skyColor, 0); //FIXME this doesnt take into acount the mappigns renderTextuers isnt  length 8
 
         setTextureClearColor(Color.WHITE, 1); //if it doesnt exist setTextureClearColor will just return
             for (int i = 2; i < NUM_RENDER_TEXTUERS; i++) {
@@ -284,6 +324,14 @@ public class RenderTextureHolder {
             throw new RuntimeException("GameShader gave bad number for ping pong buffer");
         }
         BufferTexture temp = renderTextures[bufferNum];
+        //SimplyShaders.LOGGER.info("ping Pong {}, {}", bufferNum, renderTextures[bufferNum].getAttachmentNum());
+        if (temp.clearTexture) {
+            //if the texture has clearing we want to toggle the array
+            this.flippedBuffers[bufferNum] ^= true; //xor the boolean to invert it;
+        } else {
+            //SimplyShaders.LOGGER.info("skipping over attachment num {} : b {}",attachmentNum, bufferNum);
+        }
+
         uniformTextures[bufferNum] = temp; //set the uniform bufferNum to the current renderTexture
         renderTextures[bufferNum] = swapBufferStorage[bufferNum]; //get the alternate buffer to render to
         swapBufferStorage[bufferNum] = temp;
@@ -317,5 +365,9 @@ public class RenderTextureHolder {
     }
     public BufferTexture[] getSwapTextures() {
         return swapBufferStorage;
+    }
+    public int findTextureIdxFromAttachmentNum(int attachmentNum) {
+
+        return this.attachmentMapping[attachmentNum];
     }
 }

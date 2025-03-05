@@ -202,7 +202,7 @@ public abstract class InGameMixin extends GameState {
                     if (mipMapTexes.size > 0) {
                         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
                         for (int x= 0; x < mipMapTexes.size; x++) {
-                           BufferTexture tex = SimplyShaders.holder.getRenderTexture(mipMapTexes.get(x));
+                           BufferTexture tex = SimplyShaders.holder.getRenderTexture(SimplyShaders.holder.findTextureIdxFromAttachmentNum(mipMapTexes.get(x)));
                            Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
                            GL32C.glGenerateMipmap(GL20.GL_TEXTURE_2D);
                            GL32C.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR_MIPMAP_LINEAR);// this only needs to be done before the texture is read from
@@ -213,6 +213,7 @@ public abstract class InGameMixin extends GameState {
                     }
 
                     composite.bind(rawWorldCamera);
+                    //SimplyShaders.LOGGER.info("Uniforms {}\n renders{} ", SimplyShaders.holder.uniformTextures, SimplyShaders.holder.getRenderTextures());
                     SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
                     composite.unbind();
                 }
@@ -235,7 +236,7 @@ public abstract class InGameMixin extends GameState {
         //SimplyShaders.fbo.end();
         //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
         //System.out.println("Starting quad render");
-       GameShader finalShader = FinalShader.DEFAULT_FINAL_SHADER;
+       FinalShader finalShader = FinalShader.DEFAULT_FINAL_SHADER;
         finalShader.bind(rawWorldCamera);
         //finalShader.bindOptionalInt("colorTex0", texHandle);
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
@@ -249,24 +250,43 @@ public abstract class InGameMixin extends GameState {
 
         //need to reset each textures min filter because if the texture had mip maps generated it needed to be set to gl_linear_mipmap_linear to read properly
         //but needs to be set to GL_LINAER if not
-        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-        for (BufferTexture tex: SimplyShaders.holder.getRenderTextures()) {
+//        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+//        for (BufferTexture tex: SimplyShaders.holder.getRenderTextures()) {
+//
+//            if (tex.isMipMapEnabled) {
+//                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
+//                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
+//            }
+//        }
+//        for (BufferTexture tex: SimplyShaders.holder.getSwapTextures()) {
+//
+//            if (tex.isMipMapEnabled) {
+//                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
+//                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
+//            }
+//        }
 
-            if (tex.isMipMapEnabled) {
-                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
-                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
+        RenderTextureHolder holder = SimplyShaders.holder;
+        for(int i = 0; i < holder.flippedBuffers.length; i++) {
+            if (holder.flippedBuffers[i]) {
+
+                BufferTexture[] render = holder.getRenderTextures();
+                BufferTexture[] uniform = holder.uniformTextures;
+                BufferTexture[] swap = holder.getSwapTextures();
+
+
+
+
+
+                    //if the texture has clearing we want to toggle the array
+                holder.flippedBuffers[i] = false; //xor the boolean to invert it;
+                BufferTexture temp = render[i];
+
+                render[i] = swap[i]; //get the alternate buffer to render to
+                uniform[i] = render[i]; //set the uniform bufferNum to the current renderTexture
+                swap[i] = temp;
             }
         }
-        for (BufferTexture tex: SimplyShaders.holder.getSwapTextures()) {
-
-            if (tex.isMipMapEnabled) {
-                Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
-                Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR);
-            }
-        }
-
-
-
 
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.swapQueryBuffers();

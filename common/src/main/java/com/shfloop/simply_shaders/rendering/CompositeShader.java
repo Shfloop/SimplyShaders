@@ -100,7 +100,7 @@ public class CompositeShader extends GameShader {
         int[] shaderInputBuffers = ((GameShaderInterface)this).getShaderInputBuffers();
         if (shaderInputBuffers != null) {
             for (int pingPongBufferNum: shaderInputBuffers) {
-
+                //SimplyShaders.LOGGER.info("unfo Ping pong {}", pingPongBufferNum);
                 SimplyShaders.holder.undoUniformPingPong(pingPongBufferNum);
             }//should swap the textuers before i call glDrawBuffers i think not really sure if i have to
         }

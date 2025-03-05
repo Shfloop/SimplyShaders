@@ -107,6 +107,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         ((GameShader)(Object)this).bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
         ((GameShader)(Object)this).bindOptionalFloat("sunAngle", Shadows.sunAngle);
         ((GameShader)(Object)this).bindOptionalUniform3f("cameraViewDirection", worldCamera.direction);
+        ((GameShader)(Object)this).bindOptionalFloat("frameTime", Gdx.graphics.getDeltaTime());
 
     }
 
@@ -193,6 +194,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
                     //there cant be duplicate values in this so i can exit
 
                     sameTextureUsed = true;
+                    SimplyShaders.LOGGER.info("Ping pong Buffer {}",testValue );
                     pingPongCount++;
                     break;
                 }

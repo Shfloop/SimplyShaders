@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.Shadows;
+import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.rendering.BufferTexture;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -43,6 +45,10 @@ public abstract class ChunkShaderMixin extends GameShader {
             //this.bindOptionalUniform3f("lightPos", Shadows.getCamera().position); // no longer used
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);// to compare with normal
             this.bindOptionalUniformMatrix("u_projViewTransPrev", prevCombinedMatrix);
+
+            for (BufferTexture tex: SimplyShaders.holder.uniformTextures) { //This isnt the best because chunkShaders dont do ping ponging so This should only be used if the pack is only reading
+                newTexNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),newTexNum);
+            }
 //            this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );
 //            this.bindOptionalFloat("viewWidth", Gdx.graphics.getWidth());
 //            this.bindOptionalFloat("viewHeight", Gdx.graphics.getHeight());
