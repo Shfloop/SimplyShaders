@@ -2,17 +2,7 @@ package com.shfloop.simply_shaders.settings;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.*;
-import com.shfloop.simply_shaders.SimplyShaders;
-import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
-import finalforeach.cosmicreach.GameAssetLoader;
-import finalforeach.cosmicreach.io.SaveLocation;
-import finalforeach.cosmicreach.settings.SettingsDictionary;
-import finalforeach.cosmicreach.util.Identifier;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.lang.StringBuilder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

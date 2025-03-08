@@ -42,7 +42,9 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
 
     @Inject(method = "drawSky", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Matrix4;rotate(FFFF)Lcom/badlogic/gdx/math/Matrix4;"))
     private void rotateSunAndMoon(CallbackInfo ci) {
-        sunMoonModelMat.rotate(1.0f,0.0f,0.0f,45);
+        if (Shadows.shaders_on) {
+            sunMoonModelMat.rotate(1.0f, 0.0f, 0.0f, 45);
+        }
     }
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;dot(Lcom/badlogic/gdx/math/Vector3;)F", shift = At.Shift.AFTER))
     private void rotateSunAngle(CallbackInfo ci) {
