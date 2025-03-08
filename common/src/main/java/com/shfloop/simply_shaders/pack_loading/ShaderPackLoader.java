@@ -18,7 +18,7 @@ import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 
-import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
+import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstance;
 
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;

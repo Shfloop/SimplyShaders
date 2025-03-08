@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;
-import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
+import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstance;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

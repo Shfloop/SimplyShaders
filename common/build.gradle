@@ -24,8 +24,8 @@ dependencies {
     //cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}") // quilt can run off of jigsaw but doesnt build correnctly
 
     // Cosmic Quilt
-    cosmicReach(loom.cosmicReachClient("pre-alpha", cosmic_reach_version))
-    cosmicReachServer(loom.cosmicReachServer("pre-alpha", cosmic_reach_version))
+    cosmicReach(loom.cosmicReachClient("alpha", cosmic_reach_version))
+    cosmicReachServer(loom.cosmicReachServer("alpha", cosmic_reach_version))
     modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
 }
 

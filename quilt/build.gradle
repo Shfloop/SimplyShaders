@@ -19,8 +19,8 @@ repositories {
 
 dependencies {
     // Cosmic Reach
-    cosmicReach(loom.cosmicReachClient("pre-alpha", cosmic_reach_version))
-    cosmicReachServer(loom.cosmicReachServer("pre-alpha", cosmic_reach_version))
+    cosmicReach(loom.cosmicReachClient("alpha", cosmic_reach_version))
+    cosmicReachServer(loom.cosmicReachServer("alpha", cosmic_reach_version))
     // Cosmic Quilt
     modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
 
