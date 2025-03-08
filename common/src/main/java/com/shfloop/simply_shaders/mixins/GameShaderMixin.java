@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
@@ -108,6 +109,8 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         ((GameShader)(Object)this).bindOptionalFloat("sunAngle", Shadows.sunAngle);
         ((GameShader)(Object)this).bindOptionalUniform3f("cameraViewDirection", worldCamera.direction);
         ((GameShader)(Object)this).bindOptionalFloat("frameTime", Gdx.graphics.getDeltaTime());
+        ((GameShader)(Object)this).bindOptionalMatrix4("u_shadowView", Shadows.getCamera().view);
+        ((GameShader)(Object)this).bindOptionalMatrix4("u_shadowProj", Shadows.getCamera().projection);
 
     }
 
@@ -228,6 +231,8 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     @Shadow Identifier fragShaderId;
 
     @Shadow private static Array<GameShader> allShaders;
+
+    @Shadow public abstract void bindOptionalMatrix4(String uniformName, Matrix4 mat4);
 
     @Overwrite
     public void verifyShaderHasNoBannedKeywords(Identifier shaderId, String shaderText) {

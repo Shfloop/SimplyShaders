@@ -35,25 +35,49 @@ public abstract  class DynamicSkyMixin implements DynamicSkyInterface {
     @Shadow
     protected Vector3 sunDirection;
     @Shadow protected float i;
+    @Shadow private Matrix4 sunMoonModelMat;
     @Unique
     private final Vector3 angledNoon = Vector3.Y.cpy().rotate(45f,1.0f,0.0f,0.0f).nor();
     private final Vector3 horizonVec = new Vector3(-1,0,0);
+
+    @Inject(method = "drawSky", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Matrix4;rotate(FFFF)Lcom/badlogic/gdx/math/Matrix4;"))
+    private void rotateSunAndMoon(CallbackInfo ci) {
+        sunMoonModelMat.rotate(1.0f,0.0f,0.0f,45);
+    }
     @Inject(method = "update", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;dot(Lcom/badlogic/gdx/math/Vector3;)F", shift = At.Shift.AFTER))
     private void rotateSunAngle(CallbackInfo ci) {
 
         if (Shadows.shaders_on) {
+
+
+
+
             sunDirection.rotate(45f, 1.0f,0.0f,0.0f);
+            float noonDot = angledNoon.dot(sunDirection) ;
             Vector3 cameraDirection = Shadows.getCamera().direction;
-            cameraDirection.x = sunDirection.x * -1;
-            cameraDirection.y = sunDirection.y * -1;
-            cameraDirection.z = sunDirection.z * -1;
+            if(noonDot >= 0) {
+                cameraDirection.x = sunDirection.x * -1;
+                cameraDirection.y = sunDirection.y * -1;
+                cameraDirection.z = sunDirection.z * -1;
+            } else {
+                cameraDirection.x = sunDirection.x ;
+                cameraDirection.y = sunDirection.y ;
+                cameraDirection.z = sunDirection.z ;
+            }
+
+
             cameraDirection.nor();
 //            Vector3 norSunVector = sunDirection.cpy();
 //            norSunVector.nor();
 //            lastUpdateTime = i;
 //            Shadows.getCamera().direction.set(new Vector3(norSunVector.x * -1 , norSunVector.y * -1, norSunVector.z * -1));
+
+
+
+
+
             Shadows.getCamera().update();
-            float noonDot = angledNoon.dot(sunDirection) ;
+
 
             float sunAngle;
             float horizonAngle = horizonVec.dot(sunDirection) * 0.5f + 0.5f;
