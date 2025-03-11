@@ -196,41 +196,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
         this.shaderInputBuffers = new int[numUsedRenderTextures];
         System.arraycopy(renderTexturesUsed, 0, this.shaderInputBuffers, 0,numUsedRenderTextures );
-        SimplyShaders.LOGGER.info("ADDING SHADER INPUT BUFFER {}", this.shaderInputBuffers);
-//        int pingPongCount = 0;
-//        for (int i = 0; i < numUsedRenderTextures; i++) {
-//            int testValue = renderTexturesUsed[i];
-//            boolean sameTextureUsed = false;
-//            for (int shaderDrawBuffer : this.shaderDrawBuffers) {
-//                if (shaderDrawBuffer - GL32.GL_COLOR_ATTACHMENT0 == testValue) { //need to subtract by the gl constante value because im using drawbuffers like that
-//                    //if both are equal that means that the shader is trying to read and write to the same texture
-//                    //there cant be duplicate values in this so i can exit
-//
-//                    sameTextureUsed = true;
-//                    SimplyShaders.LOGGER.info("Ping pong Buffer {}",testValue );
-//                    pingPongCount++;
-//                    break;
-//                }
-//            }
-//            //reuse the array by setting the values that dont match to negative one
-//            if (!sameTextureUsed) {
-//                renderTexturesUsed[i] = -1;
-//            }
-//        }
-//        if (pingPongCount <= 0) {
-//            return;
-//        }
-//        //go over one more time
-//        this.shaderInputBuffers = new int[pingPongCount];
-//        pingPongCount = 0;
-//        //copy over the contents
-//        for (int i = 0; i < numUsedRenderTextures; i++) {
-//            if(renderTexturesUsed[i] != -1) {
-//                this.shaderInputBuffers[pingPongCount] = renderTexturesUsed[i];
-//                pingPongCount++;
-//
-//            }
-//        }
+
 
 
 

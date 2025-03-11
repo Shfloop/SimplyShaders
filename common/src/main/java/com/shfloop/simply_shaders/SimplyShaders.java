@@ -54,7 +54,7 @@ public class SimplyShaders {
             drawBuffersUsed = ShaderPackLoader.drawBuffersUsed;
         }
         BufferTexture[] textures = new BufferTexture[drawBuffersUsed.size];
-        SimplyShaders.LOGGER.info("DRAWEA BUSDFBSDF {}",drawBuffersUsed.size);
+
         for (int i = 0; i < textures.length; i++) {
             String name = "colorTex" + (drawBuffersUsed.get(i) - GL32.GL_COLOR_ATTACHMENT0); //get the integer value 0-8
             float textureScale = 1.0f;
@@ -66,12 +66,12 @@ public class SimplyShaders {
                 }
                 if (ShaderPackLoader.packSettings.texesWithMipEnabled[drawBuffersUsed.get(i) - GL32.GL_COLOR_ATTACHMENT0]) {
                     isMipMapEnabled = true;
-                    SimplyShaders.LOGGER.info("INIT SHADER {} to MipMap true", name);
+
                 }
             }
             textures[i] = new BufferTexture(name, (int) (textureScale * Gdx.graphics.getWidth()), (int) (textureScale * Gdx.graphics.getHeight()), GL32.GL_RGBA, GL32.GL_RGBA16F, drawBuffersUsed.get(i), isMipMapEnabled);
         }
-        SimplyShaders.LOGGER.info("WHAT THE FUCK {} \n LENGTH{}", Arrays.toString(textures), textures.length);
+
 
         //created all the render textures that need to be rendered too (not including depth buffers
         //how do i knwo which ones to give depth buffers

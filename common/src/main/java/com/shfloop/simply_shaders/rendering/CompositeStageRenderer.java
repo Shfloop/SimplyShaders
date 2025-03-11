@@ -31,7 +31,7 @@ public class CompositeStageRenderer {
             int[]shaderDrawBuffers = ((GameShaderInterface)shader).getShaderDrawBuffers(); //THIS IS IN ATTACHMENT NUMBERS
             //flipped buffers points to the last stages renderTargets if true the last stage wrote to alt so this stage should read from alt
             int [] drawBuffers = new int[shaderDrawBuffers.length];
-            ;
+
             //we should set the passes texture uniforms here // so there should eb a String[] with the texture names and we need to add the bufferTexture int associated
             boolean[] readFromAlt = new boolean[flippedBuffers.length];
                     System.arraycopy(flippedBuffers,0,readFromAlt, 0, flippedBuffers.length);
@@ -43,7 +43,7 @@ public class CompositeStageRenderer {
             for(int x = 0; x < shaderDrawBuffers.length; x++) { // edit and copy the attachments to buffer num
                 drawBuffers[x] = shaderDrawBuffers[x] - GL32.GL_COLOR_ATTACHMENT0;
                 flippedBuffers[drawBuffers[x]] ^=true;
-                SimplyShaders.LOGGER.info("WRITE TO ALT {} for buf {}", flippedBuffers[drawBuffers[x]], drawBuffers[x]);
+                //SimplyShaders.LOGGER.info("WRITE TO ALT {} for buf {}", flippedBuffers[drawBuffers[x]], drawBuffers[x]);
             }
 
            //use flipped buffer to get the renderTargets and create the framebufer here
@@ -67,8 +67,9 @@ public class CompositeStageRenderer {
             for (int x = 0; x <shaderReadTextures.length; x++) {
                 int drawBufferNum = shaderReadTextures[x];
                 readTextures[x] = holder.getBufferTexture(readFromAlt[drawBufferNum], drawBufferNum );// i can use the same thing because this getRenderTexture will get the alt texture if true and with readsFromAlt true means the alt textrure
-                SimplyShaders.LOGGER.info("Read Texture {}, id {} fromAlt? {}",drawBufferNum, readTextures[x].getID(), readFromAlt[drawBufferNum]);
-            }
+                //SimplyShaders.LOGGER.info("Read Texture {}, id {} fromAlt? {}",drawBufferNum, readTextures[x].getID(), readFromAlt[drawBufferNum]);
+            }//FIXME if a texture is never written too it wont be able to be read from because its not added to textures thi sis kinda a good thing but will break stuff if i get custom texture loading in
+
 
             //set the pass mip maps and get the coorisponding alt or main texture
             IntArray mipMapEnabledBuffers = ((GameShaderInterface)shader).getShaderMipMapEnabled();
@@ -78,7 +79,7 @@ public class CompositeStageRenderer {
                 mipMapTexes[x] = holder.getBufferTexture(readFromAlt[drawBufferNum],mipMapEnabledBuffers.get(x) );
                 if(!mipMappedTexIdx.contains(mipMapTexes[x].getAttachmentNum())) {
                     mipMappedTexIdx.add(mipMapTexes[x].getID());
-                    SimplyShaders.LOGGER.info("MIP MAP {}, id {} fromAlt? {}",drawBufferNum, mipMapTexes[x].getID(), readFromAlt[drawBufferNum]);
+                    //SimplyShaders.LOGGER.info("MIP MAP {}, id {} fromAlt? {}",drawBufferNum, mipMapTexes[x].getID(), readFromAlt[drawBufferNum]);
                 }
             }
 

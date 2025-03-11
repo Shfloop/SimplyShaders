@@ -29,14 +29,14 @@ public class FinalStageRenderer {
         int [] shaderReadTextures = ((GameShaderInterface)shader).getShaderInputBuffers(); //TODO currently input buffers is just pingponged buffers
         if (shaderReadTextures == null) {
             shaderReadTextures = new int[1];
-            SimplyShaders.LOGGER.info("SHADER READ TEXTURE NULL");
+            //SimplyShaders.LOGGER.info("SHADER READ TEXTURE NULL");
             //will get the default value 0
         }
         readTextures = new BufferTexture[shaderReadTextures.length];
         for (int x = 0; x <shaderReadTextures.length; x++) {
             int drawBufferNum = shaderReadTextures[x];
             readTextures[x] = holder.getBufferTexture(readFromAlt[drawBufferNum], drawBufferNum );// i can use the same thing because this getRenderTexture will get the alt texture if true and with readsFromAlt true means the alt textrure
-            SimplyShaders.LOGGER.info("FINAL Texture {}, id {} fromAlt? {}",drawBufferNum, readTextures[x].getID(), readFromAlt[drawBufferNum]);
+            //SimplyShaders.LOGGER.info("FINAL Texture {}, id {} fromAlt? {}",drawBufferNum, readTextures[x].getID(), readFromAlt[drawBufferNum]);
         }
         finalShader = shader;
 
@@ -55,7 +55,7 @@ public class FinalStageRenderer {
 
             if (!altTex.clearTexture) {
                 temp.add(altTex);
-                SimplyShaders.LOGGER.info("COPYING ALT TO MAIN FOR TEX {}", altTex);
+                //SimplyShaders.LOGGER.info("COPYING ALT TO MAIN FOR TEX {}", altTex);
                 //if the texture has clearing false then we want to use this data for the next frame so it needs to be copied to main
                 //another way to avoid copying is to have a duplicate of everything (composite staeg, final stage etc with duplicate framebuffers but have the buffers be aligned so the ones that would be copied are flipped
 
