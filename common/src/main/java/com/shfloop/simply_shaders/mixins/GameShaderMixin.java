@@ -80,7 +80,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
 
 
-        if (SimplyShaders.inRender &&!Arrays.equals(RenderTextureHolder.boundFrameBuffer.lastDrawBuffers, shaderDrawBuffers)) {
+        if (enableDrawBuffers && SimplyShaders.inRender &&!Arrays.equals(RenderTextureHolder.boundFrameBuffer.lastDrawBuffers, shaderDrawBuffers)) {
 
             GL32.glDrawBuffers(shaderDrawBuffers);
             RenderTextureHolder.boundFrameBuffer.lastDrawBuffers = shaderDrawBuffers;
@@ -327,8 +327,10 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     public int[] getShaderDrawBuffers() {
         return this.shaderDrawBuffers;
     }
-    public void setShaderDrawBuffers(int[] arr) {
-        this.shaderDrawBuffers = arr;
+    @Unique
+    private boolean enableDrawBuffers= true;
+    public void setEnableDrawBuffers(boolean val) {
+        this.enableDrawBuffers = val;
     }
     private String loadShaderFile(Identifier shaderId, SimplyShaders.newShaderType shaderType) {
        // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //

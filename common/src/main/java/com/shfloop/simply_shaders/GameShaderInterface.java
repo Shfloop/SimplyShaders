@@ -8,7 +8,7 @@ public interface GameShaderInterface {
      int[] getShaderInputBuffers();
      void setShaderInputBuffers(int[] arr);
      int[] getShaderDrawBuffers();
-     void setShaderDrawBuffers(int[] arr);
+     void setEnableDrawBuffers(boolean val) ;
      IntArray getShaderMipMapEnabled();
 
      ShaderDirectives getShaderDirectives();

@@ -429,7 +429,7 @@ public class RenderTextureHolder {
         fb.setWidth(width);
         GL32.glDrawBuffers(attachmentDrawBuffers);
         //AHAHAHAHA I need to overwrite the gameShader buisness because its still there
-        ((GameShaderInterface)shader).setShaderDrawBuffers(attachmentDrawBuffers);
+        ((GameShaderInterface)shader).setEnableDrawBuffers(false);
         SimplyShaders.LOGGER.info("DRAW BUFFERS {}", attachmentDrawBuffers);
         if (Gdx.gl.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE ) {
             throw new RuntimeException("Could not create Color FrameBuffer " + Arrays.toString(drawBuffers));
@@ -449,10 +449,16 @@ public class RenderTextureHolder {
     }
     public BufferTexture getAltTex(int drawBuffer) {
         int texLocation = attachmentMapping[drawBuffer];
+        if (texLocation < 0 || texLocation > mainTextures.length) {
+            SimplyShaders.LOGGER.info("UH OH, texLoc {}, drawBuffer {}, attachmentMap {}", texLocation, drawBuffer, attachmentMapping);
+        }
         return alternateTextures[texLocation];
     }
     public BufferTexture getMainTex(int drawBuffer) {
         int texLocation = attachmentMapping[drawBuffer];
+        if (texLocation < 0 || texLocation > mainTextures.length) {
+            SimplyShaders.LOGGER.info("UH OH, texLoc {}, drawBuffer {}, attachmentMap {}", texLocation, drawBuffer, attachmentMapping);
+        }
         return mainTextures[texLocation];
     }
     private void setTextureClearColor(Color color , int bufNum) {

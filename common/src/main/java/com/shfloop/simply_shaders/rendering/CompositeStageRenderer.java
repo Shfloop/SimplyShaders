@@ -38,6 +38,8 @@ public class CompositeStageRenderer {
 
 
                     //TEMPORARY UNTIL I SORT OUT DRAWBUFFER IN GAMESHADERMIXIN
+            //the shader drawBufer gets overwritten with the first few color attachments so its not reliable on resize
+            //so instead we need to keep drawbuffers final in shader and just have a boolean which controls wheter the shader calls drawbuffers;
             for(int x = 0; x < shaderDrawBuffers.length; x++) { // edit and copy the attachments to buffer num
                 drawBuffers[x] = shaderDrawBuffers[x] - GL32.GL_COLOR_ATTACHMENT0;
                 flippedBuffers[drawBuffers[x]] ^=true;
