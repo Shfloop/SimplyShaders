@@ -15,7 +15,8 @@ public class BufferTexture {
     private int pixelFormat;
     private int internalFormat;
     public boolean clearTexture = true;
-    private int frameBufferIdx;
+
+
     private int attachmentNum;
     public Color clearColor = Color.CLEAR.cpy();
     public boolean isMipMapEnabled;
@@ -27,7 +28,7 @@ public class BufferTexture {
         this.height = height;
         this.pixelFormat = pixelFormat;
         this.internalFormat = internalFormat;
-        this.frameBufferIdx = -1;
+
         this.attachmentNum = attachmentNum;
         this.isMipMapEnabled = isMipMapEnabled;
          // could do the stuff in renderFbo here
@@ -68,13 +69,6 @@ public class BufferTexture {
     public String getName() {return uniformName;}
     public int getInternalFormat() {return this.internalFormat;}
     public int getPixelFormat() {return this.pixelFormat;}
-    public void setFrameBufferIdx(int idx) {
-        this.frameBufferIdx = idx;
-    }
-
-    public int getFrameBufferIdx() {
-        return frameBufferIdx;
-    }
 
     public int getAttachmentNum() {
         return attachmentNum;
@@ -84,7 +78,7 @@ public class BufferTexture {
         this.attachmentNum = attachmentNum;
     }
     public String toString() {
-        String newString = "name: " + uniformName + " Width: " + this.width + " Height: " + height + " attach: " + attachmentNum + " fIdx: " + frameBufferIdx + " id: " + id;
+        String newString = "name: " + uniformName + " Width: " + this.width + " Height: " + height + " attach: " + attachmentNum + " id: " + id;
         return newString;
     }
 }

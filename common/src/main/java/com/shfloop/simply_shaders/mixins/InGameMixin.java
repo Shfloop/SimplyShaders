@@ -160,17 +160,8 @@ public abstract class InGameMixin extends GameState {
 
         //need to bind the framebuffer that has the depth attachment
         //should have a better solution
-        boolean foundBuf = false;
-        for (FrameBuffer buf: SimplyShaders.holder.getFramebuffers()) {
-            if (buf.hasDepth) {
-                foundBuf = true;
-                SimplyShaders.holder.bindFrameBuffer(buf);
-                break;
-            }
-        }
-        if (!foundBuf) {
-            throw new RuntimeException("NO DEPTH FRAMEBUFFER FOUND"); //can remove this
-        }
+        Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        SimplyShaders.holder.bindFrameBuffer(SimplyShaders.holder.baseGameFrameBuffer);
 
 
         //System.out.println("RENDERSTART");
@@ -195,56 +186,14 @@ public abstract class InGameMixin extends GameState {
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.startQuery(2);
         if (ShaderPackLoader.shaderPackOn) {
-            if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
-                for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
-                    CompositeShader composite = (CompositeShader)  ShaderPackLoader.shader1.get(i);
-                    IntArray mipMapTexes = ((GameShaderInterface)(composite)).getShaderMipMapEnabled();
-                    if (mipMapTexes.size > 0) {
-                        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-                        for (int x= 0; x < mipMapTexes.size; x++) {
-                           BufferTexture tex = SimplyShaders.holder.getRenderTexture(SimplyShaders.holder.findTextureIdxFromAttachmentNum(mipMapTexes.get(x)));
-                           Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
-                           GL32C.glGenerateMipmap(GL20.GL_TEXTURE_2D);
-                           GL32C.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR_MIPMAP_LINEAR);// this only needs to be done before the texture is read from
-                            //each texture when the mip is generated will be a ssigned teh min filter to mipmapLinear
-                            //that way anythime this is used in sample it shoul dbe fine and rendering to it shouldnt matter
-                            //AT the end of composite / final rendering each texture that has mip maps enabled for both Swap and render should have min filter set to linear so there is no mixup between frames if a and b switch places
-                        }
-                    }
-
-                    composite.bind(rawWorldCamera);
-                    //SimplyShaders.LOGGER.info("Uniforms {}\n renders{} ", SimplyShaders.holder.uniformTextures, SimplyShaders.holder.getRenderTextures());
-                    SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
-                    composite.unbind();
-                }
-            }
+            SimplyShaders.compositeStageRenderer.render(rawWorldCamera);
         }
 
 
 
         SimplyShaders.inRender = false;// should stop finalshader from from drying to call drawbuffers
-       // System.out.println("Composite done");
 
-        //bind framebuffer 0
-        //this is okay because clearBuffers will bind appropriate buffers and finalShader doesnt bind any framebuffers
-        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-        //screen should alreayd be cleared and i dont think it woudl matter much
-//        //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-//        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
-
-        //SimplyShaders.fbo.end();
-        //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
-        //System.out.println("Starting quad render");
-       FinalShader finalShader = FinalShader.DEFAULT_FINAL_SHADER;
-        finalShader.bind(rawWorldCamera);
-        //finalShader.bindOptionalInt("colorTex0", texHandle);
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-        //Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
-        //finalShader.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, 0); //this works
-
-        SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
-        finalShader.unbind();
+        SimplyShaders.finalStageRenderer.render(rawWorldCamera);
         //System.out.println("DONE QUAD");
 
 
@@ -266,27 +215,8 @@ public abstract class InGameMixin extends GameState {
 //            }
 //        }
 
-        RenderTextureHolder holder = SimplyShaders.holder;
-        for(int i = 0; i < holder.flippedBuffers.length; i++) {
-            if (holder.flippedBuffers[i]) {
-
-                BufferTexture[] render = holder.getRenderTextures();
-                BufferTexture[] uniform = holder.uniformTextures;
-                BufferTexture[] swap = holder.getSwapTextures();
 
 
-
-
-
-                    //if the texture has clearing we want to toggle the array
-                holder.flippedBuffers[i] = false; //xor the boolean to invert it;
-                BufferTexture temp = render[i];
-
-                render[i] = swap[i]; //get the alternate buffer to render to
-                uniform[i] = render[i]; //set the uniform bufferNum to the current renderTexture
-                swap[i] = temp;
-            }
-        }
 
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.swapQueryBuffers();
