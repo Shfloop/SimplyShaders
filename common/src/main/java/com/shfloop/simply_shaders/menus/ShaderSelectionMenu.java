@@ -75,12 +75,12 @@ public class ShaderSelectionMenu extends GameState{
 
         }
     public void copyDefaultShaderPack() {
-        InputStream src= (this.getClass().getResourceAsStream("/shaderpacks/TestShaderV10.zip"));
+        InputStream src= (this.getClass().getResourceAsStream("/shaderpacks/SimpleShader-1.0.zip"));
         if (src == null) {
             SimplyShaders.LOGGER.info("Unable to find shaderpack resource");
             return;
         }
-        final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/TestShaderV10.zip";
+        final String shaderRoot = SaveLocation.getSaveFolderLocation() + "/mods/shaderpacks/SimpleShader-1.0.zip";
 
         Path to = Path.of(shaderRoot);
         try {
