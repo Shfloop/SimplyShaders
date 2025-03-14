@@ -153,10 +153,11 @@ public abstract class InGameMixin extends GameState {
 //        GL32.glDrawBuffers(drawBuffers);
 
         //SimplyShaders.fbo.begin();
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
 
         SimplyShaders.holder.clearTextures(playerZone);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         //need to bind the framebuffer that has the depth attachment
         //should have a better solution

@@ -13,6 +13,7 @@ import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL45;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -328,6 +329,7 @@ public class RenderTextureHolder {
         Sky sky = Sky.getCurrentSky(playerZone);
 
                 skyColor.set(sky.currentSkyColor);
+                Gdx.gl.glColorMask(true,true,true,true);
         for (FrameBuffer buf: this.clearFrameBuffers.iterator()) {
             this.bindFrameBuffer(buf);
             Gdx.gl.glViewport(0,0, buf.getWidth(),buf.getHeight());
@@ -336,6 +338,7 @@ public class RenderTextureHolder {
             }
             for (int attachment: buf.attachmentDrawBuffers) {
                 int drawBuffer = attachment - GL32.GL_COLOR_ATTACHMENT0;
+                GL32.glDrawBuffers(attachment);
                 BufferTexture tex = this.getBufferTexture(false, drawBuffer);
                 if (!tex.clearTexture) {
                     continue;
@@ -348,9 +351,16 @@ public class RenderTextureHolder {
                 temporaryColor[3] = c.a;
 
 
-                GL32.glClearBufferfv(GL32.GL_COLOR,drawBuffer, temporaryColor);
+                //GL32.glClearBufferfv(GL32.GL_COLOR,drawBuffer, temporaryColor);
+                //NO idea why clearBufferfv doesnt work here
+                Gdx.gl.glClearColor(c.r,c.g,c.b,c.a);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
             }
+            GL32.glDrawBuffers(buf.attachmentDrawBuffers);
+            buf.lastDrawBuffers = buf.attachmentDrawBuffers;
         }
+        //GL45.glMemoryBarrier(GL45.GL_TEXTURE_FETCH_BARRIER_BIT | GL45.GL_FRAMEBUFFER_BARRIER_BIT );
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER,0);
 
 
