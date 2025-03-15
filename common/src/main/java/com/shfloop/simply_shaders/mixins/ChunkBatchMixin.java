@@ -48,6 +48,8 @@ public abstract class ChunkBatchMixin {
         In order to efficiently swap shaders im overwriting this
      */
 
+    @Shadow private static int uniformLocationBatchPosition;
+
     public void render(Zone zone, Camera worldCamera) { //FIXME ChunkWater shaders are being bound on each call taking up excess time
         if (this.seenCount == seenStep) {
             if (this.needToRebuild) {
@@ -64,10 +66,22 @@ public abstract class ChunkBatchMixin {
                     }
                 }else if (lastBoundShader != this.shader) {
                     lastBoundShader = this.shader;
+                    float cx = worldCamera.position.x;
+                    float cy = worldCamera.position.y;
+                    float cz = worldCamera.position.z;
+                    worldCamera.position.setZero();
+                    worldCamera.update();
                     lastBoundShader.bind(worldCamera);
+                    worldCamera.position.set(cx, cy, cz);
+                    worldCamera.update();
+                    lastBoundShader.bindOptionalUniform3f("trueCameraPosition", worldCamera.position);
+                    uniformLocationBatchPosition = this.shader.getUniformLocation("u_batchPosition");
                 }
 
-                lastBoundShader.bindOptionalUniform3f("u_batchPosition", this.boundingBox.min);
+                float bx = this.boundingBox.min.x - worldCamera.position.x;
+                float by = this.boundingBox.min.y - worldCamera.position.y;
+                float bz = this.boundingBox.min.z - worldCamera.position.z;
+                this.shader.bindOptionalUniform3f(uniformLocationBatchPosition, bx, by, bz);
                 this.mesh.bind(lastBoundShader.shader);
                 this.mesh.render(lastBoundShader.shader, 4);
                 this.mesh.unbind(lastBoundShader.shader);

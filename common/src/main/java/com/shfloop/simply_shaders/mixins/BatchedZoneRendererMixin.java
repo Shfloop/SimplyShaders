@@ -37,6 +37,7 @@ public class BatchedZoneRendererMixin {
 
         if (!copiedDepthTex && !layerWritesToDepth.get(layerNum,true)) {
             copiedDepthTex = true;
+            //TODO during a shadow pass once the water starts to get rendered i can just return and cancel the water render ni shadowpass
 //            GL45.glMemoryBarrier(GL45.GL_TEXTURE_FETCH_BARRIER_BIT);
 //            //might not need this instead use
 //            GL45.glCopyImageSubData();// but i need to bind teh second texture to a framebuffre i think;
