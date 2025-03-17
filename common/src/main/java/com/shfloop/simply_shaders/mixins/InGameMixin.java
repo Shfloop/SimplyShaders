@@ -180,11 +180,15 @@ public abstract class InGameMixin extends GameState {
     }
         //stop the framebuffer so UI gets rendered normally to the screen
         //then i need to do the final render so that ui displays properly
+    @Inject(method = "render",at = @At(value = "INVOKE", target ="Lfinalforeach/cosmicreach/rendering/GameParticleRenderer;render(Lcom/badlogic/gdx/graphics/Camera;F)V", shift = At.Shift.AFTER))
+    private void deferredWaterRender(CallbackInfo ci) {
+        ((BatchedZoneRendererInterface) GameSingletons.zoneRenderer).renderWater(localPlayer.getZone(), rawWorldCamera);
+    }
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void stopRenderBuffer(CallbackInfo ci) {
         //do composite rendes on the same screen quad;
         //THIS WILL CRASH IF THE NAIVE RENDERER IS USED though i dont think you can still select it
-        ((BatchedZoneRendererInterface) GameSingletons.zoneRenderer).renderWater(localPlayer.getZone(), rawWorldCamera);
+
 
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST); // disable it so screen quad doesnt get removed
         //i think i walso want to disable gl blend
