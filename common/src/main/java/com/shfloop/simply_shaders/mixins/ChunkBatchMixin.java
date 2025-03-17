@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.shfloop.simply_shaders.rendering.ChunkBatchInterface;
 import finalforeach.cosmicreach.rendering.ChunkBatch;
 import finalforeach.cosmicreach.rendering.meshes.MeshData;
 import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static finalforeach.cosmicreach.rendering.ChunkBatch.lastBoundShader;
 
 @Mixin(ChunkBatch.class)
-public abstract class ChunkBatchMixin {
+public abstract class ChunkBatchMixin implements ChunkBatchInterface {
 
     @Shadow
     protected boolean seen;
@@ -103,5 +104,9 @@ public abstract class ChunkBatchMixin {
 
         this.seen = false;
         this.meshDatasToAdd.size = 0;
+    }
+    public void markAsSeen() {
+        seen = false;
+        meshDatasToAdd.size = 0;
     }
 }

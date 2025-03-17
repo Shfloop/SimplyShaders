@@ -129,6 +129,7 @@ public abstract class InGameMixin extends GameState {
                 for (Entity e : playerZone.getAllEntities()) {
                     e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
                 }
+                ((BatchedZoneRendererInterface)GameSingletons.zoneRenderer).markWaterAsSeen(); //i need to make sure i set the chunkbatches to act like they were rendered or else it messes up water rendering for main pass
                 Shadows.shadowPass = false;
 
 

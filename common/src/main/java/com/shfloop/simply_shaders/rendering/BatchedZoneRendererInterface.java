@@ -5,4 +5,5 @@ import finalforeach.cosmicreach.world.Zone;
 
 public interface BatchedZoneRendererInterface {
     public void renderWater(Zone zone, Camera worldCamera);
+    public void markWaterAsSeen();
 }

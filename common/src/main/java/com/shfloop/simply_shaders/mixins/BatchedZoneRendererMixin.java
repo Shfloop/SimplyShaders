@@ -11,6 +11,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.BatchedZoneRendererInterface;
+import com.shfloop.simply_shaders.rendering.ChunkBatchInterface;
 import com.shfloop.simply_shaders.rendering.RenderTextureHolder;
 import finalforeach.cosmicreach.rendering.BatchedZoneRenderer;
 import finalforeach.cosmicreach.rendering.ChunkBatch;
@@ -170,5 +171,22 @@ public abstract class BatchedZoneRendererMixin implements BatchedZoneRendererInt
 
         Gdx.gl.glActiveTexture(33984);
         Gdx.gl.glBindTexture(3553, 0);
+    }
+    @Unique
+    public void markWaterAsSeen() {
+        for (int i = savedLayerNumIdx; i < layerNums.items.length; i++) {
+            int layerNum = layerNums.items[i];
+            if(seenLayerNums.contains(layerNum)) {
+                Array<ChunkBatch> layer = layers.get(layerNum);
+                if (layer != null) {
+                    for (ChunkBatch batch : layer) {
+
+                        ((ChunkBatchInterface) batch).markAsSeen();
+                    }
+                }
+
+
+            }
+        }
     }
 }
