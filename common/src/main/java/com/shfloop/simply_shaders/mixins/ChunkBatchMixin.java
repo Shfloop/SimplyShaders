@@ -11,6 +11,7 @@ import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -50,6 +51,9 @@ public abstract class ChunkBatchMixin {
 
     @Shadow private static int uniformLocationBatchPosition;
 
+    @Shadow public static GameShader lastBoundShader;
+
+    @Overwrite
     public void render(Zone zone, Camera worldCamera) { //FIXME ChunkWater shaders are being bound on each call taking up excess time
         if (this.seenCount == seenStep) {
             if (this.needToRebuild) {
@@ -62,7 +66,16 @@ public abstract class ChunkBatchMixin {
                 if (Shadows.shadowPass) {
                     if(lastBoundShader != Shadows.SHADOW_CHUNK) {
                         lastBoundShader = Shadows.SHADOW_CHUNK;
+                        float cx = worldCamera.position.x;
+                        float cy = worldCamera.position.y;
+                        float cz = worldCamera.position.z;
+                        worldCamera.position.setZero();
+                        worldCamera.update();
                         lastBoundShader.bind(worldCamera);
+                        worldCamera.position.set(cx, cy, cz);
+                        worldCamera.update();
+                        lastBoundShader.bindOptionalUniform3f("trueCameraPosition", worldCamera.position);
+                        uniformLocationBatchPosition =lastBoundShader.getUniformLocation("u_batchPosition");
                     }
                 }else if (lastBoundShader != this.shader) {
                     lastBoundShader = this.shader;
@@ -81,7 +94,7 @@ public abstract class ChunkBatchMixin {
                 float bx = this.boundingBox.min.x - worldCamera.position.x;
                 float by = this.boundingBox.min.y - worldCamera.position.y;
                 float bz = this.boundingBox.min.z - worldCamera.position.z;
-                this.shader.bindOptionalUniform3f(uniformLocationBatchPosition, bx, by, bz);
+                lastBoundShader.bindOptionalUniform3f(uniformLocationBatchPosition, bx, by, bz);
                 this.mesh.bind(lastBoundShader.shader);
                 this.mesh.render(lastBoundShader.shader, 4);
                 this.mesh.unbind(lastBoundShader.shader);
