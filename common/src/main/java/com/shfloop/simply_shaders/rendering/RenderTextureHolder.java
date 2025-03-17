@@ -38,6 +38,7 @@ public class RenderTextureHolder {
     private static final float[] WHITE = {1.0f,1.0f,1.0f,1.0f};
     public static FrameBuffer boundFrameBuffer = null;
     public ShadowTexture depthTexture; //if the new framebuffer to be created has a width and height = to the window than it will add a depth buffer
+    public ShadowTexture noWaterDepthTex;
     private final int[] attachmentMapping = {-1,-1,-1,-1,-1,-1,-1,-1}; //maximum number of attachments
 
     public FrameBuffer baseGameFrameBuffer;
@@ -64,6 +65,7 @@ public class RenderTextureHolder {
 
         try {
             depthTexture = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
+            noWaterDepthTex = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
         } catch ( Exception e) {
             throw new RuntimeException(e);
         }
@@ -303,6 +305,10 @@ public class RenderTextureHolder {
         if (depthTexture != null) {
             depthTexture.cleanup();
             depthTexture = null;
+        }
+        if (noWaterDepthTex != null) {
+            noWaterDepthTex.cleanup();
+            noWaterDepthTex = null;
         }
 
 
