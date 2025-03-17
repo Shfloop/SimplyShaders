@@ -14,6 +14,7 @@ import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.*;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -39,6 +40,8 @@ public abstract class InGameMixin extends GameState {
     //i think instead now that sprinting influences the fov i need to change from this "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"
     //to before sky.drawsky
 
+
+    @Shadow private static Player localPlayer;
 
     //for now ill remove this and just create the buffer in render loop not sure why this doesnt work anymore
     //i might want to move this into the player creation or whenever the gamestate switches to ingame
@@ -179,6 +182,8 @@ public abstract class InGameMixin extends GameState {
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void stopRenderBuffer(CallbackInfo ci) {
         //do composite rendes on the same screen quad;
+        //THIS WILL CRASH IF THE NAIVE RENDERER IS USED though i dont think you can still select it
+        ((BatchedZoneRendererInterface) GameSingletons.zoneRenderer).renderWater(localPlayer.getZone(), rawWorldCamera);
 
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST); // disable it so screen quad doesnt get removed
         //i think i walso want to disable gl blend
