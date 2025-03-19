@@ -54,8 +54,13 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
 
     @Shadow public static GameShader lastBoundShader;
 
+    /**
+     * @author shfloop
+     * @reason because
+     *
+     */
     @Overwrite
-    public void render(Zone zone, Camera worldCamera) { //FIXME ChunkWater shaders are being bound on each call taking up excess time
+    public void render(Zone zone, Camera worldCamera) {
         if (this.seenCount == seenStep) {
             if (this.needToRebuild) {
                 this.rebuildMesh(combined);
@@ -75,7 +80,7 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
                         lastBoundShader.bind(worldCamera);
                         worldCamera.position.set(cx, cy, cz);
                         worldCamera.update();
-                        lastBoundShader.bindOptionalUniform3f("trueCameraPosition", worldCamera.position);
+                        lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
                         uniformLocationBatchPosition =lastBoundShader.getUniformLocation("u_batchPosition");
                     }
                 }else if (lastBoundShader != this.shader) {
@@ -88,7 +93,7 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
                     lastBoundShader.bind(worldCamera);
                     worldCamera.position.set(cx, cy, cz);
                     worldCamera.update();
-                    lastBoundShader.bindOptionalUniform3f("trueCameraPosition", worldCamera.position);
+                    lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
                     uniformLocationBatchPosition = this.shader.getUniformLocation("u_batchPosition");
                 }
 

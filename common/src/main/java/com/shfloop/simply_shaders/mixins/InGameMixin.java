@@ -115,6 +115,7 @@ public abstract class InGameMixin extends GameState {
             if (BlockPropertiesIDLoader.packEnableShadows) { //TODO TEMPORARY
                 Gdx.gl.glBindFramebuffer(36160, Shadows.shadow_map.getDepthMapFbo());
                 Gdx.gl.glViewport(0,0, Shadows.shadow_map.getDepthMapTexture().getWidth(), Shadows.shadow_map.getDepthMapTexture().getHeight());
+                //what would happen if i cleared the buffer to 0 instead of 1. i cuoldnt use depth testing to eliminate frags but it would remove the problem of shadows going through terrain that doesnt have faces like the edge of render distance
 
                 Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
                 Shadows.shadowPass = true;
