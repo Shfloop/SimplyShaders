@@ -24,6 +24,7 @@ import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL32C;
 import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL45;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -183,6 +184,10 @@ public abstract class InGameMixin extends GameState {
         //then i need to do the final render so that ui displays properly
     @Inject(method = "render",at = @At(value = "INVOKE", target ="Lfinalforeach/cosmicreach/rendering/GameParticleRenderer;render(Lcom/badlogic/gdx/graphics/Camera;F)V", shift = At.Shift.AFTER))
     private void deferredWaterRender(CallbackInfo ci) {
+        //deferred rendering goes here
+        //in iris it seems to make a seperate framebuffer for water rendering and uses alt as the render texture if deferred renders to colorTex1 for ex
+        //
+        GL45.glMemoryBarrier(GL45.GL_FRAMEBUFFER_BARRIER_BIT);
         ((BatchedZoneRendererInterface) GameSingletons.zoneRenderer).renderWater(localPlayer.getZone(), rawWorldCamera);
     }
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
