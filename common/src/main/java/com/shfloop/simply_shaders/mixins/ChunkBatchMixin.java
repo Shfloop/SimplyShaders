@@ -59,8 +59,62 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
      * @reason because
      *
      */
-    @Overwrite
-    public void render(Zone zone, Camera worldCamera) {
+//    @Overwrite
+//    public void render(Zone zone, Camera worldCamera) {
+//        if (this.seenCount == seenStep) {
+//            if (this.needToRebuild) {
+//                this.rebuildMesh(combined);
+//                this.needToRebuild = false;
+//            }
+//
+//            if (this.mesh != null) {
+//                this.mesh.setAutoBind(false);
+//                if (Shadows.shadowPass) {
+//                    if(lastBoundShader != Shadows.SHADOW_CHUNK) {
+//                        lastBoundShader = Shadows.SHADOW_CHUNK;
+//                        float cx = worldCamera.position.x;
+//                        float cy = worldCamera.position.y;
+//                        float cz = worldCamera.position.z;
+//                        worldCamera.position.setZero();
+//                        worldCamera.update();
+//                        lastBoundShader.bind(worldCamera);
+//                        worldCamera.position.set(cx, cy, cz);
+//                        worldCamera.update();
+//                        lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
+//                        uniformLocationBatchPosition =lastBoundShader.getUniformLocation("u_batchPosition");
+//                    }
+//                }else if (lastBoundShader != this.shader) {
+//                    lastBoundShader = this.shader;
+//                    float cx = worldCamera.position.x;
+//                    float cy = worldCamera.position.y;
+//                    float cz = worldCamera.position.z;
+//                    worldCamera.position.setZero();
+//                    worldCamera.update();
+//                    lastBoundShader.bind(worldCamera);
+//                    worldCamera.position.set(cx, cy, cz);
+//                    worldCamera.update();
+//                    lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
+//                    uniformLocationBatchPosition = this.shader.getUniformLocation("u_batchPosition");
+//                }
+//
+//                float bx = this.boundingBox.min.x - worldCamera.position.x;
+//                float by = this.boundingBox.min.y - worldCamera.position.y;
+//                float bz = this.boundingBox.min.z - worldCamera.position.z;
+//                lastBoundShader.bindOptionalUniform3f(uniformLocationBatchPosition, bx, by, bz);
+//                this.mesh.bind(lastBoundShader.shader);
+//                this.mesh.render(lastBoundShader.shader, 4);
+//                this.mesh.unbind(lastBoundShader.shader);
+//            }
+//        }
+//
+//        this.seen = false;
+//        this.meshDatasToAdd.size = 0;
+//    }
+    public void markAsSeen() {
+        seen = false;
+        meshDatasToAdd.size = 0;
+    }
+    public void renderShadowPass(Zone zone, Camera worldCamera) {
         if (this.seenCount == seenStep) {
             if (this.needToRebuild) {
                 this.rebuildMesh(combined);
@@ -69,7 +123,7 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
 
             if (this.mesh != null) {
                 this.mesh.setAutoBind(false);
-                if (Shadows.shadowPass) {
+
                     if(lastBoundShader != Shadows.SHADOW_CHUNK) {
                         lastBoundShader = Shadows.SHADOW_CHUNK;
                         float cx = worldCamera.position.x;
@@ -83,19 +137,7 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
                         lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
                         uniformLocationBatchPosition =lastBoundShader.getUniformLocation("u_batchPosition");
                     }
-                }else if (lastBoundShader != this.shader) {
-                    lastBoundShader = this.shader;
-                    float cx = worldCamera.position.x;
-                    float cy = worldCamera.position.y;
-                    float cz = worldCamera.position.z;
-                    worldCamera.position.setZero();
-                    worldCamera.update();
-                    lastBoundShader.bind(worldCamera);
-                    worldCamera.position.set(cx, cy, cz);
-                    worldCamera.update();
-                    lastBoundShader.bindOptionalUniform3f("cameraPosition", worldCamera.position);
-                    uniformLocationBatchPosition = this.shader.getUniformLocation("u_batchPosition");
-                }
+
 
                 float bx = this.boundingBox.min.x - worldCamera.position.x;
                 float by = this.boundingBox.min.y - worldCamera.position.y;
@@ -109,9 +151,5 @@ public abstract class ChunkBatchMixin implements ChunkBatchInterface {
 
         this.seen = false;
         this.meshDatasToAdd.size = 0;
-    }
-    public void markAsSeen() {
-        seen = false;
-        meshDatasToAdd.size = 0;
     }
 }

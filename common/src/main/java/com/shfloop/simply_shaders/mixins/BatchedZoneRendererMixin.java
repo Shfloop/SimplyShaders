@@ -94,11 +94,11 @@ public abstract class BatchedZoneRendererMixin implements BatchedZoneRendererInt
         Gdx.gl.glBlendFunc(770, 771);
         getChunksToRender(zone, worldCamera);
         requestMeshes();
-        if(Shadows.shadowPass) {
-            //Gdx.gl.glCullFace(GL20.GL_FRONT);
-            //only like 30 fps drop in a test might have worse cases but im not sure how else to fix shadows
-            Gdx.gl.glDisable(GL20.GL_CULL_FACE);
-        }
+//        if(Shadows.shadowPass) {
+//            //Gdx.gl.glCullFace(GL20.GL_FRONT);
+//            //only like 30 fps drop in a test might have worse cases but im not sure how else to fix shadows
+//            Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+//        }
         disposeUnusedBatches(false);
         addMeshDatasToChunkBatches();
         ChunkBatch.lastBoundShader = null;
@@ -188,5 +188,60 @@ public abstract class BatchedZoneRendererMixin implements BatchedZoneRendererInt
 
             }
         }
+    }
+    public void renderShadowPass(Zone zone, Camera worldCamera) {
+        savedLayerNumIdx = -1;// have to initialize this to -1 each frame render
+        Gdx.gl.glEnable(2929);
+        Gdx.gl.glDepthFunc(513);
+       // Gdx.gl.glEnable(2884); enable cull face
+        Gdx.gl.glCullFace(1029); //ill set this just to make sure other rendering doesnt depend on this
+        //Gdx.gl.glEnable(3042); //blend i dont think this is required for shadows ubt it would be for colored shadows if i every add those (probably not)
+        Gdx.gl.glBlendFunc(770, 771);
+
+        getChunksToRender(zone, worldCamera);
+        requestMeshes();
+
+            //Gdx.gl.glCullFace(GL20.GL_FRONT);
+            //only like 30 fps drop in a test might have worse cases but im not sure how else to fix shadows
+            Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        disposeUnusedBatches(false);
+        addMeshDatasToChunkBatches();
+        ChunkBatch.lastBoundShader = null;
+        Gdx.gl.glDepthMask(true);// i want all terrain and water to render to depth texture
+        //i exit early when water is reached where base game switches depthMas to false
+        //make sure to copy the depth right before water is rendered
+        for(int i = 0; i < layerNums.items.length; i++) {
+            int layerNum = layerNums.items[i];
+            if(seenLayerNums.contains(layerNum)) {
+                Array<ChunkBatch> layer = layers.get(layerNum);
+                if (layer != null) {
+                    boolean renderingTerrain = layerWritesToDepth.get(layerNum, true);
+                    if (!renderingTerrain) {
+                        //need to save the curent i value to resume rendering with water
+                        //this is good because in shadowPass idont want to render water anyway so i need to not call render water
+                        savedLayerNumIdx = i;
+                        break;
+
+                    }
+                    for (ChunkBatch batch : layer) {
+                        ((ChunkBatchInterface) batch).renderShadowPass(zone, worldCamera);
+                    }
+                }
+
+
+            }
+        }
+        if (ChunkBatch.lastBoundShader != null) {
+            ChunkBatch.lastBoundShader.unbind();
+        }
+
+        if (drawDebugLines) {
+            drawDebugLines(worldCamera);
+        }
+
+        Gdx.gl.glActiveTexture(33984);
+        Gdx.gl.glBindTexture(3553, 0);
     }
 }

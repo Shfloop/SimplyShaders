@@ -122,7 +122,8 @@ public abstract class InGameMixin extends GameState {
                 Shadows.shadowPass = true;
                 // nned to improve framerate its getting cut by like 1/3 with default shaders
                 //using hte same render causes a few extra BlockModelJson calls but it isnt very much compared to what it did originally
-                GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
+                //GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
+                ((BatchedZoneRendererInterface)GameSingletons.zoneRenderer).renderShadowPass(playerZone,Shadows.getCamera());
 
                 Gdx.gl.glDepthMask(true);
                 //Gdx.gl.glCullFace(GL20.GL_BACK);
