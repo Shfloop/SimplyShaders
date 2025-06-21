@@ -172,8 +172,13 @@ public abstract class BatchedZoneRendererMixin implements BatchedZoneRendererInt
         Gdx.gl.glActiveTexture(33984);
         Gdx.gl.glBindTexture(3553, 0);
     }
+    //TODO Leaves are untoggled in SimpleShader
     @Unique
     public void markWaterAsSeen() {
+        if (savedLayerNumIdx == -1) {
+            //there can be frames withohut any water chunks rendered
+            return;
+        }
         for (int i = savedLayerNumIdx; i < layerNums.items.length; i++) {
             int layerNum = layerNums.items[i];
             if(seenLayerNums.contains(layerNum)) {

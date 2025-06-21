@@ -124,9 +124,16 @@ public class ShaderPackLoader {
         //this needs to
         for (Zone zone: InGame.getWorld().getZones()) {
             for (Region reg: zone.getRegions()) {
-                for (Chunk chunk: reg.getChunks()) {
-                    chunk.flagForRemeshing(false); //hm setting this to true does not help makes it much worse
+                Chunk[] chunks = reg.getChunks();
+                for (int i = 0; i < chunks.length; i++) {
+                    if (chunks[i] != null) {
+                        chunks[i].flagForRemeshing(false);
+                    }
+
                 }
+//                for (Chunk chunk: reg.getChunks()) {
+//                    chunk.flagForRemeshing(false); //hm setting this to true does not help makes it much worse
+//                }
             }
 
         }

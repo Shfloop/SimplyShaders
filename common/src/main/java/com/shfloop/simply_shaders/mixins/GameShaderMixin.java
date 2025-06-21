@@ -210,7 +210,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     @Shadow private static Array<GameShader> allShaders;
 
     @Shadow public abstract void bindOptionalMatrix4(String uniformName, Matrix4 mat4);
-
+    
     @Overwrite
     public void verifyShaderHasNoBannedKeywords(Identifier shaderId, String shaderText) {
 
