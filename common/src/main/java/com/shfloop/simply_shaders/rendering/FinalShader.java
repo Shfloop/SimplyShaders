@@ -8,11 +8,13 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Sky;
+import org.lwjgl.opengl.GL32;
 
 
 public class FinalShader extends GameShader {
@@ -24,23 +26,23 @@ public class FinalShader extends GameShader {
         this.allVertexAttributesObj = new VertexAttributes(new VertexAttribute[]{VertexAttribute.Position(), VertexAttribute.TexCoords(0) });
 
 
-        ((GameShaderInterface)this).setShaderInputBuffers(null); // final shader cant have a ping pong so this should stop it during bind
+
 
     }
     public static void initFinalShader() {
         FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(( Identifier.of("shaders/final.vert.glsl")), (Identifier.of("shaders/final.frag.glsl")));
 
     }
-    public void bind(Camera worldCamera) {
+    public void bind(Camera worldCamera, BufferTexture[] readTexes) {
         super.bind(worldCamera);
         int texNum= 0;
 
 
         //may want to go back with set strings, not sure whats better
-        for (BufferTexture tex: SimplyShaders.holder.uniformTextures) {
-            texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum);
-        }
 
+        for (BufferTexture tex: readTexes) {
+            texNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),texNum); //i can get rid of the optional
+        }
 
         texNum= this.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, texNum);
         texNum= this.bindOptionalTextureI("depthTex0", SimplyShaders.holder.depthTexture.id,texNum);

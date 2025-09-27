@@ -2,6 +2,7 @@ package com.shfloop.simply_shaders;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 
 import java.nio.ByteBuffer;
 
@@ -22,7 +23,7 @@ public class ShadowTexture  { //look into using GLTexture
 
 
         GL20.glBindTexture(GL20.GL_TEXTURE_2D, this.id);
-        GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL20.GL_DEPTH_COMPONENT,this.width,this.height,0,pixel_format,GL20.GL_FLOAT, (ByteBuffer) null);
+        GL20.glTexImage2D(GL20.GL_TEXTURE_2D,0, GL20.GL_DEPTH_COMPONENT24,this.width,this.height,0,pixel_format, GL32.GL_FLOAT, (ByteBuffer) null);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_NEAREST);
         GL20.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_CLAMP_TO_BORDER);

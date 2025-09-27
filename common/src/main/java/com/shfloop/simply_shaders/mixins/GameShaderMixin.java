@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.GameShaderInterface;
+import com.shfloop.simply_shaders.pack_loading.ShaderDirectives;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
@@ -79,7 +80,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
 
 
-        if (SimplyShaders.inRender &&!Arrays.equals(RenderTextureHolder.boundFrameBuffer.lastDrawBuffers, shaderDrawBuffers)) {
+        if (enableDrawBuffers && SimplyShaders.inRender &&!Arrays.equals(RenderTextureHolder.boundFrameBuffer.lastDrawBuffers, shaderDrawBuffers)) {
 
             GL32.glDrawBuffers(shaderDrawBuffers);
             RenderTextureHolder.boundFrameBuffer.lastDrawBuffers = shaderDrawBuffers;
@@ -113,6 +114,11 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         ((GameShader)(Object)this).bindOptionalMatrix4("u_shadowProj", Shadows.getCamera().projection);
 
     }
+
+    @Unique
+    private ShaderDirectives shaderDirectives;
+    @Override
+    public ShaderDirectives getShaderDirectives() {return shaderDirectives;}
 
     @Unique
     public int[] shaderInputBuffers = null;
@@ -187,40 +193,11 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
             }
         }
-        int pingPongCount = 0;
-        for (int i = 0; i < numUsedRenderTextures; i++) {
-            int testValue = renderTexturesUsed[i];
-            boolean sameTextureUsed = false;
-            for (int shaderDrawBuffer : this.shaderDrawBuffers) {
-                if (shaderDrawBuffer - GL32.GL_COLOR_ATTACHMENT0 == testValue) { //need to subtract by the gl constante value because im using drawbuffers like that
-                    //if both are equal that means that the shader is trying to read and write to the same texture
-                    //there cant be duplicate values in this so i can exit
 
-                    sameTextureUsed = true;
-                    SimplyShaders.LOGGER.info("Ping pong Buffer {}",testValue );
-                    pingPongCount++;
-                    break;
-                }
-            }
-            //reuse the array by setting the values that dont match to negative one
-            if (!sameTextureUsed) {
-                renderTexturesUsed[i] = -1;
-            }
-        }
-        if (pingPongCount <= 0) {
-            return;
-        }
-        //go over one more time
-        this.shaderInputBuffers = new int[pingPongCount];
-        pingPongCount = 0;
-        //copy over the contents
-        for (int i = 0; i < numUsedRenderTextures; i++) {
-            if(renderTexturesUsed[i] != -1) {
-                this.shaderInputBuffers[pingPongCount] = renderTexturesUsed[i];
-                pingPongCount++;
+        this.shaderInputBuffers = new int[numUsedRenderTextures];
+        System.arraycopy(renderTexturesUsed, 0, this.shaderInputBuffers, 0,numUsedRenderTextures );
 
-            }
-        }
+
 
 
     }
@@ -233,7 +210,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     @Shadow private static Array<GameShader> allShaders;
 
     @Shadow public abstract void bindOptionalMatrix4(String uniformName, Matrix4 mat4);
-
+    
     @Overwrite
     public void verifyShaderHasNoBannedKeywords(Identifier shaderId, String shaderText) {
 
@@ -315,6 +292,11 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     private int[] shaderDrawBuffers;
     public int[] getShaderDrawBuffers() {
         return this.shaderDrawBuffers;
+    }
+    @Unique
+    private boolean enableDrawBuffers= true;
+    public void setEnableDrawBuffers(boolean val) {
+        this.enableDrawBuffers = val;
     }
     private String loadShaderFile(Identifier shaderId, SimplyShaders.newShaderType shaderType) {
        // String[] rawShaderLines = GameAssetLoader.loadAsset("shaders/" + shaderName).readString().split("\n"); //

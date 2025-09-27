@@ -3,27 +3,33 @@ package com.shfloop.simply_shaders.rendering;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
+import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.ShadowTexture;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL45;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class RenderTextureHolder {
     //needs to make all the appropraite sized render textuers and deal with swapping them between framebuffers
 
 
-    public  BufferTexture[] uniformTextures; // this needs to be a copy of renderTextures on renderFBO create
-    private  BufferTexture[] swapBufferStorage;
-    private  BufferTexture[] renderTextures;
+
+    private  BufferTexture[] alternateTextures;
+    public BufferTexture[] mainTextures;
+
     public static int MAX_NUM_RENDER_TEXTURES = 8;
     public final int NUM_RENDER_TEXTUERS;
-    private FrameBuffer[] framebuffers;
+    private Array<FrameBuffer> framebuffers;
 
     private static final float[] temporaryColor = {0,0,0,0};
     private static final Color skyColor = new Color(0,0,0,0); //needs to update every clear cycle in clearTExtures
@@ -32,190 +38,258 @@ public class RenderTextureHolder {
     private static final float[] WHITE = {1.0f,1.0f,1.0f,1.0f};
     public static FrameBuffer boundFrameBuffer = null;
     public ShadowTexture depthTexture; //if the new framebuffer to be created has a width and height = to the window than it will add a depth buffer
+    public ShadowTexture noWaterDepthTex;
     private final int[] attachmentMapping = {-1,-1,-1,-1,-1,-1,-1,-1}; //maximum number of attachments
-    public final boolean[] flippedBuffers = new boolean[8]; //this keeps track of each texture in the main renderFbo used during terrain passes
-    //only set the buffer to true if it the buffer does do clearing
-    //For now ill have to rely on the shaderpack not reding/writing to teporal texes in non fullscreen passes, because the tex could end up in alternate tex and not be able to be rendered to
+
+    public FrameBuffer baseGameFrameBuffer;
+    private Array<FrameBuffer> clearFrameBuffers;
 
 
 
-    //at the end of render a buffer currently in framebuffer alternate, would end up in renderTextures this is not good because it would get cleared but uniforms would be set to this instead of the texture activly getting rendered to in main buffer during terrain stages
-    // i only want to set this if the buffer is part of the terrain shaders because if somebody wanted to temporaly use the textre
-    //if at the end the texture with the data is the one in swap buffer storage there is no way to render to that during terrain passes it would still work for composite renders if i didnt reset it
-    //i only need to reset flipped buffers if its a rendertarget during non fullscreen passes
+    public RenderTextureHolder(BufferTexture[] textures) {
+        this.framebuffers = new Array<>();
 
-    //solution to this is to have a secondary a and b fbo along witht he main render texture fbo
-    //how would this solve theissue
-    //read from a write to b
-    //read from b write to a
-    //so instead of calling drawbuffers iris just has a fbo for each shader stage whitht the coresponding texture bound to it
-
-
-
-
-    //I THINK I GET IT
-    //EVERY singly shader stage has a seperate FBO with teh corresponding texture for that stage even base game stages
-    //but every one has the same depth texture attached so they can all be bound seperatly and render to the same depth texture
-    //but how if one texture is the alternate and oneis the main how could you render to both so if you ping pong once
-    //and its a temporal texture b has the correct data to keep but you start by rendering to a it just couldnt work in a terrain shader maybe
-    //
-    //
-    //texture can be an attachment to multiple FBOs'
-
-    //curent issue is if one buffer ping pongs than what happens to the other buffers that didnt ping pong
-    //iris seems to make an a and b framebuffer for each fullscreen pass the framebuffer has the respective a and b textures bound as attachments
-    //the uniforms are decided by whatever was rendered last
-    //
-    public RenderTextureHolder(BufferTexture[] unSortedTextures) { //should probably change this to somethign that holds the data for the texture
-        //i need to make one of the framebuffers the main framebuffer that has a depth attachmetn
-        if (MAX_NUM_RENDER_TEXTURES < unSortedTextures.length) {
-            for (BufferTexture tex: unSortedTextures) { //should no longer be needed
+        if (MAX_NUM_RENDER_TEXTURES < textures.length) {
+            for (BufferTexture tex: textures) { //should no longer be needed
                 tex.dispose();
             }
             throw new RuntimeException(" RENDER TEXTUIRES EXCEEDS 8");
         }
-        NUM_RENDER_TEXTUERS = unSortedTextures.length;
-//        renderTextures = new BufferTexture[NUM_RENDER_TEXTUERS];
-        uniformTextures = new BufferTexture[NUM_RENDER_TEXTUERS];
-        // swapBufferStorage = new BufferTexture[NUM_RENDER_TEXTUERS];
-
-        framebuffers = new FrameBuffer[NUM_RENDER_TEXTUERS * 2]; //just allocate enough space for each rendertexture to have a framebuffer and a copy framebuffer for each swap texture
-        int framebufferSize = 0;
+        NUM_RENDER_TEXTUERS = textures.length;
 
 
-        //sort them so texture of the same height and width are next to each other
-        Arrays.sort(unSortedTextures, Comparator.comparingInt(BufferTexture::getWidth).thenComparingInt(BufferTexture::getHeight).thenComparingInt(BufferTexture::getAttachmentNum));
+        alternateTextures = new BufferTexture[NUM_RENDER_TEXTUERS];
+        mainTextures = textures;
 
-        //doesnt matter what order they are in just that each texture of similar size is next to the same size
-        //need to find how many framebuffers i need to make
 
-        //create the swap textures as a deep copy of the
-        BufferTexture[] unsortedSwapTexs = new BufferTexture[NUM_RENDER_TEXTUERS];
-        for (int i = 0; i < NUM_RENDER_TEXTUERS; i++) {
-            //the swap texture cant be set to mipMap linear if i never generate mip maps for it
-            //I belive the textures can be swapped around though so that
-            unsortedSwapTexs[i] = new BufferTexture(unSortedTextures[i].getName(), unSortedTextures[i].getWidth(), unSortedTextures[i].getHeight(), unSortedTextures[i].getPixelFormat(), unSortedTextures[i].getInternalFormat(), unSortedTextures[i].getAttachmentNum(),unSortedTextures[i].isMipMapEnabled);
+
+        try {
+            depthTexture = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
+            noWaterDepthTex = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
+        } catch ( Exception e) {
+            throw new RuntimeException(e);
         }
 
 
 
-        int j =0;
-        //int testIdx = 0;
+
+        // swapBufferStorage = new BufferTexture[NUM_RENDER_TEXTUERS];
+        for (int i = 0; i < NUM_RENDER_TEXTUERS; i++) {
+            //the swap texture cant be set to mipMap linear if i never generate mip maps for it
+            //I belive the textures can be swapped around though so that
+            alternateTextures[i] = new BufferTexture(mainTextures[i].getName(), mainTextures[i].getWidth(), mainTextures[i].getHeight(), mainTextures[i].getPixelFormat(), mainTextures[i].getInternalFormat(), mainTextures[i].getAttachmentNum(),mainTextures[i].isMipMapEnabled);
+        }
+
+        try {
+            for (int i = 0; i < NUM_RENDER_TEXTUERS; i++) {
+                mainTextures[i].genTexture();
+                alternateTextures[i].genTexture();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        //FIXME this needs to be redone once i redo the base game framebuffer creation / handling
+        for (int i = 0; i < this.NUM_RENDER_TEXTUERS; i++) {
+            this.attachmentMapping[this.mainTextures[i].getAttachmentNum() - GL32.GL_COLOR_ATTACHMENT0] = i;
+        }
 
 
-        for (int i = 0; i < NUM_RENDER_TEXTUERS;i ++) {
+
+
+        if (ShaderPackLoader.shaderPackOn) {
+            //SimplyShaders.LOGGER.info("beginning clear Texture Write");
+            for (int i =0; i < ShaderPackLoader.packSettings.disableBufferClearing.size; i++) {
+
+                int bufferNum = ShaderPackLoader.packSettings.disableBufferClearing.get(i);
+                //SimplyShaders.LOGGER.info("Clear disabled for bufferNum {}", bufferNum );
+                bufferNum = this.findTextureIdxFromAttachmentNum(bufferNum);
+                if (bufferNum >= 0 && bufferNum < alternateTextures.length) {
+                    mainTextures[bufferNum].clearTexture = false;
+                    alternateTextures[bufferNum].clearTexture = false;
+                    //SimplyShaders.LOGGER.info("Tex Clear Actually disabled {} : {}", bufferNum, mainTextures[bufferNum].getAttachmentNum());
+                } else {
+                    SimplyShaders.LOGGER.info("buffer Num  {}, is out of range mapping {}, \nmainTexes {} ", bufferNum, attachmentMapping, mainTextures);
+                }
+            }
+        }
+
+        setTextureClearColor(skyColor, 0); //FIXME this doesnt take into acount the mappigns renderTextuers isnt  length 8
+
+        setTextureClearColor(Color.WHITE, 1); //if it doesnt exist setTextureClearColor will just return
+        for (int i = 2; i < NUM_RENDER_TEXTUERS; i++) {
+
+            setTextureClearColor(transparent, i);
+        }
+
+
+        BufferTexture[] temp1 = new BufferTexture[NUM_RENDER_TEXTUERS];
+        int sortedTexturesSize = 0;
+
+        for (int i = 0; i < NUM_RENDER_TEXTUERS; i++) {
+            if (mainTextures[i].clearTexture) {
+                temp1[sortedTexturesSize++]= mainTextures[i];
+            }
+        }
+        BufferTexture[] sortedTextures = new BufferTexture[sortedTexturesSize];
+        System.arraycopy(temp1,0,sortedTextures,0,sortedTexturesSize);
+        Arrays.sort(sortedTextures, Comparator.comparingInt(BufferTexture::getWidth).thenComparingInt(BufferTexture::getHeight));
+        this.clearFrameBuffers = new Array<>();
+        int j = -1;
+        boolean addedDepth = false;
+        for (int i = 0; i < sortedTexturesSize;i ++) {
 
             int testIdx = i;
-            if (testIdx + 1< NUM_RENDER_TEXTUERS) {
-                if (unSortedTextures[i].getWidth() == unSortedTextures[i + 1].getWidth() && unSortedTextures[i].getHeight() == unSortedTextures[i + 1].getHeight()) {
+
+            if (testIdx + 1 < sortedTexturesSize) {
+                if (sortedTextures[i].getWidth() == sortedTextures[i + 1].getWidth() && sortedTextures[i].getHeight() == sortedTextures[i + 1].getHeight()) {
                     //if both textures have the same dimensions they should go in the same FB
 
                     continue;
                 }
-
             }
 
-            //create the framebuffer
-
-
-            // repeat until the end of the textuers
-
-//            framebuffers[framebufferSize] = new FrameBuffer();
-//            framebufferSize++;unsortedSwapTexs[j].setFrameBufferIdx(framebufferSize - 1); //set teh swap texture framebuffer idx
-
-            int startIdx = j;
-            //i is the index of the last texture that is in the framebuffer
-            while (j <= i) {
-                try {
-                    unSortedTextures[j ].genTexture();
-                    unsortedSwapTexs[j ].genTexture();
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                unSortedTextures[j].setFrameBufferIdx(framebufferSize ); //set teh render texture framebuffer idx
-                unsortedSwapTexs[j].setFrameBufferIdx(framebufferSize + 1);
-
-
-
-                j++;
-            }
+            BufferTexture[] temp = new BufferTexture[i -j];
+            System.arraycopy(sortedTextures, j + 1, temp,0,i-j);
 
             try {
-
-                 //cannot forget to reset this between framebuffer creation or any fb > window size will also get depth
-                //can be i cause its inclusive in this case
-                //there should only be a single framebuffer with the size of Gdx.graphics.getWidth unless im stupid and my code completly doesnt work
-                if (unSortedTextures[i].getWidth() == Gdx.graphics.getWidth() && unSortedTextures[i].getHeight() == Gdx.graphics.getHeight()) {
-                    //create the framebuffer with a depth atachment
-                    if (depthTexture != null) {
-                        throw new RuntimeException("DEPTH TEXTURE IS NOT NULL AND TRYING TO OVERWRITE");
-                    }
-                    depthTexture = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
-                    framebuffers[framebufferSize] = new FrameBuffer(unSortedTextures,startIdx, i, depthTexture);
-                    framebufferSize++;
-                }else {
-                    framebuffers[framebufferSize] = new FrameBuffer(unSortedTextures,startIdx, i, null);
-                    framebufferSize++;
+                ShadowTexture depthTex;
+               // SimplyShaders.LOGGER.info("creating clearFramebuffer with {} \nMain textures {} \n MAIN MAIN{}", Arrays.toString(temp), Arrays.toString(sortedTextures), mainTextures.length);
+                if (temp[0].getWidth() == Gdx.graphics.getWidth() && temp[0].getHeight() == Gdx.graphics.getHeight()) {
+                    depthTex = depthTexture;
+                    addedDepth = true;
+                } else {
+                    depthTex = null;
                 }
+                FrameBuffer fb  = new FrameBuffer(temp,depthTex);
 
-                framebuffers[framebufferSize] = new FrameBuffer(unsortedSwapTexs,startIdx, i, null);//swap buffer doesnt need a depthAttachment should onyl be used in composite passes
-                framebufferSize++;
+                framebuffers.add(fb);
+                clearFrameBuffers.add(fb);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
+            j = i;
 
 
         }
-        Arrays.sort(unSortedTextures, Comparator.comparingInt(BufferTexture::getAttachmentNum));
-        Arrays.sort(unsortedSwapTexs, Comparator.comparingInt(BufferTexture::getAttachmentNum));
-        this.renderTextures = unSortedTextures;
-        this.swapBufferStorage = unsortedSwapTexs;
-        //generate attachment mappings
-        for (int i = 0; i < this.NUM_RENDER_TEXTUERS; i++) {
-            this.attachmentMapping[this.renderTextures[i].getAttachmentNum() - GL32.GL_COLOR_ATTACHMENT0] = i;
-        }
-        System.arraycopy(this.renderTextures, 0, this.uniformTextures, 0, this.renderTextures.length);
-
-        //add clear Color
-
-        if (ShaderPackLoader.shaderPackOn) {
-            SimplyShaders.LOGGER.info("beginning clear Texture Write");
-            for (int i =0; i < ShaderPackLoader.packSettings.disableBufferClearing.size; i++) {
-
-                int bufferNum = ShaderPackLoader.packSettings.disableBufferClearing.get(i);
-                SimplyShaders.LOGGER.info("Clear disabled for bufferNum {}", bufferNum );
-                bufferNum = this.findTextureIdxFromAttachmentNum(bufferNum);
-                if (bufferNum >= 0 && bufferNum < renderTextures.length) {
-                    renderTextures[bufferNum].clearTexture = false;
-                    swapBufferStorage[bufferNum].clearTexture = false;
-                    SimplyShaders.LOGGER.info("Tex Clear Actually disabled {} : {}", bufferNum, renderTextures[bufferNum].getAttachmentNum());
-                } else {
-                    SimplyShaders.LOGGER.info("buffer Num  {}, is out of range ", bufferNum);
-                }
-            }
+        if (!addedDepth) {
+            throw new RuntimeException(" NO DEPTH BUFFER ADDED TO CLEAR FrameBuffers ie no framebuffres match gdx height/widht");
         }
 
-        //ClearColor
-        //tmp until i support pack specific colors
-        setTextureClearColor(skyColor, 0); //FIXME this doesnt take into acount the mappigns renderTextuers isnt  length 8
 
-        setTextureClearColor(Color.WHITE, 1); //if it doesnt exist setTextureClearColor will just return
-            for (int i = 2; i < NUM_RENDER_TEXTUERS; i++) {
 
-                setTextureClearColor(transparent, i);
-            }
+        //needs to create teh main framebuffre
+        IntArray baseDrawBuffers = ShaderPackLoader.baseGameDrawbuffers;
+        if(baseDrawBuffers == null) {
+            baseDrawBuffers = new IntArray(2);
+            baseDrawBuffers.add(GL32.GL_COLOR_ATTACHMENT0); //FIXME
+        }
+        BufferTexture[] tmpMain = new BufferTexture[baseDrawBuffers.size];
+        //copy over the textures needed for the base game framebuffer
 
+
+
+
+
+
+        for (int i = 0; i < tmpMain.length; i++) {
+            tmpMain[i] = mainTextures[this.attachmentMapping[baseDrawBuffers.get(i) - GL32.GL_COLOR_ATTACHMENT0]];// FIXME i need to fix GameShader giving values in Attachment range
+        }
+        try {
+
+            baseGameFrameBuffer = new FrameBuffer(tmpMain,depthTexture);
+            framebuffers.add(baseGameFrameBuffer);
+//            clearFrameBuffer = new FrameBuffer(textures,depthTexture); //problem here is i need a secondary clear buffer if the texture is a different size
+//            framebuffers.add(clearFrameBuffer);
+        } catch (Exception e) {
+            //probably dispose the framebuffer
+            throw new RuntimeException(e);
+        }
+
+
+
+
+
+
+        //needs to create shadow framebuffer currently done in shadows but should be moved
 
 
 
 
     }
-    private void setTextureClearColor(Color color , int texNum) {
+
+    /**
+     * @param writeToAlt array of bools which is used to get either the main tex or alt tex
+     * @param drawBuffers array of stage Drawbuffers 0-16 / max_render_targets not in GL_ATTACHMENT range
+     * @return framebuffer reference which is managed by RenderTextureHolder //might want to manage in CompositeRenderer
+     * //uses the size from the given drawBuffer Textures
+     */
+    public FrameBuffer createColorFramebuffer(boolean[] writeToAlt, int[] drawBuffers, GameShader shader) {
+
+        int[] attachmentDrawBuffers = new int[drawBuffers.length];
+        int height = -1;
+        int width = -1;
+        for (int i = 0; i < drawBuffers.length; i++) {
+            attachmentDrawBuffers[i] = i + GL32.GL_COLOR_ATTACHMENT0;
+        }
+
+
+        FrameBuffer fb = new FrameBuffer(attachmentDrawBuffers);
+
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER,fb.getFboHandle());
+        for (int i = 0; i < drawBuffers.length; i++) {
+            int drawBuffer = drawBuffers[i];
+            BufferTexture tex = getBufferTexture(writeToAlt[drawBuffer],drawBuffer);
+            int newHeight = tex.getHeight();
+            int newWidth = tex.getWidth();
+            if ((height > 0 && newHeight != height) || (width > 0 && newWidth != width)) {
+                throw new RuntimeException("TEX scales dont match prevoius");
+            }
+            //SimplyShaders.LOGGER.info("adding attachment {} {}",tex.getID(), tex.getName());
+            Gdx.gl.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, i + GL32.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D, tex.getID(), 0);
+            height =newHeight;
+            width = newWidth;
+        }
+        fb.setHeight(height);
+        fb.setWidth(width);
+        GL32.glDrawBuffers(attachmentDrawBuffers);
+        //AHAHAHAHA I need to overwrite the gameShader buisness because its still there
+        ((GameShaderInterface)shader).setEnableDrawBuffers(false);
+        //SimplyShaders.LOGGER.info("DRAW BUFFERS {}", attachmentDrawBuffers);
+        if (Gdx.gl.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE ) {
+            throw new RuntimeException("Could not create Color FrameBuffer " + Arrays.toString(drawBuffers));
+        }
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+        framebuffers.add(fb);
+        return fb;
+
+
+    }
+
+    public int getRenderTexture(boolean writeToAlt, int drawBuffer) {
+        return writeToAlt ? getAltTex(drawBuffer).getID() : getMainTex(drawBuffer).getID();
+    }
+    public BufferTexture getBufferTexture(boolean useAltBuf, int drawBuffer) {
+        return useAltBuf ? getAltTex(drawBuffer) : getMainTex(drawBuffer);
+    }
+    public BufferTexture getAltTex(int drawBuffer) {
+        int texLocation = attachmentMapping[drawBuffer];
+        if (texLocation < 0 || texLocation > mainTextures.length) {
+            SimplyShaders.LOGGER.info("UH OH, texLoc {}, drawBuffer {}, attachmentMap {}", texLocation, drawBuffer, attachmentMapping);
+        }
+        return alternateTextures[texLocation];
+    }
+    public BufferTexture getMainTex(int drawBuffer) {
+        int texLocation = attachmentMapping[drawBuffer];
+        if (texLocation < 0 || texLocation > mainTextures.length) {
+            SimplyShaders.LOGGER.info("UH OH, texLoc {}, drawBuffer {}, attachmentMap {}", texLocation, drawBuffer, attachmentMapping);
+        }
+        return mainTextures[texLocation];
+    }
+    private void setTextureClearColor(Color color , int bufNum) {
+        int texNum = attachmentMapping[bufNum];
         if (texNum >= 0 && texNum < NUM_RENDER_TEXTUERS) {
-            renderTextures[texNum].clearColor = color;
-            uniformTextures[texNum].clearColor = color;
+            mainTextures[texNum].clearColor = color;
+            alternateTextures[texNum].clearColor = color;
         }
     }
     public void dispose() {
@@ -232,76 +306,75 @@ public class RenderTextureHolder {
             depthTexture.cleanup();
             depthTexture = null;
         }
+        if (noWaterDepthTex != null) {
+            noWaterDepthTex.cleanup();
+            noWaterDepthTex = null;
+        }
 
-        uniformTextures = null; // should always be a copy of the renderTextures so just set to null and dispose of renderTexture objects
-        if (renderTextures != null) {
-            for(BufferTexture tex: renderTextures) {
+
+        if (mainTextures != null) {
+            for(BufferTexture tex: mainTextures) {
                 tex.dispose();
 
             }
         }
-        if (swapBufferStorage != null) {
-            for(BufferTexture tex: swapBufferStorage) { //Todo instead of creating a bunch of unused textures make renderFbo reload when the shaderpack loads so i can set swap to only have the needed textures
+        if (alternateTextures != null) {
+            for(BufferTexture tex: alternateTextures) { //Todo instead of creating a bunch of unused textures make renderFbo reload when the shaderpack loads so i can set swap to only have the needed textures
                 //would need to null check if i only make needed textures
                 tex.dispose();
             }
         }
 
-        swapBufferStorage = null;
-        renderTextures = null;
+        alternateTextures = null;
+        mainTextures = null;
 
     }
-    private int bindClearFramebuffer(int lastBufIdx, int texNum) {
-        int bufIdx = this.renderTextures[texNum].getFrameBufferIdx();
-        if (bufIdx != lastBufIdx) {
-            Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, this.framebuffers[bufIdx].getFboHandle());
-            return bufIdx;
-        }
-        return lastBufIdx;
-    }
+
     public void clearTextures(Zone playerZone) {//FIXME naive approach but just to get things working
-
-        int lastBufIdx = -1;
-//        FrameBuffer buf = this.framebuffers[this.renderTextures[0].getFrameBufferIdx()];
-//        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, buf.getFboHandle());
-       lastBufIdx= this.bindClearFramebuffer(lastBufIdx,0); // texNum 0 might not be the colorTex-0 if a pack decides to change all the shaders for normal game passes
 
         Sky sky = Sky.getCurrentSky(playerZone);
 
-        skyColor.set(sky.currentSkyColor);
-
-
-        GL32.glClearBufferfv(GL32.GL_DEPTH, 0, WHITE); //clear the depth tex
-        for (int i = 0; i < this.NUM_RENDER_TEXTUERS; i++) {
-            if (!this.renderTextures[i].clearTexture) {
-                continue;
+                skyColor.set(sky.currentSkyColor);
+                Gdx.gl.glColorMask(true,true,true,true);
+        for (FrameBuffer buf: this.clearFrameBuffers.iterator()) {
+            this.bindFrameBuffer(buf);
+            Gdx.gl.glViewport(0,0, buf.getWidth(),buf.getHeight());
+            if (buf.hasDepth) {
+                GL32.glClearBufferfv(GL32.GL_DEPTH, 0, WHITE); //clear the depth tex always
             }
-            Color c = this.renderTextures[i].clearColor;
-            temporaryColor[0] = c.r;
-            temporaryColor[1] = c.g;
-            temporaryColor[2] = c.b;
-            temporaryColor[3] = c.a;
-            lastBufIdx =this.bindClearFramebuffer(lastBufIdx, i);
-            GL32.glDrawBuffers(this.renderTextures[i].getAttachmentNum());
-            //this.framebuffers[bufIdx].lastDrawBuffers = this.framebuffers[bufIdx].allDrawBuffers;
-            GL32.glClearColor(c.r,c.g,c.b,c.a);
-            GL32.glClear(GL32.GL_COLOR_BUFFER_BIT);
-            //GL32.glClearBufferfv(GL32.GL_COLOR, i, temporaryColor); //this clears the index of the number of attachments not the attachment number specifically so 0 would clear the first attachment which could be atachment6
+            for (int attachment: buf.attachmentDrawBuffers) {
+                int drawBuffer = attachment - GL32.GL_COLOR_ATTACHMENT0;
+                GL32.glDrawBuffers(attachment);
+                BufferTexture tex = this.getBufferTexture(false, drawBuffer);
+                if (!tex.clearTexture) {
+                    continue;
+                }
 
+                Color c = tex.clearColor;
+                temporaryColor[0] = c.r;
+                temporaryColor[1] = c.g;
+                temporaryColor[2] = c.b;
+                temporaryColor[3] = c.a;
+
+
+                //GL32.glClearBufferfv(GL32.GL_COLOR,drawBuffer, temporaryColor);
+                //NO idea why clearBufferfv doesnt work here
+                Gdx.gl.glClearColor(c.r,c.g,c.b,c.a);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            }
+            GL32.glDrawBuffers(buf.attachmentDrawBuffers);
+            buf.lastDrawBuffers = buf.attachmentDrawBuffers;
         }
+        //GL45.glMemoryBarrier(GL45.GL_TEXTURE_FETCH_BARRIER_BIT | GL45.GL_FRAMEBUFFER_BARRIER_BIT );
+        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER,0);
 
 
 
     }
 
-    public FrameBuffer[] getFramebuffers() {
-        return framebuffers;
-    }
-    public void bindFrameBuffer(int frameBufferIdx) {
-        boundFrameBuffer = this.framebuffers[frameBufferIdx];
-        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, boundFrameBuffer.getFboHandle());
 
-    }
+
     public void bindFrameBuffer(FrameBuffer fb) { //dont do this if the framebuffer isnt managed only be used with framebufferrs in rendertextureholder
         boundFrameBuffer = fb;
         Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, boundFrameBuffer.getFboHandle());
@@ -312,60 +385,14 @@ public class RenderTextureHolder {
     }
     //bufferNUm doesnt coesnt match up with renderTextures becasue rendertextures only has the length of buffers in use but this calles the attachment number
     //
-    public void pingPongBuffer(int attachmentNum) { // can be called multiple times per pass for each buffer that needs to pong
 
 
 
-        int bufferNum = this.attachmentMapping[attachmentNum];
 
 
-        if (bufferNum < 0 || bufferNum >= renderTextures.length) {
-            SimplyShaders.LOGGER.info("MAPPINGS {} \nrenderTextures {}",this.attachmentMapping, this.renderTextures);
-            throw new RuntimeException("GameShader gave bad number for ping pong buffer");
-        }
-        BufferTexture temp = renderTextures[bufferNum];
-        //SimplyShaders.LOGGER.info("ping Pong {}, {}", bufferNum, renderTextures[bufferNum].getAttachmentNum());
-        if (temp.clearTexture) {
-            //if the texture has clearing we want to toggle the array
-            this.flippedBuffers[bufferNum] ^= true; //xor the boolean to invert it;
-        } else {
-            //SimplyShaders.LOGGER.info("skipping over attachment num {} : b {}",attachmentNum, bufferNum);
-        }
-
-        uniformTextures[bufferNum] = temp; //set the uniform bufferNum to the current renderTexture
-        renderTextures[bufferNum] = swapBufferStorage[bufferNum]; //get the alternate buffer to render to
-        swapBufferStorage[bufferNum] = temp;
-        FrameBuffer newBuf = this.framebuffers[renderTextures[bufferNum].getFrameBufferIdx()];
-        if(boundFrameBuffer != newBuf) {
-            bindFrameBuffer(newBuf);
-        }
-
-    }
-    public void undoUniformPingPong(int attachmentNum) { //dont need to check heare cause this will be called after pingpong anyway
-        int bufferNum = this.attachmentMapping[attachmentNum];
-        uniformTextures[bufferNum] = renderTextures[bufferNum];
-        //uniform should only have copies of stuff in render textures or swap bufer storage
-    }
-
-    public void setCompositeViewPort(float viewportScale) {
-        //needs to change viewPort based on the previous viewport resolution
 
 
-        Gdx.gl.glViewport(0,0,(int)  (viewportScale * Gdx.graphics.getWidth()),(int) (viewportScale * Gdx.graphics.getHeight()));
 
-
-    }
-
-    public BufferTexture getRenderTexture(int i) {
-        return this.renderTextures[i];
-    }
-
-    public BufferTexture[] getRenderTextures() {
-        return renderTextures;
-    }
-    public BufferTexture[] getSwapTextures() {
-        return swapBufferStorage;
-    }
     public int findTextureIdxFromAttachmentNum(int attachmentNum) {
 
         return this.attachmentMapping[attachmentNum];

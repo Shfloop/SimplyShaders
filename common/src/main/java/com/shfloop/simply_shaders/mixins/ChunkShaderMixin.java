@@ -46,7 +46,8 @@ public abstract class ChunkShaderMixin extends GameShader {
             this.bindOptionalUniform3f("lightDir", Shadows.getCamera().direction);// to compare with normal
             this.bindOptionalUniformMatrix("u_projViewTransPrev", prevCombinedMatrix);
 
-            for (BufferTexture tex: SimplyShaders.holder.uniformTextures) { //This isnt the best because chunkShaders dont do ping ponging so This should only be used if the pack is only reading
+            //TODO fix this so its not trying ever singly texture
+            for (BufferTexture tex: SimplyShaders.holder.mainTextures) { //This isnt the best because chunkShaders dont do ping ponging so This should only be used if the pack is only reading
                 newTexNum= this.bindOptionalTextureI(tex.getName(), tex.getID(),newTexNum);
             }
 //            this.bindOptionalFloat("frameTimeCounter", (float) Gdx.graphics.getFrameId() );

@@ -13,7 +13,7 @@ buildscript() {
         mavenLocal()
     }
     dependencies {
-        classpath "org.codeberg.CRModders:cosmic-loom:1.1.1"
+        classpath "org.codeberg.CRModders:cosmic-loom:PR11-SNAPSHOT"
 
 
         classpath "com.github.johnrengelman:shadow:8.1.1"

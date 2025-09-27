@@ -14,6 +14,7 @@ import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.*;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -23,6 +24,7 @@ import finalforeach.cosmicreach.world.Zone;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL32C;
 import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL45;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -39,6 +41,8 @@ public abstract class InGameMixin extends GameState {
     //i think instead now that sprinting influences the fov i need to change from this "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"
     //to before sky.drawsky
 
+
+    @Shadow private static Player localPlayer;
 
     //for now ill remove this and just create the buffer in render loop not sure why this doesnt work anymore
     //i might want to move this into the player creation or whenever the gamestate switches to ingame
@@ -112,12 +116,14 @@ public abstract class InGameMixin extends GameState {
             if (BlockPropertiesIDLoader.packEnableShadows) { //TODO TEMPORARY
                 Gdx.gl.glBindFramebuffer(36160, Shadows.shadow_map.getDepthMapFbo());
                 Gdx.gl.glViewport(0,0, Shadows.shadow_map.getDepthMapTexture().getWidth(), Shadows.shadow_map.getDepthMapTexture().getHeight());
+                //what would happen if i cleared the buffer to 0 instead of 1. i cuoldnt use depth testing to eliminate frags but it would remove the problem of shadows going through terrain that doesnt have faces like the edge of render distance
 
                 Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
                 Shadows.shadowPass = true;
                 // nned to improve framerate its getting cut by like 1/3 with default shaders
                 //using hte same render causes a few extra BlockModelJson calls but it isnt very much compared to what it did originally
-                GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
+                //GameSingletons.zoneRenderer.render(playerZone, Shadows.getCamera());
+                ((BatchedZoneRendererInterface)GameSingletons.zoneRenderer).renderShadowPass(playerZone,Shadows.getCamera());
 
                 Gdx.gl.glDepthMask(true);
                 //Gdx.gl.glCullFace(GL20.GL_BACK);
@@ -126,6 +132,7 @@ public abstract class InGameMixin extends GameState {
                 for (Entity e : playerZone.getAllEntities()) {
                     e.render(Shadows.getCamera()); //ENtity shaders during shadow pass also need to be distorted to apply correctly to shadow map
                 }
+                ((BatchedZoneRendererInterface)GameSingletons.zoneRenderer).markWaterAsSeen(); //i need to make sure i set the chunkbatches to act like they were rendered or else it messes up water rendering for main pass
                 Shadows.shadowPass = false;
 
 
@@ -153,24 +160,16 @@ public abstract class InGameMixin extends GameState {
 //        GL32.glDrawBuffers(drawBuffers);
 
         //SimplyShaders.fbo.begin();
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
         //ScreenUtils.clear(1.0f,1.0f,0.0f,1.0f,true);
 
         SimplyShaders.holder.clearTextures(playerZone);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
         //need to bind the framebuffer that has the depth attachment
         //should have a better solution
-        boolean foundBuf = false;
-        for (FrameBuffer buf: SimplyShaders.holder.getFramebuffers()) {
-            if (buf.hasDepth) {
-                foundBuf = true;
-                SimplyShaders.holder.bindFrameBuffer(buf);
-                break;
-            }
-        }
-        if (!foundBuf) {
-            throw new RuntimeException("NO DEPTH FRAMEBUFFER FOUND"); //can remove this
-        }
+        Gdx.gl.glViewport(0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        SimplyShaders.holder.bindFrameBuffer(SimplyShaders.holder.baseGameFrameBuffer);
 
 
         //System.out.println("RENDERSTART");
@@ -184,9 +183,19 @@ public abstract class InGameMixin extends GameState {
     }
         //stop the framebuffer so UI gets rendered normally to the screen
         //then i need to do the final render so that ui displays properly
+    @Inject(method = "render",at = @At(value = "INVOKE", target ="Lfinalforeach/cosmicreach/rendering/GameParticleRenderer;render(Lcom/badlogic/gdx/graphics/Camera;F)V", shift = At.Shift.AFTER))
+    private void deferredWaterRender(CallbackInfo ci) {
+        //deferred rendering goes here
+        //in iris it seems to make a seperate framebuffer for water rendering and uses alt as the render texture if deferred renders to colorTex1 for ex
+        //
+        GL45.glMemoryBarrier(GL45.GL_FRAMEBUFFER_BARRIER_BIT);
+        ((BatchedZoneRendererInterface) GameSingletons.zoneRenderer).renderWater(localPlayer.getZone(), rawWorldCamera);
+    }
     @Inject(method = "render",at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void stopRenderBuffer(CallbackInfo ci) {
         //do composite rendes on the same screen quad;
+        //THIS WILL CRASH IF THE NAIVE RENDERER IS USED though i dont think you can still select it
+
 
         Gdx.gl.glDisable(GL20.GL_DEPTH_TEST); // disable it so screen quad doesnt get removed
         //i think i walso want to disable gl blend
@@ -195,56 +204,14 @@ public abstract class InGameMixin extends GameState {
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.startQuery(2);
         if (ShaderPackLoader.shaderPackOn) {
-            if (ShaderPackLoader.shader1.size >ShaderPackLoader.compositeStartIdx) { //added new shader so have to increase
-                for(int i = ShaderPackLoader.compositeStartIdx; i < ShaderPackLoader.shader1.size; i++) {
-                    CompositeShader composite = (CompositeShader)  ShaderPackLoader.shader1.get(i);
-                    IntArray mipMapTexes = ((GameShaderInterface)(composite)).getShaderMipMapEnabled();
-                    if (mipMapTexes.size > 0) {
-                        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
-                        for (int x= 0; x < mipMapTexes.size; x++) {
-                           BufferTexture tex = SimplyShaders.holder.getRenderTexture(SimplyShaders.holder.findTextureIdxFromAttachmentNum(mipMapTexes.get(x)));
-                           Gdx.gl.glBindTexture(GL20.GL_TEXTURE_2D, tex.getID());
-                           GL32C.glGenerateMipmap(GL20.GL_TEXTURE_2D);
-                           GL32C.glTexParameteri(GL20.GL_TEXTURE_2D,GL20.GL_TEXTURE_MIN_FILTER,GL32C.GL_LINEAR_MIPMAP_LINEAR);// this only needs to be done before the texture is read from
-                            //each texture when the mip is generated will be a ssigned teh min filter to mipmapLinear
-                            //that way anythime this is used in sample it shoul dbe fine and rendering to it shouldnt matter
-                            //AT the end of composite / final rendering each texture that has mip maps enabled for both Swap and render should have min filter set to linear so there is no mixup between frames if a and b switch places
-                        }
-                    }
-
-                    composite.bind(rawWorldCamera);
-                    //SimplyShaders.LOGGER.info("Uniforms {}\n renders{} ", SimplyShaders.holder.uniformTextures, SimplyShaders.holder.getRenderTextures());
-                    SimplyShaders.screenQuad.render(composite.shader, GL20.GL_TRIANGLE_FAN);
-                    composite.unbind();
-                }
-            }
+            SimplyShaders.compositeStageRenderer.render(rawWorldCamera);
         }
 
 
 
         SimplyShaders.inRender = false;// should stop finalshader from from drying to call drawbuffers
-       // System.out.println("Composite done");
 
-        //bind framebuffer 0
-        //this is okay because clearBuffers will bind appropriate buffers and finalShader doesnt bind any framebuffers
-        Gdx.gl.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-        //screen should alreayd be cleared and i dont think it woudl matter much
-//        //render the screen quad with final.vsh and final.fsh just to outColor so it should display to screen
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-//        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT);
-
-        //SimplyShaders.fbo.end();
-        //int texHandle = SimplyShaders.fbo.getColorBufferTexture().getTextureObjectHandle();
-        //System.out.println("Starting quad render");
-       FinalShader finalShader = FinalShader.DEFAULT_FINAL_SHADER;
-        finalShader.bind(rawWorldCamera);
-        //finalShader.bindOptionalInt("colorTex0", texHandle);
-        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-        //Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
-        //finalShader.bindOptionalTexture("noiseTex", ChunkShader.noiseTex, 0); //this works
-
-        SimplyShaders.screenQuad.render(finalShader.shader, GL20.GL_TRIANGLE_FAN); //as long as this is in the pool of shaders to get updated with colertexture spots i dont need to bind textures in shader
-        finalShader.unbind();
+        SimplyShaders.finalStageRenderer.render(rawWorldCamera);
         //System.out.println("DONE QUAD");
 
 
@@ -266,27 +233,8 @@ public abstract class InGameMixin extends GameState {
 //            }
 //        }
 
-        RenderTextureHolder holder = SimplyShaders.holder;
-        for(int i = 0; i < holder.flippedBuffers.length; i++) {
-            if (holder.flippedBuffers[i]) {
-
-                BufferTexture[] render = holder.getRenderTextures();
-                BufferTexture[] uniform = holder.uniformTextures;
-                BufferTexture[] swap = holder.getSwapTextures();
 
 
-
-
-
-                    //if the texture has clearing we want to toggle the array
-                holder.flippedBuffers[i] = false; //xor the boolean to invert it;
-                BufferTexture temp = render[i];
-
-                render[i] = swap[i]; //get the alternate buffer to render to
-                uniform[i] = render[i]; //set the uniform bufferNum to the current renderTexture
-                swap[i] = temp;
-            }
-        }
 
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.swapQueryBuffers();

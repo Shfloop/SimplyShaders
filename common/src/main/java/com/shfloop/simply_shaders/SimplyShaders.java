@@ -10,9 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
-import com.shfloop.simply_shaders.rendering.BufferTexture;
-import com.shfloop.simply_shaders.rendering.RenderTextureHolder;
-import com.shfloop.simply_shaders.rendering.TimerQuery;
+import com.shfloop.simply_shaders.rendering.*;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.ui.debug.DebugInfo;
@@ -28,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 
 public class SimplyShaders {
@@ -39,6 +38,8 @@ public class SimplyShaders {
     public static RenderTextureHolder holder = null;
     public static TimerQuery timerQuery;
     private static final Vector3 timerVec = new Vector3(0,0,0);
+    public static CompositeStageRenderer compositeStageRenderer;
+    public static FinalStageRenderer finalStageRenderer;
    static  DecimalFormat debugPositionFormat = new DecimalFormat("0.00");
     public static void initTextureHolder() {
         if (holder != null) {
@@ -65,7 +66,7 @@ public class SimplyShaders {
                 }
                 if (ShaderPackLoader.packSettings.texesWithMipEnabled[drawBuffersUsed.get(i) - GL32.GL_COLOR_ATTACHMENT0]) {
                     isMipMapEnabled = true;
-                    SimplyShaders.LOGGER.info("INIT SHADER {} to MipMap Linear", name);
+
                 }
             }
             textures[i] = new BufferTexture(name, (int) (textureScale * Gdx.graphics.getWidth()), (int) (textureScale * Gdx.graphics.getHeight()), GL32.GL_RGBA, GL32.GL_RGBA16F, drawBuffersUsed.get(i), isMipMapEnabled);
@@ -77,6 +78,24 @@ public class SimplyShaders {
         //i could just give the first one a depth buffer always
         ///wouldnt work for resized compute or deferred but its an easy solution that should work
         holder = new RenderTextureHolder(textures);
+        boolean[] flippedBuffers = new boolean[8];
+        IntArray mipMappedTextures = new IntArray();
+        if (ShaderPackLoader.shaderPackOn) {
+            int compStart = ShaderPackLoader.compositeStartIdx;
+            CompositeShader[] compositeShaders = new CompositeShader[ShaderPackLoader.shader1.size - compStart];
+            int index= 0;
+            for ( int i = compStart; i < ShaderPackLoader.shader1.size; i++) {
+                compositeShaders[index++] = (CompositeShader) ShaderPackLoader.shader1.get(i);
+            }
+
+
+            //need to add shadowTextures
+            compositeStageRenderer = new CompositeStageRenderer(compositeShaders,null,flippedBuffers,null,holder ,mipMappedTextures);
+        }
+
+
+        finalStageRenderer = new FinalStageRenderer(FinalShader.DEFAULT_FINAL_SHADER,flippedBuffers,holder,mipMappedTextures);
+
     }
 
 

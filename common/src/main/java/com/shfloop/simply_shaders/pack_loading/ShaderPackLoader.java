@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.shfloop.simply_shaders.DynamicSkyInterface;
+import com.shfloop.simply_shaders.GameShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.mixins.*;
@@ -50,10 +51,13 @@ public class ShaderPackLoader {
     public static PackSettings packSettings;
     public static  IntArray drawBuffersUsed;
 
+    public static IntArray baseGameDrawbuffers;
+
 
 
     public static void switchToShaderPack() {
         drawBuffersUsed = new IntArray(8);
+        baseGameDrawbuffers = new IntArray(8);
 
         //check if folder is zip pack
         isZipPack = selectedPack.endsWith(".zip");
@@ -86,6 +90,7 @@ public class ShaderPackLoader {
     }
     public static void switchToDefaultPack() {
         drawBuffersUsed = null;
+        baseGameDrawbuffers = null;
         shaderPackOn = false;
         isZipPack = false;
         //packSettings.saveUserPackSettings(); // dont think this is needed as long as packSettingsMenu always savees settings for the pack on exit
@@ -119,9 +124,16 @@ public class ShaderPackLoader {
         //this needs to
         for (Zone zone: InGame.getWorld().getZones()) {
             for (Region reg: zone.getRegions()) {
-                for (Chunk chunk: reg.getChunks()) {
-                    chunk.flagForRemeshing(false); //hm setting this to true does not help makes it much worse
+                Chunk[] chunks = reg.getChunks();
+                for (int i = 0; i < chunks.length; i++) {
+                    if (chunks[i] != null) {
+                        chunks[i].flagForRemeshing(false);
+                    }
+
                 }
+//                for (Chunk chunk: reg.getChunks()) {
+//                    chunk.flagForRemeshing(false); //hm setting this to true does not help makes it much worse
+//                }
             }
 
         }
@@ -303,13 +315,24 @@ public class ShaderPackLoader {
 
         ItemShader.DEFAULT_ITEM_SHADER = new ItemShader(Identifier.of("shaders/item_shader.vert.glsl"), Identifier.of("shaders/item_shader.frag.glsl"));
         packShaders.add(allShaders.pop());
+        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
+        packShaders.add(allShaders.pop());
 
+        //add all of the base game drawbuffers to a seperate array so i can make one framebuffer for all the base game rendering and just call drawbuffers
+        //keep it to one framebuffer cause i think it will be quicker and i dont need to bind framebuffers between each rendering stage
+        for (GameShader shader : packShaders) {
+            for (int drawBuffer: ((GameShaderInterface)shader).getShaderDrawBuffers()) {
+                if (!baseGameDrawbuffers.contains(drawBuffer)){
+                    baseGameDrawbuffers.add(drawBuffer);
+                }
+            }
+
+        }
 
         FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"));
         packShaders.add(allShaders.pop());
 
-        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
-        packShaders.add(allShaders.pop());
+
 
         //add the rest from the pack  shadow , shadowentity, ? composite0-8 as many as given
 
