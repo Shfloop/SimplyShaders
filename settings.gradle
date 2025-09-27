@@ -13,10 +13,10 @@ buildscript() {
         mavenLocal()
     }
     dependencies {
-        classpath "org.codeberg.CRModders:cosmic-loom:PR11-SNAPSHOT"
+        classpath "org.codeberg.CRModders:cosmic-loom:main-SNAPSHOT"
 
 
-        classpath "com.github.johnrengelman:shadow:8.1.1"
+        //classpath "com.github.johnrengelman:shadow:8.1.1"
         classpath "com.github.PuzzleLoader:jigsaw:$jigsaw_gradle_version"
     } //jitpack builds it for you if you do master-SNAPSHOT
 }

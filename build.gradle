@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "cosmicloom" apply(false)
     id "jigsaw" apply(false)
-    id "com.github.johnrengelman.shadow" apply(false)
+    //id "com.github.johnrengelman.shadow" apply(false)
     id "maven-publish"
 }
 
