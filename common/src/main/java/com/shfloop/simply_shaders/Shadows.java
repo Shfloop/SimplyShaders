@@ -72,12 +72,9 @@ public class Shadows {
         try {
             ShaderPackLoader.switchToShaderPack();
         } catch (RuntimeException e) {
-
-            ShaderPackLoader.switchToDefaultPack();
             System.out.println("ERROR in Shader pack loading");
             e.printStackTrace();
             Chat.MAIN_CLIENT_CHAT.addMessage( null, e.getMessage()); //FixMe need better error handling this is needed cause when shader pack fails it is still added to allShaders
-            //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
             System.out.println(e.getMessage());
             Array<GameShader> defaultShaders = GameShaderAccessor.getShader();
             if (defaultAllShadersSize == -1) {
@@ -87,6 +84,14 @@ public class Shadows {
                 //This shouldnt be necessary but is an easy solution to shader loading without redoing the entire thing
                 defaultShaders.pop();
             }
+
+
+            ShaderPackLoader.switchToDefaultPack();
+
+
+
+            //but i dont want this to happen for other errors so only ones where shader fails to compile / load after it gets created
+
             Shadows.shaders_on = false;
             initalized = false;
             return;

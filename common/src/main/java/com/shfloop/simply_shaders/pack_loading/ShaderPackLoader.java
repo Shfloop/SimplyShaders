@@ -339,14 +339,15 @@ public class ShaderPackLoader {
 
 
         //add the rest from the pack  shadow , shadowentity, ? composite0-8 as many as given
-
+        HashMap<Identifier, HashMap<Identifier, IGameShader>> all_shaders = IGameShaderAccessor.getAllShaders();
         if (BlockPropertiesIDLoader.packEnableShadows) {
 
             Shadows.SHADOW_CHUNK = new ChunkShader(Identifier.of("shaders/shadowChunk.vert.glsl"), Identifier.of("shaders/shadowChunk.frag.glsl"));
             packShaders.add(allShaders.pop());
-
+            removeShader(Identifier.of("shaders/shadowChunk.vert.glsl"), Identifier.of("shaders/shadowChunk.frag.glsl"), all_shaders);
             Shadows.SHADOW_ENTITY = new EntityShader(Identifier.of("shaders/shadowEntity.vert.glsl"), Identifier.of("shaders/shadowEntity.frag.glsl"));
             packShaders.add(allShaders.pop());
+            removeShader(Identifier.of("shaders/shadowEntity.vert.glsl"), Identifier.of("shaders/shadowEntity.frag.glsl"), all_shaders);
 
         }
 
@@ -366,6 +367,7 @@ public class ShaderPackLoader {
                     if (Files.exists(path)) {
                         new CompositeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"));
                         packShaders.add(allShaders.pop());
+                        removeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), all_shaders);
                     } else {
                         break;
                     }
@@ -387,6 +389,7 @@ public class ShaderPackLoader {
                 if (compositeTest.exists()) {
                     new CompositeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"));
                     packShaders.add(allShaders.pop());
+                    removeShader(Identifier.of(compositeName + ".vert.glsl"), Identifier.of(compositeName + ".frag.glsl"), all_shaders);
                 } else {
 
                     break;
@@ -409,4 +412,14 @@ public class ShaderPackLoader {
             drawBuffersUsed.add(attachmentNum);
         }
     }
+    public static GameShader removeShader(Identifier vertexShader, Identifier fragmentShader, HashMap<Identifier, HashMap<Identifier, IGameShader>> all_shaders) {
+        IGameShader s = null;
+        HashMap<Identifier, IGameShader> fragMap = (HashMap)all_shaders.get(vertexShader); // might want to remove the vertex shader but i dont think it matters
+        if (fragMap != null) {
+            s = fragMap.remove(fragmentShader);
+        }
+
+        return (GameShader) s;
+    }
+
 }
