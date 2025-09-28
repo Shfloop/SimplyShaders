@@ -46,23 +46,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         Shadows.defaultAllShadersSize = allShaders.size;
 
     }
-    //TODO get rid of this overwrite
-    @Overwrite
-    public static void reloadAllShaders() {
-        if (ShaderPackLoader.shaderPackOn) {
-//            for (GameShader shader: ShaderPackLoader.shader1) {
-//                shader.reload();
-//            }
-            return;
-    }
-        System.out.println("Reloading all Shaders");
 
-        for (GameShader shader: GameShaderAccessor.getShader()) {
-            shader.reload();
-        }
-
-        System.out.println("Reloaded all Shaders");
-    }
 
     @Inject(method = "bind", at = @At("HEAD"))
     private void bindDrawBuffers(CallbackInfo ci) {
