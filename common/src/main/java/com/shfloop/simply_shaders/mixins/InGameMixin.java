@@ -12,7 +12,7 @@ import com.shfloop.simply_shaders.Shadows;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.*;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.GameState;

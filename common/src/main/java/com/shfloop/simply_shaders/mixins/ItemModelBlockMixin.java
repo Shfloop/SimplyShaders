@@ -34,7 +34,7 @@ public abstract class  ItemModelBlockMixin extends ItemModel {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void replaceBlockEntityShader(CallbackInfo ci) {
-        ((ItemModelBlockInterface)(Object)this).setShader(Shadows.BLOCK_ENTITY_SHADER);
+        //((ItemModelBlockInterface)(Object)this).setShader(Shadows.BLOCK_ENTITY_SHADER);
     }
     @Inject(method = "renderAsHeldItem", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/items/ItemModelBlock;render(Lcom/badlogic/gdx/math/Vector3;Lcom/badlogic/gdx/graphics/Camera;Lcom/badlogic/gdx/math/Matrix4;ZZ)V", shift = At.Shift.BEFORE))
     private void reenableglDepthFunc(CallbackInfo ci) {

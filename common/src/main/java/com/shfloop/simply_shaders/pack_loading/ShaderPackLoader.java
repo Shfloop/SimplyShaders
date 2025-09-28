@@ -81,10 +81,10 @@ public class ShaderPackLoader {
         }
 
         //remesh?
-        remeshAllRegions();
-        remeashAllSkies();
-        changeItemShader();
-        updateEntityShader();
+        //remeshAllRegions();
+//        remeashAllSkies();
+//        changeItemShader();
+//        updateEntityShader();
         remakeFBO();
 
     }
@@ -96,10 +96,10 @@ public class ShaderPackLoader {
         //packSettings.saveUserPackSettings(); // dont think this is needed as long as packSettingsMenu always savees settings for the pack on exit
         packSettings = null;
         setDefaultShaders();
-        remeshAllRegions();
-        remeashAllSkies();
-        changeItemShader();
-        updateEntityShader();
+        //remeshAllRegions();
+//        remeashAllSkies();
+//        changeItemShader();
+//        updateEntityShader();
         //remesh
         remakeFBO();
     }
@@ -138,43 +138,43 @@ public class ShaderPackLoader {
 
         }
     }
-    public static void remeashAllSkies() {
-        for (Sky sky: Sky.skyChoices) {
-            sky.starMesh = null;
-        }
-
-        //Sky.skyChoices.set(0, new DynamicSky("base:dynamic_sky", "Dynamic_Sky"));
-        //DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
-        //Sky.currentSky = temp;
-        //SkyInterface.getSkies().put("base:dynamic_sky", temp);
-        if (Sky.currentSky instanceof DynamicSky) {
-            ((DynamicSkyInterface)Sky.currentSky).setCurrentShader();
-        }
-        ((DynamicSkyInterface)Sky.skyChoices.first()).setCurrentShader();
-    }
-    public static void changeItemShader() {
-    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) {
-        if (model instanceof ItemModelBlock) {
-            ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER);
-        } else if (model instanceof ItemThingModel) {
-            ((ItemThingModelInterface)model).setProgram(ItemShader.DEFAULT_ITEM_SHADER);
-        }
-
-    } //2d items dont need to get new shader i just need to change entity shader for them to work
-
-
-    }
-    public static void updateEntityShader() {
-        if (InGame.getWorld() != null) {
-            for (Entity e: InGame.getLocalPlayer().getZone().getAllEntities()) {
-                if (e.modelInstance instanceof EntityModelInstance) {
-                    ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);
-                }
-            }
-        }
-
-
-    }
+//    public static void remeashAllSkies() {
+//        for (Sky sky: Sky.skyChoices) {
+//            sky.starMesh = null;
+//        }
+//
+//        //Sky.skyChoices.set(0, new DynamicSky("base:dynamic_sky", "Dynamic_Sky"));
+//        //DynamicSky temp =   (DynamicSky) Sky.skyChoices.get(0);
+//        //Sky.currentSky = temp;
+//        //SkyInterface.getSkies().put("base:dynamic_sky", temp);
+//        if (Sky.currentSky instanceof DynamicSky) {
+//            ((DynamicSkyInterface)Sky.currentSky).setCurrentShader();
+//        }
+//        ((DynamicSkyInterface)Sky.skyChoices.first()).setCurrentShader();
+//    }
+//    public static void changeItemShader() {
+//    for(ItemModel model : ItemRendererInterfaceMixin.getModels().values()) {
+//        if (model instanceof ItemModelBlock) {
+//            ((ItemModelBlockInterface)model).setShader(Shadows.BLOCK_ENTITY_SHADER);
+//        } else if (model instanceof ItemThingModel) {
+//            ((ItemThingModelInterface)model).setProgram(ItemShader.DEFAULT_ITEM_SHADER);
+//        }
+//
+//    } //2d items dont need to get new shader i just need to change entity shader for them to work
+//
+//
+//    }
+//    public static void updateEntityShader() {
+//        if (InGame.getWorld() != null) {
+//            for (Entity e: InGame.getLocalPlayer().getZone().getAllEntities()) {
+//                if (e.modelInstance instanceof EntityModelInstance) {
+//                    ((EntityModelInstanceInterface) e.modelInstance).setShader(EntityShader.ENTITY_SHADER);
+//                }
+//            }
+//        }
+//
+//
+//    }
     public static String[] tryDefualtShader(Identifier location) {
 
         //if the shader is in the map then try to assign a different shader
@@ -275,18 +275,22 @@ public class ShaderPackLoader {
     private static void setDefaultShaders() {
         //idk why this is crashing its not getting 8 shaders somehow in allShaders so 7 is out of bounds
        Array<GameShader> allShaders = GameShaderAccessor.getShader();
-        ChunkShader.DEFAULT_BLOCK_SHADER = (ChunkShader) allShaders.get(0);
-        ChunkShader.WATER_BLOCK_SHADER = (ChunkShader) allShaders.get(1);
-        SkyStarShader.SKY_STAR_SHADER = (SkyStarShader) allShaders.get(2);
-        SkyShader.SKY_SHADER = (SkyShader) allShaders.get(3);
-
-        EntityShader.ENTITY_SHADER = (EntityShader) allShaders.get(4);
-        //for now dont f with death screen (5) switched to spritebatchShader
-        ItemShader.DEFAULT_ITEM_SHADER = (ItemShader) allShaders.get(6);    
-        VisualTextShader.TEXT_SHADER = (VisualTextShader) allShaders.get(7);
-        ParticleShader.PARTICLE_SHADER = (ParticleShader) allShaders.get(8);
-        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(9);
-        Shadows.BLOCK_ENTITY_SHADER = (ChunkShader) ChunkShader.DEFAULT_BLOCK_SHADER;
+//        ChunkShader.DEFAULT_BLOCK_SHADER = (ChunkShader) allShaders.get(0);
+//        ChunkShader.WATER_BLOCK_SHADER = (ChunkShader) allShaders.get(1);
+//        SkyStarShader.SKY_STAR_SHADER = (SkyStarShader) allShaders.get(2);
+//        SkyShader.SKY_SHADER = (SkyShader) allShaders.get(3);
+//
+//        EntityShader.ENTITY_SHADER = (EntityShader) allShaders.get(4);
+//        //for now dont f with death screen (5) switched to spritebatchShader
+//        ItemShader.DEFAULT_ITEM_SHADER = (ItemShader) allShaders.get(6);
+//        VisualTextShader.TEXT_SHADER = (VisualTextShader) allShaders.get(7);
+//        ParticleShader.PARTICLE_SHADER = (ParticleShader) allShaders.get(8);
+//        FinalShader.DEFAULT_FINAL_SHADER = (FinalShader) allShaders.get(9);
+//        Shadows.BLOCK_ENTITY_SHADER = (ChunkShader) ChunkShader.DEFAULT_BLOCK_SHADER;
+        for (GameShader shader: allShaders) {
+            System.out.println(shader.getFragmentShaderName() + " " + shader.getVertexShaderName());
+        }
+        GameShader.reloadAllShaders();
     }
 
     //create the new array based onthe shaderpack folder
@@ -296,31 +300,31 @@ public class ShaderPackLoader {
         Array<GameShader> allShaders = GameShaderAccessor.getShader();
 
 
-        ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk.vert.glsl"), Identifier.of("shaders/chunk.frag.glsl"));
-        packShaders.add(allShaders.pop()); //i dont want to infinitly add shaders to allshaders
-
-        ChunkShader.WATER_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk-water.vert.glsl"), Identifier.of("shaders/chunk-water.frag.glsl"));
-        packShaders.add(allShaders.pop());
-
-        SkyStarShader.SKY_STAR_SHADER = new SkyStarShader(Identifier.of("shaders/sky-star.vert.glsl"), Identifier.of("shaders/sky-star.frag.glsl"));
-        packShaders.add(allShaders.pop());
-
-        SkyShader.SKY_SHADER =  new SkyShader(Identifier.of("shaders/sky.vert.glsl"), Identifier.of("shaders/sky.frag.glsl"));
-        packShaders.add(allShaders.pop());
-
-        EntityShader.ENTITY_SHADER =  new EntityShader(Identifier.of("shaders/entity.vert.glsl"), Identifier.of("shaders/entity.frag.glsl"));
-        packShaders.add(allShaders.pop());
-
-        packShaders.add(allShaders.get(5)); //TODO
-
-        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader(Identifier.of("shaders/item_shader.vert.glsl"), Identifier.of("shaders/item_shader.frag.glsl"));
-        packShaders.add(allShaders.pop());
-        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
-        packShaders.add(allShaders.pop());
-
+//        ChunkShader.DEFAULT_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk.vert.glsl"), Identifier.of("shaders/chunk.frag.glsl"));
+//        packShaders.add(allShaders.pop()); //i dont want to infinitly add shaders to allshaders
+//
+//        ChunkShader.WATER_BLOCK_SHADER = new ChunkShader(Identifier.of("shaders/chunk-water.vert.glsl"), Identifier.of("shaders/chunk-water.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+//
+//        SkyStarShader.SKY_STAR_SHADER = new SkyStarShader(Identifier.of("shaders/sky-star.vert.glsl"), Identifier.of("shaders/sky-star.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+//
+//        SkyShader.SKY_SHADER =  new SkyShader(Identifier.of("shaders/sky.vert.glsl"), Identifier.of("shaders/sky.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+//
+//        EntityShader.ENTITY_SHADER =  new EntityShader(Identifier.of("shaders/entity.vert.glsl"), Identifier.of("shaders/entity.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+//
+//        packShaders.add(allShaders.get(5)); //TODO
+//
+//        ItemShader.DEFAULT_ITEM_SHADER = new ItemShader(Identifier.of("shaders/item_shader.vert.glsl"), Identifier.of("shaders/item_shader.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+//        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
+//        packShaders.add(allShaders.pop());
+        GameShader.reloadAllShaders();
         //add all of the base game drawbuffers to a seperate array so i can make one framebuffer for all the base game rendering and just call drawbuffers
         //keep it to one framebuffer cause i think it will be quicker and i dont need to bind framebuffers between each rendering stage
-        for (GameShader shader : packShaders) {
+        for (GameShader shader : allShaders) {
             for (int drawBuffer: ((GameShaderInterface)shader).getShaderDrawBuffers()) {
                 if (!baseGameDrawbuffers.contains(drawBuffer)){
                     baseGameDrawbuffers.add(drawBuffer);
@@ -329,8 +333,8 @@ public class ShaderPackLoader {
 
         }
 
-        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"));
-        packShaders.add(allShaders.pop());
+//        FinalShader.DEFAULT_FINAL_SHADER =  new FinalShader(Identifier.of("shaders/final.vert.glsl"), Identifier.of("shaders/final.frag.glsl"));
+//        packShaders.add(allShaders.pop());
 
 
 

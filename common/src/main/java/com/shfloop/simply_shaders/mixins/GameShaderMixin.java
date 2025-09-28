@@ -42,7 +42,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
 
         FinalShader.initFinalShader();
 
-        Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
+        //Shadows.BLOCK_ENTITY_SHADER = ChunkShader.DEFAULT_BLOCK_SHADER;
         Shadows.defaultAllShadersSize = allShaders.size;
 
     }
