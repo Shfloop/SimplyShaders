@@ -321,7 +321,10 @@ public class ShaderPackLoader {
 //        packShaders.add(allShaders.pop());
 //        Shadows.BLOCK_ENTITY_SHADER = new ChunkShader(Identifier.of("shaders/blockEntity.vert.glsl"), Identifier.of("shaders/blockEntity.frag.glsl"));
 //        packShaders.add(allShaders.pop());
-        GameShader.reloadAllShaders();
+        for (GameShader shader: allShaders) {
+            shader.reload();
+        }
+        //GameShader.reloadAllShaders(); //this doesnt reload the shaders because im overriding the gameShader methdd and returning early //FIXME
         //add all of the base game drawbuffers to a seperate array so i can make one framebuffer for all the base game rendering and just call drawbuffers
         //keep it to one framebuffer cause i think it will be quicker and i dont need to bind framebuffers between each rendering stage
         for (GameShader shader : allShaders) {
