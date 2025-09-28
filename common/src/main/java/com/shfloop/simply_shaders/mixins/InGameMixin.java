@@ -234,7 +234,7 @@ public abstract class InGameMixin extends GameState {
 //        }
 
 
-
+        //FIXME Water renders on top of particles
 
         SimplyShaders.timerQuery.endQuery();
         SimplyShaders.timerQuery.swapQueryBuffers();

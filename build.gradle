@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "cosmicloom" apply(false)
     id "jigsaw" apply(false)
-    //id "com.github.johnrengelman.shadow" apply(false)
+    id 'com.gradleup.shadow' apply(false)
     id "maven-publish"
 }
 
@@ -25,23 +25,43 @@ subprojects {
     }
 
     processResources {
-        def resourceTargets = [ // Locations of where to inject the properties
-                "quilt.mod.json", "puzzle.mod.json"
+        def resourceTargetsQuilt = [ // Locations of where to inject the properties
+                "quilt.mod.json"
         ]
-
+        def resourceTargetsPuzzle = [ "puzzle.mod.json" ]
         // Left item is the name in the target, right is the varuable name
-        def replaceProperties = [
+        def replacePropertiesQuilt = [
                 "mod_version"     : project.version,
                 "mod_group"       : project.group,
                 "mod_name"        : rootProject.name,
                 "mod_id"          : id,
         ]
+        String cosmic_api_version_clean = cosmic_api_version.split("-")[0]
+        String alpha_appended_version = cosmic_reach_version + "-alpha"
+        // Left item is the name in the target, right is the variable name
+        def replacePropertiesPuzzle = [
+                "mod_version"     : project.version,
+                "mod_group"       : project.group,
+                "mod_name"        : rootProject.name,
+                "mod_desc"        : desc,
+                "mod_id"          : id,
+                "cosmic_reach"    : alpha_appended_version,
+                "cosmic_reach_minimum"    : cosmic_reach_minimum_version,
+                "cosmic_api"      : cosmic_api_version_clean,
+                "puzzle_loader_cosmic"    : puzzle_cosmic_version,
+                "puzzle_loader_core"      : puzzle_core_version
+        ]
 
 
-        inputs.properties replaceProperties
-        replaceProperties.put "project", project
-        filesMatching(resourceTargets) {
-            expand replaceProperties
+        inputs.properties replacePropertiesQuilt
+        replacePropertiesQuilt.put "project", project
+        filesMatching(resourceTargetsQuilt) {
+            expand replacePropertiesQuilt
+        }
+        inputs.properties replacePropertiesPuzzle
+        replacePropertiesPuzzle.put "project", project
+        filesMatching(resourceTargetsPuzzle) {
+            expand replacePropertiesPuzzle
         }
     }
 }
