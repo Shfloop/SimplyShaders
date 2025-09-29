@@ -1,8 +1,10 @@
 package com.shfloop.simply_shaders;
 
 
-import com.shfloop.simply_shaders.SimplyShaders;
-import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ClientModInit;
+
+
+
+import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.client.ClientModInit;
 
 import static com.shfloop.simply_shaders.SimplyShaders.LOGGER;
 
