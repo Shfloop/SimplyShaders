@@ -13,6 +13,26 @@ loom {
 
 }
 repositories {
+    exclusiveContent {
+        forRepository {
+            ivy {
+                name = "GitHub Releases"
+                url = uri("https://github.com")
+                patternLayout {
+                    artifact("[organization]/releases/download/[revision]/[module](-[classifier]).[ext]")
+                    artifact("[organization]/releases/download/[revision]/[module]-[revision](-[classifier]).[ext]")
+                    setM2compatible(true)
+                }
+                metadataSources {
+                    artifact()
+                }
+            }
+        }
+        filter {
+            // you may add more repos but for now this is what we need
+            includeGroup("PuzzlesHQ.CRArchive")
+        }
+    }
     mavenCentral()
     mavenLocal()
     maven {
@@ -25,8 +45,8 @@ dependencies {
     //cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}") // quilt can run off of jigsaw but doesnt build correnctly
 
     // Cosmic Quilt
-    cosmicReach(loom.cosmicReachClient("alpha", cosmic_reach_version))
-    cosmicReachServer(loom.cosmicReachServer("alpha", cosmic_reach_version))
+    cosmicReach("PuzzlesHQ.CRArchive:cosmic-reach-client:${cosmic_reach_version}-alpha")
+    cosmicReachServer("PuzzlesHQ.CRArchive:cosmic-reach-server:${cosmic_reach_version}-alpha")
     modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
 }
 

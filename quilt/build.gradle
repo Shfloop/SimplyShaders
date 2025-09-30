@@ -14,6 +14,26 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    exclusiveContent {
+        forRepository {
+            ivy {
+                name = "GitHub Releases"
+                url = uri("https://github.com")
+                patternLayout {
+                    artifact("[organization]/releases/download/[revision]/[module](-[classifier]).[ext]")
+                    artifact("[organization]/releases/download/[revision]/[module]-[revision](-[classifier]).[ext]")
+                    setM2compatible(true)
+                }
+                metadataSources {
+                    artifact()
+                }
+            }
+        }
+        filter {
+            // you may add more repos but for now this is what we need
+            includeGroup("PuzzlesHQ.CRArchive")
+        }
+    }
     mavenLocal()
     //
 }
@@ -21,8 +41,8 @@ repositories {
 
 dependencies {
     // Cosmic Reach
-    cosmicReach(loom.cosmicReachClient("alpha", cosmic_reach_version))
-    cosmicReachServer(loom.cosmicReachServer("alpha", cosmic_reach_version))
+    cosmicReach("PuzzlesHQ.CRArchive:cosmic-reach-client:${cosmic_reach_version}-alpha")
+    cosmicReachServer("PuzzlesHQ.CRArchive:cosmic-reach-server:${cosmic_reach_version}-alpha")
     // Cosmic Quilt
     modImplementation(loom.cosmicQuilt(cosmic_quilt_version))
 
