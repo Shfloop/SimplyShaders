@@ -1,6 +1,7 @@
 package com.shfloop.simply_shaders.mixins;
 
 
+import com.shfloop.simply_shaders.OptionsUIElement;
 import com.shfloop.simply_shaders.menus.ShaderSelectionMenu;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
@@ -17,16 +18,7 @@ public abstract class OptionsMenuMixin extends GameState {
     @Inject(method = "<init>(Lfinalforeach/cosmicreach/gamestates/GameState;)V", at = @At("TAIL"))
     private void addIsometricOptionsButton(CallbackInfo ci) {
         GameState temp = this;
-        UIElement IsometricButton = new UIElement(-5.0F, -5.0F, 250.0F, 50.0F) {//-137.0F, 25.0F, 250.0F, 50.0F
-
-
-            @Override
-            public void onClick() {
-                super.onClick();
-                GameState.switchToGameState(new ShaderSelectionMenu(temp));
-            }
-
-        };
+        UIElement IsometricButton = new OptionsUIElement(-5.0F, -5.0F, 250.0F, 50.0F, temp) ;
         IsometricButton.setText("Shaders");
         IsometricButton.vAnchor = VerticalAnchor.BOTTOM_ALIGNED;
         IsometricButton.hAnchor = HorizontalAnchor.LEFT_ALIGNED;

@@ -4,6 +4,7 @@
   "package": "com.shfloop.simply_shaders.mixins",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "MainMenuMixinPuzzle"
   ],
   "server": [],
   "injectors": {

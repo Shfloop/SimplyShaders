@@ -88,6 +88,28 @@ tasks.register("runRenderDoc", Exec) {
             ":quilt:runClient"
     ]
 }
+tasks.register("runNvidiaProfiler", Exec) {
+    def javaExecTask = rootProject.project(":quilt").tasks.named("runClient", JavaExec).get()
+    def javaHome = javaExecTask.javaLauncher.get().metadata.installationPath.asFile.absolutePath
+
+    commandLine = [
+            "C:\\Program Files\\NVIDIA Corporation\\Nsight Graphics 2025.2.0\\host\\windows-desktop-nomad-x64\\ngfx.exe",
+            "GPU Trace Profiler",
+            "--opt-hook-children",
+            "--wait-for-exit",
+            "--working-dir",
+            ".",
+            "$javaHome/bin/java.exe",
+            "-Xmx64m",
+            "-Xms64m",
+            "-Dorg.gradle.appname=gradlew",
+            "-Dorg.gradle.java.home=$javaHome",
+            "-classpath",
+            "gradle/wrapper/gradle-wrapper.jar",
+            "org.gradle.wrapper.GradleWrapperMain",
+            ":quilt:runClient"
+    ]
+}
 
 
 

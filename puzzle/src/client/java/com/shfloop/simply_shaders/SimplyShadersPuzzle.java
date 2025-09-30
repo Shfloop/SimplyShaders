@@ -14,5 +14,6 @@ public class SimplyShadersPuzzle implements ClientModInit {
     public void onClientInit() {
         LOGGER.info("Block Switcher Puzzle Initialized!");
 
+        SimplyShaders.initializeBuffer(); //i dont think this is running
     }
 }

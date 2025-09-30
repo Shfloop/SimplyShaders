@@ -63,6 +63,6 @@ java {
 	// withJavadocJar() // If docs are included with the project, this line can be un-commented
 
     // Sets the Java version
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_24
+    targetCompatibility = JavaVersion.VERSION_24
 }

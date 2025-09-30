@@ -3,13 +3,13 @@ package com.shfloop.simply_shaders.mixins;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.shfloop.simply_shaders.GameShaderInterface;
+import com.shfloop.simply_shaders.ShaderProgram;
 import com.shfloop.simply_shaders.pack_loading.ShaderDirectives;
 import com.shfloop.simply_shaders.pack_loading.ShaderPackLoader;
 import com.shfloop.simply_shaders.Shadows;
@@ -203,6 +203,10 @@ public abstract class GameShaderMixin implements GameShaderInterface {
     public String removeCommentsFromShaderText(String shaderText) { //todo fix this instead of removing it
        return shaderText;
     }
+    /**
+     * @author Shfloop
+     * @reason ShaderType is package-private
+     */
     @Overwrite
     public void reload() {
         GameShader tempThis = ((GameShader) (Object)this); //maybe this works
@@ -220,28 +224,7 @@ public abstract class GameShaderMixin implements GameShaderInterface {
         String frag = loadShaderFile(this.fragShaderId, SimplyShaders.newShaderType.FRAG);
         tempThis.validateShader(this.vertexShaderId, vert, this.fragShaderId, frag);
         ShaderProgram.pedantic = true;
-        tempThis.shader = new ShaderProgram(vert, frag) {
-            public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, int offset) {
-                int location = this.getAttributeLocation(name);
-                if (location != -1) {
-                    this.setVertexAttribute(location, size, type, normalize, stride, offset);
-                }
-            }
-
-            public void setVertexAttribute(int location, int size, int type, boolean normalize, int stride, int offset) {
-                GL20 gl = Gdx.gl20;
-                if (type == 5124 && Gdx.gl30 == null) {
-                    type = 5126;
-                }
-
-                if (type == 5124 && Gdx.gl30 != null) {
-                    Gdx.gl30.glVertexAttribIPointer(location, size, type, stride, offset);
-                } else {
-                    gl.glVertexAttribPointer(location, size, type, normalize, stride, offset);
-                }
-
-            }
-        };
+        tempThis.shader = new ShaderProgram(vert, frag) ;
 
 
 

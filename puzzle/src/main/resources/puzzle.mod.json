@@ -16,7 +16,11 @@
   },
   "mixins": [
     "simply_shaders.mixins.json",
-    "simply_shaders.puzzle.mixins.json"
+    {
+      "config":"simply_shaders.puzzle.mixins.json",
+      "environment": "client"
+    }
+
   ],
   "dependencies": {
     "cosmic-reach": ">=0.3.6",
