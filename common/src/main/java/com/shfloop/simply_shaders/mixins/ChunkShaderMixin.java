@@ -5,21 +5,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.shfloop.simply_shaders.ChunkShaderInterface;
 import com.shfloop.simply_shaders.Shadows;
 import com.shfloop.simply_shaders.SimplyShaders;
 import com.shfloop.simply_shaders.rendering.BufferTexture;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.rendering.TextureBuffer;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static finalforeach.cosmicreach.rendering.shaders.ChunkShader.faceTexBufFloats;
+
 
 @Mixin(ChunkShader.class)
-public abstract class ChunkShaderMixin extends GameShader {
+public abstract class ChunkShaderMixin extends GameShader implements ChunkShaderInterface {
     private String shaderType;
     private Matrix4 prevCombinedMatrix = new Matrix4();
 
@@ -29,8 +34,16 @@ public abstract class ChunkShaderMixin extends GameShader {
 
     //TODO i should add an entity shader mixin to add normals to entities
 
+    @Shadow
+     TextureBuffer uvTexBuf;
+    public void updateTexBuf() {
+        if (this.uvTexBuf != null) {
+            this.uvTexBuf.dispose();
 
-
+        }
+        faceTexBufFloats.shrink();
+        this.uvTexBuf = TextureBuffer.fromFloats(faceTexBufFloats.toArray());
+    }
 
     @Inject(method = "bind(Lcom/badlogic/gdx/graphics/Camera;)V", at = @At("TAIL"))//value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V")) // Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTextureBuffer(Ljava/lang/String;,  Lfinalforeach/cosmicreach/rendering/TextureBuffer; I)V
     private void injectShaderParam(CallbackInfo ci ,@Local int texNum, @Local Camera worldCamera) {

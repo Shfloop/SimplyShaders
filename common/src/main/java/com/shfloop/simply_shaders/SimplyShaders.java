@@ -77,7 +77,7 @@ public class SimplyShaders {
         //how do i knwo which ones to give depth buffers
         //i could just give the first one a depth buffer always
         ///wouldnt work for resized compute or deferred but its an easy solution that should work
-        holder = new RenderTextureHolder(textures);
+        holder = new RenderTextureHolder(textures, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         boolean[] flippedBuffers = new boolean[8];
         IntArray mipMappedTextures = new IntArray();
         if (ShaderPackLoader.shaderPackOn) {
@@ -213,7 +213,16 @@ public class SimplyShaders {
 //                throw new RuntimeException(e);
 //            }
 //        }
-        initTextureHolder();
+        try {
+            initTextureHolder();
+        } catch (Exception e) {
+            if (holder != null) {
+                holder.dispose();
+                holder = null;
+            }
+            LOGGER.info("FrameBuffer Failed to init must be minimized");
+        }
+
 
     }
 

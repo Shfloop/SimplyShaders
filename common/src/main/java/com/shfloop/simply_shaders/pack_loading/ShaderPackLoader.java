@@ -5,10 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
-import com.shfloop.simply_shaders.DynamicSkyInterface;
-import com.shfloop.simply_shaders.GameShaderInterface;
-import com.shfloop.simply_shaders.Shadows;
-import com.shfloop.simply_shaders.SimplyShaders;
+import com.shfloop.simply_shaders.*;
 import com.shfloop.simply_shaders.mixins.*;
 import com.shfloop.simply_shaders.rendering.CompositeShader;
 import com.shfloop.simply_shaders.rendering.FinalShader;
@@ -108,6 +105,14 @@ public class ShaderPackLoader {
 //            throw new RuntimeException(e);
 //        }
         SimplyShaders.initTextureHolder();
+    }
+    static void reloadChunkTexBuf() {
+        Array<GameShader> allShaders = GameShaderAccessor.getShader();
+        for (GameShader shader: allShaders) {
+            if (shader instanceof ChunkShader) {
+                ((ChunkShaderInterface)shader).updateTexBuf();
+            }
+        }
     }
 
     public static String[] tryDefualtShader(Identifier location) {
@@ -226,6 +231,7 @@ public class ShaderPackLoader {
 
 
         GameShader.reloadAllShaders();
+        reloadChunkTexBuf();
         //add all of the base game drawbuffers to a seperate array so i can make one framebuffer for all the base game rendering and just call drawbuffers
         //keep it to one framebuffer cause i think it will be quicker and i dont need to bind framebuffers between each rendering stage
         for (GameShader shader : allShaders) {

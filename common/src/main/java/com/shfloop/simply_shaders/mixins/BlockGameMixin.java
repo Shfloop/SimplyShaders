@@ -27,6 +27,15 @@ public abstract class BlockGameMixin {
             if (timeSinceResize > 0.1) { // this could probably be even lesss atleast on my pc resize was called about every 0.02
                 if (BlockGame.isFocused) {
                     needsResize = false;
+                    if (Gdx.graphics.getWidth() == 0 && Gdx.graphics.getHeight() == 0) {
+                        return;
+                    }
+                    if (SimplyShaders.holder != null) {
+                        if (Gdx.graphics.getHeight() == SimplyShaders.holder.getHeight() &&  Gdx.graphics.getWidth() ==SimplyShaders.holder.getWidth()) {
+                            //return if the graphics didnt change
+                            return;
+                        }
+                    }
                     SimplyShaders.resize();
                 } else {
 

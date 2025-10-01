@@ -208,6 +208,7 @@ public abstract class BatchedZoneRendererMixin implements BatchedZoneRendererInt
 
             //Gdx.gl.glCullFace(GL20.GL_FRONT);
             //only like 30 fps drop in a test might have worse cases but im not sure how else to fix shadows
+        // fix shadows by updating mesh generation by generating faces for blocks that touch a null chunk
             Gdx.gl.glDisable(GL20.GL_CULL_FACE);
             Gdx.gl.glDisable(GL20.GL_BLEND);
 

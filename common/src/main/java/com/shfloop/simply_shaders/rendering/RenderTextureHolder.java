@@ -43,10 +43,14 @@ public class RenderTextureHolder {
 
     public FrameBuffer baseGameFrameBuffer;
     private Array<FrameBuffer> clearFrameBuffers;
+    private int width;
+    private int height;
 
 
 
-    public RenderTextureHolder(BufferTexture[] textures) {
+    public RenderTextureHolder(BufferTexture[] textures, int width, int height) {
+        this.width = width;
+        this.height = height;
         this.framebuffers = new Array<>();
 
         if (MAX_NUM_RENDER_TEXTURES < textures.length) {
@@ -64,8 +68,8 @@ public class RenderTextureHolder {
 
 
         try {
-            depthTexture = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
-            noWaterDepthTex = new ShadowTexture(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), GL20.GL_DEPTH_COMPONENT);
+            depthTexture = new ShadowTexture(this.width, this.height, GL20.GL_DEPTH_COMPONENT);
+            noWaterDepthTex = new ShadowTexture(this.width, this.height, GL20.GL_DEPTH_COMPONENT);
         } catch ( Exception e) {
             throw new RuntimeException(e);
         }
@@ -153,8 +157,9 @@ public class RenderTextureHolder {
 
             try {
                 ShadowTexture depthTex;
-               // SimplyShaders.LOGGER.info("creating clearFramebuffer with {} \nMain textures {} \n MAIN MAIN{}", Arrays.toString(temp), Arrays.toString(sortedTextures), mainTextures.length);
-                if (temp[0].getWidth() == Gdx.graphics.getWidth() && temp[0].getHeight() == Gdx.graphics.getHeight()) {
+                System.out.println("Creating FrameBuffer " + Gdx.graphics.getHeight() + " " + Gdx.graphics.getWidth());
+                SimplyShaders.LOGGER.info("creating clearFramebuffer with {} \nMain textures {} \n MAIN MAIN{}", Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 123);
+                if (temp[0].getWidth() == this.width && temp[0].getHeight() == this.height) {
                     depthTex = depthTexture;
                     addedDepth = true;
                 } else {
@@ -387,7 +392,12 @@ public class RenderTextureHolder {
     //
 
 
-
+    public int getHeight() {
+        return this.height;
+    }
+    public int getWidth() {
+        return this.width;
+    }
 
 
 
